@@ -1,10 +1,15 @@
 package abi.mach.parse;
 
-import abi.generic.Parser;
+
+import abi.generic.memory.Address64;
+import abi.generic.memory.DWord;
 import abi.mach.Loader;
+import abi.mach.Mach;
 import abi.mach.MachO32;
 import abi.mach.MachO64;
-import util.ByteUtils;
+import abi.mach.parse.x86.MachParser32;
+import abi.mach.parse.x86_64.MachParser64;
+import util.B;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +23,7 @@ public class Reader {
 
     private Reader(){}
 
-    public static Parser Read(final File in) throws IOException,ArithmeticException{
+    public static Mach Read(final File in) throws IOException,ArithmeticException{
 
         long fileLengthInBytes = -1;
         if(in.exists()){
@@ -33,19 +38,21 @@ public class Reader {
         final FileInputStream fis = new FileInputStream(in);
         fis.read(binary);
 
-        final byte[] init = {(byte)0x00};
-        final byte[] dWordAtAddress = ByteUtils.getDWordAtAddress(binary, init);
+        final DWord dWordAtAddress = B.getDWordAtAddress(binary, new Address64("0x0000000000000000"), ByteOrder.LITTLE_ENDIAN);
 
         if(dWordAtAddress == null)
             return null;
 
-        if(ByteUtils.equals(Loader.MH_MAGIC_64,dWordAtAddress) || ByteUtils.equals(Loader.MH_CIGAM_64,dWordAtAddress)){
-            return new MachParser64(new MachO64(binary));
-        } else if(ByteUtils.equals(Loader.MH_MAGIC,dWordAtAddress) || ByteUtils.equals(Loader.MH_CIGAM,dWordAtAddress)){
-            return new MachParser32(new MachO32(binary));
+        Mach ret = null;
+
+        if(B.equals(Loader.MH_MAGIC_64, dWordAtAddress.getContainer()) || B.equals(Loader.MH_CIGAM_64, dWordAtAddress.getContainer())){
+            ret = new MachO64(binary);
+            MachParser64.parse((MachO64)ret);
+        } else if(B.equals(Loader.MH_MAGIC, dWordAtAddress.getContainer()) || B.equals(Loader.MH_CIGAM, dWordAtAddress.getContainer())){
+            ret = new MachO32(binary);
+            MachParser32.parse((MachO32)ret);
         }
 
-        return null;
+        return ret;
     }
-
 }

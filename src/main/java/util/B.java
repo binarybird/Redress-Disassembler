@@ -1,5 +1,7 @@
 package util;
 
+import abi.generic.memory.*;
+
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -7,13 +9,34 @@ import java.nio.ByteOrder;
 
 /**
  * Created by jamesrichardson on 2/10/16.
+ *
+ * Byte Utils
  */
-public class ByteUtils {
-    private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+public class B {
+
+    private B(){}
+
+    public static byte[] byteToBytes(byte b){
+        final byte[] bytes = {b};
+        return bytes;
+    }
+
+    public static  byte[] intToBytes(int myInteger,ByteOrder order){
+
+        if(order == ByteOrder.LITTLE_ENDIAN)
+            return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(myInteger).array();
+        return ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(myInteger).array();
+    }
+
+    public static int bytesToInt(byte [] byteBarray,ByteOrder order){
+
+        if(order == ByteOrder.LITTLE_ENDIAN)
+            return ByteBuffer.wrap(byteBarray).order(ByteOrder.LITTLE_ENDIAN).getInt();
+        return ByteBuffer.wrap(byteBarray).order(ByteOrder.BIG_ENDIAN).getInt();
+    }
 
     public static byte[] longToBytes(long x) {
-        buffer.putLong(0, x);
-        return buffer.array();
+        return ByteBuffer.allocate(Long.BYTES).putLong(0, x).array();
     }
 
     // Underflow issue
@@ -57,7 +80,25 @@ public class ByteUtils {
         return true;
     }
 
+    public static boolean equalsIgnoreLength(final byte[] one,final byte[] two){
+
+        if(one.length <= two.length){
+            for(int i=0;i<one.length;i++){
+                if(one[i] != two[i])
+                    return false;
+            }
+
+        }else{
+            for(int i=0;i<two.length;i++){
+                if(one[i] != two[i])
+                    return false;
+            }
+        }
+        return true;
+    }
+
     public static byte[] stringToBytes(String in){
+        in = in.replaceAll("0x","");
         return DatatypeConverter.parseHexBinary(in);
     }
 
@@ -76,6 +117,15 @@ public class ByteUtils {
         return ret;
     }
 
+    public static Word getWordAtAddress(final byte[] raw, final Address address,ByteOrder resultOrder){
+
+        final byte[] ret = new byte[4];
+        final int addr = longToInt(bytesToLong(address.getContainer(),address.BYTEORDER));
+
+        return new Word(raw[addr],raw[addr+1],resultOrder);
+
+    }
+
     public static byte[] getDWordAtAddress(final byte[] raw, final byte[] address){
 
         final byte[] ret = new byte[4];
@@ -87,6 +137,15 @@ public class ByteUtils {
         ret[3] = raw[addr+3];
 
         return ret;
+    }
+
+    public static DWord getDWordAtAddress(final byte[] raw, final Address address,ByteOrder resultOrder){
+
+        final byte[] ret = new byte[4];
+        final int addr = longToInt(bytesToLong(address.getContainer(),address.BYTEORDER));
+
+        return new DWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],resultOrder);
+
     }
 
     public static byte[] getQWordAtAddress(final byte[] raw,final byte[] address){
@@ -106,5 +165,12 @@ public class ByteUtils {
         return ret;
     }
 
+    public static QWord getQWordAtAddress(final byte[] raw, final Address address, ByteOrder resultOrder){
 
+        final byte[] ret = new byte[4];
+        final int addr = longToInt(bytesToLong(address.getContainer(),address.BYTEORDER));
+
+        return new QWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7],resultOrder);
+
+    }
 }

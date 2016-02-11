@@ -1,6 +1,6 @@
 package abi.mach;
 
-import abi.generic.*;
+import abi.generic.abi.*;
 
 import java.util.LinkedList;
 
@@ -9,12 +9,12 @@ import java.util.LinkedList;
  */
 public class MachO64 extends ABI implements Mach{
 
-    private static final Arch arch = Arch.SIXTYFOUR;
+    private static final ABIType ABI_TYPE = ABIType.MACH_64;
     private LinkedList<Command> commands = new LinkedList<>();
     private LinkedList<Segment> segments = new LinkedList<>();
     private LinkedList<Section> sections = new LinkedList<>();
 
-    private Loader.mach_header_64 mach_header_64 = new Loader.mach_header_64();
+    private Loader.mach_header_64 mach_header_64 = null;
 
     public MachO64(byte[] binary){
         super(binary);
@@ -26,13 +26,17 @@ public class MachO64 extends ABI implements Mach{
     }
 
     @Override
-    public Arch getArch() {
-        return arch;
+    public ABIType getArch() {
+        return ABI_TYPE;
     }
 
     @Override
-    public Header getHeader() {
+    public Loader.mach_header_64 getHeader() {
         return mach_header_64;
+    }
+
+    public void setHeader(Loader.mach_header_64 in){
+        this.mach_header_64 = in;
     }
 
     @Override
@@ -49,4 +53,5 @@ public class MachO64 extends ABI implements Mach{
     public LinkedList<Section> getSections() {
         return sections;
     }
+
 }

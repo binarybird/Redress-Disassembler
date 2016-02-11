@@ -1,6 +1,6 @@
 package abi.mach;
 
-import abi.generic.*;
+import abi.generic.abi.*;
 
 import java.util.LinkedList;
 
@@ -9,7 +9,7 @@ import java.util.LinkedList;
  */
 public class MachO32 extends ABI implements Mach {
 
-    private static final Arch arch = Arch.THIRTYTWO;
+    private static final ABIType ABI_TYPE = ABIType.MACH_32;
     private LinkedList<Command> commands = new LinkedList<>();
     private LinkedList<Segment> segments = new LinkedList<>();
     private LinkedList<Section> sections = new LinkedList<>();
@@ -31,8 +31,8 @@ public class MachO32 extends ABI implements Mach {
     }
 
     @Override
-    public Arch getArch() {
-        return arch;
+    public ABIType getArch() {
+        return ABI_TYPE;
     }
 
     @Override

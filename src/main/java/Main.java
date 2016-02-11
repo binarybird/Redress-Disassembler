@@ -1,4 +1,3 @@
-import abi.mach.parse.MachParser64;
 import abi.mach.parse.Reader;
 
 import java.io.File;

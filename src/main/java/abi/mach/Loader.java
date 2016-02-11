@@ -1,8 +1,8 @@
 package abi.mach;
 
-import abi.generic.Command;
-import abi.generic.Header;
-import abi.generic.Section;
+import abi.generic.abi.Command;
+import abi.generic.abi.Header;
+import abi.generic.abi.Section;
 
 public interface Loader {
 /*
@@ -680,14 +680,14 @@ public interface Loader {
      * 32-bit architectures.
      */
     public class cpu_type_t {
-
+        public byte[] type;
     }
 
     public class cpu_subtype_t{
-
+        public byte[] subType;
     }
 
-    public class mach_header implements Header{
+    public class mach_header extends Header{
         public byte[] magic;		/* abi.mach magic number identifier */
         public cpu_type_t cputype;	/* cpu specifier */
         public cpu_subtype_t cpusubtype;	/* machine specifier */
@@ -701,7 +701,7 @@ public interface Loader {
      * The 64-bit abi.mach header appears at the very beginning of object files for
      * 64-bit architectures.
      */
-    public class mach_header_64 implements Header{
+    public class mach_header_64 extends Header{
         public byte[] magic;		/* abi.mach magic number identifier */
         public cpu_type_t cputype;	/* cpu specifier */
         public cpu_subtype_t cpusubtype;	/* machine specifier */
@@ -729,7 +729,7 @@ public interface Loader {
      * to these tables will not work well or at all on some machines.  With all
      * padding zeroed like objects will compare byte for byte.
      */
-    public class load_command implements Command {
+    public class load_command extends Command {
         public byte[] cmd;		/* type of load command */
         public byte[] cmdsize;	/* total size of command in bytes */
     }
@@ -751,7 +751,7 @@ public interface Loader {
 
     }
 
-    public class vm_prot_t implements Command {
+    public class vm_prot_t extends Command {
 
     }
 
@@ -767,7 +767,7 @@ public interface Loader {
      * section structures directly follow the segment command and their size is
      * reflected in cmdsize.
      */
-    public class segment_command  implements Command { /* for 32-bit architectures */
+    public class segment_command  extends Command { /* for 32-bit architectures */
         public byte[] cmd;		/* LC_SEGMENT */
         public byte[] cmdsize;	/* includes sizeof section structs */
         public byte[] segname;	/* segment name */
@@ -787,7 +787,7 @@ public interface Loader {
      * sections then section_64 structures directly follow the 64-bit segment
      * command and their size is reflected in cmdsize.
      */
-    public class segment_command_64  implements Command { /* for 64-bit architectures */
+    public class segment_command_64  extends Command { /* for 64-bit architectures */
         public byte[] cmd;		/* LC_SEGMENT_64 */
         public byte[] cmdsize;	/* includes sizeof section_64 structs */
         public byte[] segname;	/* segment name */
@@ -828,7 +828,7 @@ public interface Loader {
      * fields of the section structure for abi.mach object files is described in the
      * header file <reloc.h>.
      */
-    public class section implements Section { /* for 32-bit architectures */
+    public class section extends Section { /* for 32-bit architectures */
         public String sectname;	/* name of this section */
         public String segname;	/* segment this section goes in */
         public byte[] addr;		/* memory address of this section */
@@ -842,7 +842,7 @@ public interface Loader {
         public byte[] reserved2;	/* reserved (for count or sizeof) */
     }
 
-    public class section_64 implements Section { /* for 64-bit architectures */
+    public class section_64 extends Section { /* for 64-bit architectures */
         public String sectname;	/* name of this section */
         public String segname;	/* segment this section goes in */
         public byte[] addr;		/* memory address of this section */
@@ -876,7 +876,7 @@ public interface Loader {
      * fvmlib_command (cmd == LC_LOADFVMLIB) for each library it uses.
      * (THIS IS OBSOLETE and no public byte[]er supported).
      */
-    public class fvmlib_command implements Command {
+    public class fvmlib_command extends Command {
         public byte[] cmd;		/* LC_IDFVMLIB or LC_LOADFVMLIB */
         public byte[] cmdsize;	/* includes pathname string */
         public fvmlib fvmlib;		/* the library identification */
@@ -905,8 +905,8 @@ public interface Loader {
      * dylib_command (cmd == LC_LOAD_DYLIB, LC_LOAD_WEAK_DYLIB, or
      * LC_REEXPORT_DYLIB) for each library it uses.
      */
-    public class dylib_command  implements Command {
-        public byte[] cmd;		/* LC_ID_DYLIB, LC_LOAD_ implements Command {,WEAK_}DYLIB,
+    public class dylib_command  extends Command {
+        public byte[] cmd;		/* LC_ID_DYLIB, LC_LOAD_ extends Command {,WEAK_}DYLIB,
 					   LC_REEXPORT_DYLIB */
         public byte[] cmdsize;	/* includes pathname string */
         public dylib dylib;		/* the library identification */
@@ -922,7 +922,7 @@ public interface Loader {
      * The name of the umbrella framework for subframeworks is recorded in the
      * following structure.
      */
-    public class sub_framework_command implements Command {
+    public class sub_framework_command extends Command {
         public byte[] cmd;		/* LC_SUB_FRAMEWORK */
         public byte[] cmdsize;	/* includes umbrella string */
         public lc_str umbrella;	/* the umbrella framework name */
@@ -937,7 +937,7 @@ public interface Loader {
      * usually a framework name.  It can also be a name used for bundles clients
      * where the bundle is built with "-client_name client_name".
      */
-    public class sub_client_command implements Command {
+    public class sub_client_command extends Command {
         public byte[] cmd;		/* LC_SUB_CLIENT */
         public byte[] cmdsize;	/* includes client string */
         public lc_str
@@ -957,7 +957,7 @@ public interface Loader {
      * Zero or more sub_umbrella frameworks may be use by an umbrella framework.
      * The name of a sub_umbrella framework is recorded in the following structure.
      */
-    public class sub_umbrella_command implements Command {
+    public class sub_umbrella_command extends Command {
         public byte[] cmd;		/* LC_SUB_UMBRELLA */
         public byte[] cmdsize;	/* includes sub_umbrella string */
         public lc_str
@@ -979,7 +979,7 @@ public interface Loader {
      * The name of a sub_library framework is recorded in the following structure.
      * For example /usr/lib/libobjc_profile.A.dylib would be recorded as "libobjc".
      */
-    public class sub_library_command implements Command {
+    public class sub_library_command extends Command {
         public byte[] cmd;		/* LC_SUB_LIBRARY */
         public byte[] cmdsize;	/* includes sub_library string */
         public lc_str
@@ -995,7 +995,7 @@ public interface Loader {
      * of the first byte.  So the bit for the Nth module is:
      * (linked_modules[N/8] >> N%8) & 1
      */
-    public class prebound_dylib_command implements Command {
+    public class prebound_dylib_command extends Command {
         public byte[] cmd;		/* LC_PREBOUND_DYLIB */
         public byte[] cmdsize;	/* includes strings */
         public lc_str
@@ -1011,7 +1011,7 @@ public interface Loader {
      * contains a dylinker_command to identify the dynamic linker (LC_ID_DYLINKER).
      * A file can have at most one of these.
      */
-    public class dylinker_command implements Command {
+    public class dylinker_command extends Command {
         public byte[] cmd;		/* LC_ID_DYLINKER or LC_LOAD_DYLINKER */
         public byte[] cmdsize;	/* includes pathname string */
         public lc_str
@@ -1039,7 +1039,7 @@ public interface Loader {
      * created (based on the shell's limit for the stack size).  Command arguments
      * and environment variables are copied onto that stack.
      */
-    public class thread_command implements Command {
+    public class thread_command extends Command {
         public byte[] cmd;		/* LC_THREAD or  LC_UNIXTHREAD */
         public byte[] cmdsize;	/* total size of this command */
 	/* byte[] flavor		   flavor of thread state */
@@ -1056,7 +1056,7 @@ public interface Loader {
      * and then calls it.  This gets called before any module initialization
      * routines (used for C++ static constructors) in the library.
      */
-    public class routines_command implements Command { /* for 32-bit architectures */
+    public class routines_command extends Command { /* for 32-bit architectures */
         public byte[] cmd;		/* LC_ROUTINES */
         public byte[] cmdsize;	/* total size of this command */
         public byte[] init_address;	/* address of initialization routine */
@@ -1073,7 +1073,7 @@ public interface Loader {
     /*
      * The 64-bit routines command.  Same use as above.
      */
-    public class routines_command_64 implements Command { /* for 64-bit architectures */
+    public class routines_command_64 extends Command { /* for 64-bit architectures */
         public byte[] cmd;		/* LC_ROUTINES_64 */
         public byte[] cmdsize;	/* total size of this command */
         public byte[] init_address;	/* address of initialization routine */
@@ -1092,7 +1092,7 @@ public interface Loader {
      * "stab" style symbol table information as described in the header files
      * <nlist.h> and <stab.h>.
      */
-    public class symtab_command implements Command {
+    public class symtab_command extends Command {
         public byte[] cmd;		/* LC_SYMTAB */
         public byte[] cmdsize;	/* sizeof(struct symtab_command) */
         public byte[] symoff;		/* symbol table offset */
@@ -1141,7 +1141,7 @@ public interface Loader {
      * For executable and object modules the relocation entries continue to hang
      * off the section structures.
      */
-    public class dysymtab_command implements Command {
+    public class dysymtab_command extends Command {
         public byte[] cmd;	/* LC_DYSYMTAB */
         public byte[] cmdsize;	/* sizeof(struct dysymtab_command) */
 
@@ -1337,7 +1337,7 @@ public interface Loader {
      * The twolevel_hints_command contains the offset and number of hints in the
      * two-level namespace lookup hints table.
      */
-    public class twolevel_hints_command implements Command {
+    public class twolevel_hints_command extends Command {
         public byte[] cmd;	/* LC_TWOLEVEL_HINTS */
         public byte[] cmdsize;	/* sizeof(struct twolevel_hints_command) */
         public byte[] offset;	/* offset to the hint table */
@@ -1376,7 +1376,7 @@ public interface Loader {
      * is re-done and the cksum field is non-zero it is left unchanged from the
      * input file.
      */
-    public class prebind_cksum_command implements Command {
+    public class prebind_cksum_command extends Command {
         public byte[] cmd;	/* LC_PREBIND_CKSUM */
         public byte[] cmdsize;	/* sizeof(struct prebind_cksum_command) */
         public byte[] cksum;	/* the check sum or zero */
@@ -1386,7 +1386,7 @@ public interface Loader {
      * The uuid load command contains a single 128-bit unique random number that
      * identifies an object produced by the static link editor.
      */
-    public class uuid_command implements Command {
+    public class uuid_command extends Command {
         public byte[] cmd;		/* LC_UUID */
         public byte[] cmdsize;	/* sizeof(struct uuid_command) */
         public byte[] uuid;	/* the 128-bit uuid */
@@ -1396,7 +1396,7 @@ public interface Loader {
      * The rpath_command contains a path which at runtime should be added to
      * the current run path used to find @rpath prefixed dylibs.
      */
-    public class rpath_command implements Command {
+    public class rpath_command extends Command {
         public byte[] cmd;		/* LC_RPATH */
         public byte[] cmdsize;	/* includes string */
         lc_str
@@ -1407,7 +1407,7 @@ public interface Loader {
      * The linkedit_data_command contains the offsets and sizes of a blob
      * of data in the __LINKEDIT segment.
      */
-    public class linkedit_data_command implements Command {
+    public class linkedit_data_command extends Command {
         public byte[] cmd;		/* LC_CODE_SIGNATURE or LC_SEGMENT_SPLIT_INFO */
         public byte[] cmdsize;	/* sizeof(struct linkedit_data_command) */
         public byte[] dataoff;	/* file offset of data in __LINKEDIT segment */
@@ -1418,7 +1418,7 @@ public interface Loader {
      * The encryption_info_command contains the file offset and size of an
      * of an encrypted segment.
      */
-    public class encryption_info_command implements Command {
+    public class encryption_info_command extends Command {
         public byte[] cmd;		/* LC_ENCRYPTION_INFO */
         public byte[] cmdsize;	/* sizeof(struct encryption_info_command) */
         public byte[] cryptoff;	/* file offset of encrypted range */
@@ -1435,7 +1435,7 @@ public interface Loader {
      * is encoded using byte streams, so no endian swapping is needed
      * to interpret it.
      */
-    public class dyld_info_command implements Command {
+    public class dyld_info_command extends Command {
         public byte[] cmd;		/* LC_DYLD_INFO or LC_DYLD_INFO_ONLY */
         public byte[] cmdsize;		/* sizeof(struct dyld_info_command) */
 
@@ -1539,7 +1539,7 @@ public interface Loader {
      * roots also being a multiple of a byte[].  Also the padding must again be
      * zeroed. (THIS IS OBSOLETE and no byte[]er supported).
      */
-    public class symseg_command implements Command {
+    public class symseg_command extends Command {
         public byte[] cmd;		/* LC_SYMSEG */
         public byte[] cmdsize;	/* sizeof(struct symseg_command) */
         public byte[] offset;		/* symbol segment offset */
@@ -1554,7 +1554,7 @@ public interface Loader {
      * the command is padded out with zero bytes to a multiple of 4 bytes/
      * (THIS IS OBSOLETE and no byte[]er supported).
      */
-    public class ident_command implements Command {
+    public class ident_command extends Command {
         public byte[] cmd;		/* LC_IDENT */
         public byte[] cmdsize;	/* strings that follow this command */
     }
@@ -1567,7 +1567,7 @@ public interface Loader {
      * internal use.  The kernel ignores this command when loading a program into
      * memory).
      */
-    public class fvmfile_command implements Command {
+    public class fvmfile_command extends Command {
         public byte[] cmd;			/* LC_FVMFILE */
         public byte[] cmdsize;		/* includes pathname string */
         public lc_str

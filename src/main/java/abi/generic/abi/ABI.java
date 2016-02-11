@@ -1,4 +1,4 @@
-package abi.generic;
+package abi.generic.abi;
 
 import java.util.LinkedList;
 
@@ -15,7 +15,7 @@ public abstract class ABI {
 
     public abstract byte[] getRaw();
     public abstract Header getHeader();
-    public abstract Arch getArch();
+    public abstract ABIType getArch();
     public abstract LinkedList<Command> getCommands();
     public abstract LinkedList<Segment> getSegments();
     public abstract LinkedList<Section> getSections();
