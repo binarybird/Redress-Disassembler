@@ -2,6 +2,8 @@ package abi.generic.memory;
 
 import util.B;
 
+import java.nio.ByteOrder;
+
 /**
  * Created by jamesrichardson on 2/11/16.
  */
@@ -40,4 +42,5 @@ public class Address16 extends Address{
 
         return new Address16(flip);
     }
+
 }

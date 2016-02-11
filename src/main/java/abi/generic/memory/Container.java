@@ -1,5 +1,8 @@
 package abi.generic.memory;
 
+import util.B;
+
+import java.math.BigInteger;
 import java.nio.ByteOrder;
 
 /**
@@ -64,4 +67,46 @@ public abstract class Container {
         }
         return true;
     }
+
+    public int getIntValue(){
+        return B.bytesToInt(container,BYTEORDER);
+    }
+
+    public BigInteger getIntegerValue(){
+        return new BigInteger(container);
+    }
+
+    public String getStringValue(){
+        return B.bytesToString(container);
+    }
+
+    public long getLongValue(){
+        return B.bytesToLong(container,BYTEORDER);
+    }
+
+    public byte getLeastSignificantByte(){
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            return container[BYTES-1];
+        }
+        return container[0];
+    }
+
+    public byte getMostSignificantByte(){
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            return container[0];
+        }
+        return container[BYTES-1];
+    }
+
+    public byte getByteAtOffset(int offset){
+        if(offset >= BYTES){
+            return (byte)0x00;
+        }
+
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            return container[BYTES-offset];
+        }
+        return container[offset];
+    }
+
 }

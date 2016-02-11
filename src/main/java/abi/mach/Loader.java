@@ -228,70 +228,71 @@ public interface Loader {
 
 
     /* Constants for the cmd field of all load commands, the type */
-    public static final  byte[] LC_SEGMENT
-            = {(byte)0x1};	/* segment of this file to be mapped */
-    public static final  byte[] LC_SYMTAB
-            = {(byte)0x2};	/* link-edit stab symbol table info */
-    public static final  byte[] LC_SYMSEG
-            = {(byte)0x3};	/* link-edit gdb symbol table info (obsolete) */
-    public static final  byte[] LC_THREAD
-            = {(byte)0x4};	/* thread */
-    public static final  byte[] LC_UNIXTHREAD
-            = {(byte)0x5};	/* unix thread (includes a stack) */
-    public static final  byte[] LC_LOADFVMLIB
-            = {(byte)0x6};	/* load a specified fixed VM shared library */
-    public static final  byte[] LC_IDFVMLIB
-            = {(byte)0x7};	/* fixed VM shared library identification */
-    public static final  byte[] LC_IDENT
-            = {(byte)0x8};	/* object identification info (obsolete) */
-    public static final  byte[] LC_FVMFILE
-            = {(byte)0x9};	/* fixed VM file inclusion (internal use) */
-    public static final  byte[] LC_PREPAGE
-            = {(byte)0xa} ;    /* prepage command (internal use) */
-    public static final  byte[] LC_DYSYMTAB
-            = {(byte)0xb};	/* dynamic link-edit symbol table info */
-    public static final  byte[] LC_LOAD_DYLIB
-            = {(byte)0xc};	/* load a dynamically linked shared library */
-    public static final  byte[] LC_ID_DYLIB
-            = {(byte)0xd};	/* dynamically linked shared lib ident */
-    public static final  byte[] LC_LOAD_DYLINKER
-            = {(byte)0xe};	/* load a dynamic linker */
-    public static final  byte[] LC_ID_DYLINKER
-            = {(byte)0xf};	/* dynamic linker identification */
-    public static final  byte[] LC_PREBOUND_DYLIB
-            = {(byte)0x10};	/* modules prebound for a dynamically */
+    public static final  byte LC_SEGMENT
+            = (byte)0x1;	/* segment of this file to be mapped */
+    public static final  byte LC_SYMTAB
+            = (byte)0x2;	/* link-edit stab symbol table info */
+    public static final  byte LC_SYMSEG
+            = (byte)0x3;	/* link-edit gdb symbol table info (obsolete) */
+    public static final  byte LC_THREAD
+            = (byte)0x4;	/* thread */
+    public static final  byte LC_UNIXTHREAD
+            = (byte)0x5;	/* unix thread (includes a stack) */
+    public static final  byte LC_LOADFVMLIB
+            = (byte)0x6;	/* load a specified fixed VM shared library */
+    public static final  byte LC_IDFVMLIB
+            = (byte)0x7;	/* fixed VM shared library identification */
+    public static final  byte LC_IDENT
+            = (byte)0x8;	/* object identification info (obsolete) */
+    public static final  byte LC_FVMFILE
+            = (byte)0x9;	/* fixed VM file inclusion (internal use) */
+    public static final  byte LC_PREPAGE
+            = (byte)0xa ;    /* prepage command (internal use) */
+    public static final  byte LC_DYSYMTAB
+            = (byte)0xb;	/* dynamic link-edit symbol table info */
+    public static final  byte LC_LOAD_DYLIB
+            = (byte)0xc;	/* load a dynamically linked shared library */
+    public static final  byte LC_ID_DYLIB
+            = (byte)0xd;	/* dynamically linked shared lib ident */
+    public static final  byte LC_LOAD_DYLINKER
+            = (byte)0xe;	/* load a dynamic linker */
+    public static final  byte LC_ID_DYLINKER
+            = (byte)0xf;	/* dynamic linker identification */
+    public static final  byte LC_PREBOUND_DYLIB
+            = (byte)0x10;	/* modules prebound for a dynamically */
     /*  linked shared library */
-    public static final  byte[] LC_ROUTINES
-            = {(byte)0x11};	/* image routines */
-    public static final  byte[] LC_SUB_FRAMEWORK
-            = {(byte)0x12};	/* sub framework */
-    public static final  byte[] LC_SUB_UMBRELLA
-            = {(byte)0x13};	/* sub umbrella */
-    public static final  byte[] LC_SUB_CLIENT
-            = {(byte)0x14};	/* sub client */
-    public static final  byte[] LC_SUB_LIBRARY
-            = {(byte)0x15};	/* sub library */
-    public static final  byte[] LC_TWOLEVEL_HINTS
-            = {(byte)0x16};	/* two-level namespace lookup hints */
-    public static final  byte[] LC_PREBIND_CKSUM
-            = {(byte)0x17};	/* prebind checksum */
-    public static final  byte[] LC_SEGMENT_64
-            = {(byte)0x19};	/* 64-bit segment of this file to be
+    public static final  byte LC_ROUTINES
+            = (byte)0x11;	/* image routines */
+    public static final  byte LC_SUB_FRAMEWORK
+            = (byte)0x12;	/* sub framework */
+    public static final  byte LC_SUB_UMBRELLA
+            = (byte)0x13;	/* sub umbrella */
+    public static final  byte LC_SUB_CLIENT
+            = (byte)0x14;	/* sub client */
+    public static final  byte LC_SUB_LIBRARY
+            = (byte)0x15;	/* sub library */
+    public static final  byte LC_TWOLEVEL_HINTS
+            = (byte)0x16;	/* two-level namespace lookup hints */
+    public static final  byte LC_PREBIND_CKSUM
+            = (byte)0x17;	/* prebind checksum */
+    public static final  byte LC_SEGMENT_64
+            = (byte)0x19;	/* 64-bit segment of this file to be
 				   mapped */
-    public static final  byte[] LC_ROUTINES_64
-            = {(byte)0x1a};	/* 64-bit image routines */
-    public static final  byte[] LC_UUID
-            = {(byte)0x1b};	/* the uuid */
-    public static final  byte[] LC_CODE_SIGNATURE
-            = {(byte)0x1d};	/* local of code signature */
-    public static final  byte[] LC_SEGMENT_SPLIT_INFO
-            = {(byte)0x1e}; /* local of info to split segments */
-    public static final  byte[] LC_LAZY_LOAD_DYLIB
-            = {(byte)0x20};	/* delay load of dylib until first use */
-    public static final  byte[] LC_ENCRYPTION_INFO
-            = {(byte)0x21};	/* encrypted segment information */
-    public static final  byte[] LC_DYLD_INFO
-            = {(byte)0x22};	/* compressed dyld information */
+    public static final  byte LC_ROUTINES_64
+            = (byte)0x1a;	/* 64-bit image routines */
+    public static final  byte LC_UUID
+            = (byte)0x1b;	/* the uuid */
+    public static final  byte LC_CODE_SIGNATURE
+            = (byte)0x1d;	/* local of code signature */
+    public static final  byte LC_SEGMENT_SPLIT_INFO
+            = (byte)0x1e; /* local of info to split segments */
+    public static final  byte LC_LAZY_LOAD_DYLIB
+            = (byte)0x20;	/* delay load of dylib until first use */
+    public static final  byte LC_ENCRYPTION_INFO
+            = (byte)0x21;	/* encrypted segment information */
+    public static final  byte LC_DYLD_INFO
+            = (byte)0x22;	/* compressed dyld information */
+
     /* Constants for the flags field of the segment_command */
     public static final  byte[] SG_HIGHVM
             = {(byte)0x1};	/* the file contents for this segment is for
