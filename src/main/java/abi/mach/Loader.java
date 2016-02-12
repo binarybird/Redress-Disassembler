@@ -748,12 +748,12 @@ public interface Loader {
     {
         public byte[] offset;	/* offset to the string */
 
-        char[] ptr;	/* pointer to the string */
+        public byte[] ptr;	/* pointer to the string */
 
     }
 
     public class vm_prot_t extends Command {
-
+        public byte[] value;
     }
 
     /*

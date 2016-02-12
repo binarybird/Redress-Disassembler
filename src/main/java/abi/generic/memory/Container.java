@@ -4,12 +4,13 @@ import util.B;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  * Created by jamesrichardson on 2/11/16.
  *
  * for enforcing some order on byte[]
- * instead of arrays around all willy nilly
+ * instead of arrays around all willynilly
  */
 public abstract class Container {
 
@@ -24,9 +25,10 @@ public abstract class Container {
         container = new byte[BYTES];
     }
 
-    public byte[] getContainer(){return container;}
-
     public abstract Container flipByteOrder();
+    public abstract Container clone();
+
+    public byte[] getContainer(){return container;}
 
     @Override
     public boolean equals(Object o){
@@ -73,7 +75,7 @@ public abstract class Container {
     }
 
     public BigInteger getIntegerValue(){
-        return new BigInteger(container);
+        return new BigInteger(1,container);
     }
 
     public String getStringValue(){
@@ -84,18 +86,20 @@ public abstract class Container {
         return B.bytesToLong(container,BYTEORDER);
     }
 
-    public byte getLeastSignificantByte(){
-        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
-            return container[BYTES-1];
-        }
-        return container[0];
-    }
+    public double getDoubleValue(){return B.bytesToDouble(container,BYTEORDER);}
 
-    public byte getMostSignificantByte(){
+    public byte getLeastSignificantByte(){
         if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
             return container[0];
         }
         return container[BYTES-1];
+    }
+
+    public byte getMostSignificantByte(){
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            return container[BYTES-1];
+        }
+        return container[0];
     }
 
     public byte getByteAtOffset(int offset){
@@ -109,4 +113,124 @@ public abstract class Container {
         return container[offset];
     }
 
+    public void add(Container in){
+        //No unsigned values anywhere in java - we have to do it the hard way
+        Container otherContainer;
+        Container thisContainer;
+
+        //BigInt takes BigEndian only
+        if(in.BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            otherContainer = in.flipByteOrder();
+        }else{
+            otherContainer = in;
+        }
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            thisContainer = this.flipByteOrder();
+        }else{
+            thisContainer = this;
+        }
+
+        //Get BigInt
+        final BigInteger otherUnsigned = new BigInteger(1,otherContainer.getContainer());
+        final BigInteger thisUnsigned = new BigInteger(1,thisContainer.getContainer());
+
+        //Add
+        final BigInteger add = thisUnsigned.add(otherUnsigned);
+        final byte[] res = add.toByteArray();
+
+        Arrays.fill(container, (byte) 0x00);
+
+        //Restore original endinass
+        byte[] tmp;
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            tmp = B.flipByteOrder(res);
+            //store result
+            if(BYTES >= res.length){
+                for(int i=0;i<tmp.length;i++){
+                    container[i] = tmp[i];
+                }
+            }else{
+                for(int i=0;i<BYTES;i++){
+                    container[i] = tmp[i];
+                }
+            }
+        }else{
+            tmp = res;
+            //store result
+            if(BYTES >= res.length){
+                int padding = BYTES - tmp.length;
+                for(int i=0;i<tmp.length;i++){
+                    container[padding+i] = tmp[i];
+                }
+            }else{
+                int padding = tmp.length - BYTES;
+                for(int i=0;i<BYTES;i++){
+                    container[i] = tmp[i+padding];
+                }
+            }
+        }
+    }
+
+    public void subtract(Container in){
+        //No unsigned values anywhere in java - we have to do it the hard way
+        Container otherContainer;
+        Container thisContainer;
+
+        //BigInt takes BigEndian only
+        if(in.BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            otherContainer = in.flipByteOrder();
+        }else{
+            otherContainer = in;
+        }
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            thisContainer = this.flipByteOrder();
+        }else{
+            thisContainer = this;
+        }
+
+        //Get BigInt
+        final BigInteger otherUnsigned = new BigInteger(1,otherContainer.getContainer());
+        final BigInteger thisUnsigned = new BigInteger(1,thisContainer.getContainer());
+
+        //Subtract
+        final BigInteger add = thisUnsigned.subtract(otherUnsigned);
+        final byte[] res = add.toByteArray();
+
+        Arrays.fill(container, (byte) 0x00);
+
+        //Restore original endinass
+        byte[] tmp;
+        if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            tmp = B.flipByteOrder(res);
+            //store result
+            if(BYTES >= res.length){
+                for(int i=0;i<tmp.length;i++){
+                    container[i] = tmp[i];
+                }
+            }else{
+                for(int i=0;i<BYTES;i++){
+                    container[i] = tmp[i];
+                }
+            }
+        }else{
+            tmp = res;
+            //store result
+            if(BYTES >= res.length){
+                int padding = BYTES - tmp.length;
+                for(int i=0;i<tmp.length;i++){
+                    container[padding+i] = tmp[i];
+                }
+            }else{
+                int padding = tmp.length - BYTES;
+                for(int i=0;i<BYTES;i++){
+                    container[i] = tmp[i+padding];
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString(){
+        return "0x"+getStringValue()+" "+BYTEORDER;
+    }
 }

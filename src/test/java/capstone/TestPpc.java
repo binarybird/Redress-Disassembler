@@ -1,12 +1,9 @@
-// Capstone Java binding
+package capstone;// Capstone Java binding
 // By Nguyen Anh Quynh & Dang Hoang Vu,  2013
 
-import capstone.Capstone;
-import capstone.Mips;
+import static capstone.Ppc_const.*;
 
-import static capstone.Mips_const.*;
-
-public class TestMips {
+public class TestPpc {
 
   static byte[] hexString2Byte(String s) {
     // from http://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
@@ -19,8 +16,7 @@ public class TestMips {
     return data;
   }
 
-  static final String MIPS_CODE  = "0C100097000000002402000c8fa2000034213456";
-  static final String MIPS_CODE2 = "56342134c2170100";
+  static final String PPC_CODE = "80200000803f00001043230ed04400804c4322022d0300807c4320147c4320934f2000214cc8002140820014";
 
   public static Capstone cs;
 
@@ -35,34 +31,41 @@ public class TestMips {
   public static void print_ins_detail(Capstone.CsInsn ins) {
     System.out.printf("0x%x:\t%s\t%s\n", ins.address, ins.mnemonic, ins.opStr);
 
-    Mips.OpInfo operands = (Mips.OpInfo) ins.operands;
+    Ppc.OpInfo operands = (Ppc.OpInfo) ins.operands;
 
     if (operands.op.length != 0) {
       System.out.printf("\top_count: %d\n", operands.op.length);
       for (int c=0; c<operands.op.length; c++) {
-        Mips.Operand i = (Mips.Operand) operands.op[c];
-        String imm = hex(i.value.imm);
-        if (i.type == MIPS_OP_REG)
-          System.out.printf("\t\toperands[%d].type: REG = %s\n", c, ins.regName(i.value.reg));
-        if (i.type == MIPS_OP_IMM)
+        Ppc.Operand i = (Ppc.Operand) operands.op[c];
+        if (i.type == PPC_OP_REG)
+            System.out.printf("\t\toperands[%d].type: REG = %s\n", c, ins.regName(i.value.reg));
+        if (i.type == PPC_OP_IMM)
           System.out.printf("\t\toperands[%d].type: IMM = 0x%x\n", c, i.value.imm);
-        if (i.type == MIPS_OP_MEM) {
-          System.out.printf("\t\toperands[%d].type: MEM\n",c);
-          String base = ins.regName(i.value.mem.base);
-          if (base != null)
-            System.out.printf("\t\t\toperands[%d].mem.base: REG = %s\n", c, base);
+        if (i.type == PPC_OP_MEM) {
+          System.out.printf("\t\toperands[%d].type: MEM\n", c);
+          if (i.value.mem.base != PPC_REG_INVALID)
+            System.out.printf("\t\t\toperands[%d].mem.base: REG = %s\n", c, ins.regName(i.value.mem.base));
           if (i.value.mem.disp != 0)
-            System.out.printf("\t\t\toperands[%d].mem.disp: %s\n", c, hex(i.value.mem.disp));
+            System.out.printf("\t\t\toperands[%d].mem.disp: 0x%x\n", c, i.value.mem.disp);
         }
       }
     }
+
+    if (operands.bc != 0)
+      System.out.printf("\tBranch code: %d\n", operands.bc);
+
+    if (operands.bh != 0)
+      System.out.printf("\tBranch hint: %d\n", operands.bh);
+
+    if (operands.updateCr0)
+      System.out.printf("\tUpdate-CR0: True\n");
+
   }
 
   public static void main(String argv[]) {
 
     final Test.platform[] all_tests = {
-      new Test.platform(Capstone.CS_ARCH_MIPS, Capstone.CS_MODE_MIPS32 + Capstone.CS_MODE_BIG_ENDIAN, hexString2Byte(MIPS_CODE), "MIPS-32 (Big-endian)"),
-      new Test.platform(Capstone.CS_ARCH_MIPS, Capstone.CS_MODE_MIPS64 + Capstone.CS_MODE_LITTLE_ENDIAN, hexString2Byte(MIPS_CODE2), "MIPS-64-EL (Little-endian)"),
+      new Test.platform(Capstone.CS_ARCH_PPC, Capstone.CS_MODE_BIG_ENDIAN, hexString2Byte(PPC_CODE), "PPC-64"),
     };
 
     for (int i=0; i<all_tests.length; i++) {
@@ -80,8 +83,7 @@ public class TestMips {
         print_ins_detail(all_ins[j]);
         System.out.println();
       }
-
-      System.out.printf("0x%x:\n\n", all_ins[all_ins.length-1].address + all_ins[all_ins.length-1].size);
+      System.out.printf("0x%x:\n\n", (all_ins[all_ins.length-1].address + all_ins[all_ins.length-1].size));
 
       // Close when done
       cs.close();

@@ -8,6 +8,9 @@ import java.nio.ByteOrder;
  * Created by jamesrichardson on 2/11/16.
  */
 public class QWord extends Container{
+    public static final Word SIZEOF_B = new Word("0x0008",ByteOrder.BIG_ENDIAN);
+    public static final Word SIZEOF_L = new Word("0x0800",ByteOrder.LITTLE_ENDIAN);
+
     public QWord(byte[] in,ByteOrder order){
         super(8,order);
         if(in.length != BYTES){
@@ -33,6 +36,10 @@ public class QWord extends Container{
     public QWord(String in,ByteOrder order){
         super(8,order);
         final byte[] tmp = B.stringToBytes(in);
+        if(tmp.length != BYTES){
+            System.out.println("Size Overflow!");
+            return;
+        }
         for(int i=0;i<BYTES;i++){
             container[i]=tmp[i];
         }
@@ -46,5 +53,10 @@ public class QWord extends Container{
         }
 
         return new QWord(flip,BYTEORDER==ByteOrder.BIG_ENDIAN?ByteOrder.LITTLE_ENDIAN:ByteOrder.BIG_ENDIAN);
+    }
+
+    @Override
+    public QWord clone() {
+        return new QWord(container,BYTEORDER);
     }
 }

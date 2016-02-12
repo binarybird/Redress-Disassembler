@@ -43,4 +43,9 @@ public class Address16 extends Address{
         return new Address16(flip);
     }
 
+    @Override
+    public Address16 clone() {
+        return new Address16(container);
+    }
+
 }

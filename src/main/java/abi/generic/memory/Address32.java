@@ -43,4 +43,9 @@ public class Address32 extends Address{
 
         return new Address32(flip);
     }
+
+    @Override
+    public Address32 clone() {
+        return new Address32(container);
+    }
 }

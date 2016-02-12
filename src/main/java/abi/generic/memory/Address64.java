@@ -47,4 +47,9 @@ public class Address64 extends Address {
 
         return new Address64(flip);
     }
+
+    @Override
+    public Address64 clone() {
+        return new Address64(container);
+    }
 }

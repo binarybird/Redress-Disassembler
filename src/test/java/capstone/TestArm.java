@@ -1,8 +1,5 @@
-// Capstone Java binding
+package capstone;// Capstone Java binding
 // By Nguyen Anh Quynh & Dang Hoang Vu,  2013
-
-import capstone.Capstone;
-import capstone.Arm;
 
 import static capstone.Arm_const.*;
 
