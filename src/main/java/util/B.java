@@ -138,6 +138,19 @@ public class B {
         return new QWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7],resultOrder);
     }
 
+    public static byte[] getRangeAtAddress(final byte[] raw, final Address begin, final Address end){
+        final int beginArrAddr = bytesToInt(begin.getContainer(),begin.BYTEORDER);
+        final int endArrAddr = bytesToInt(end.getContainer(),begin.BYTEORDER);
+
+        final byte[] ret = new byte[endArrAddr-beginArrAddr];
+
+        for(int i=beginArrAddr;i<endArrAddr;i++){
+            ret[i-beginArrAddr] = raw[i];
+        }
+
+        return ret;
+    }
+
     public static byte[] mergeBytes(byte[] first, byte[] last){
         byte[] join = new byte[first.length+last.length];
         for(int i=0;i<first.length;i++){
