@@ -5,7 +5,7 @@ import java.io.File;
 public class Main {
 
     public static void main(String[] args){
-        File in =new File("/Users/jamesrichardson/Desktop/reverse/a.out");
+        File in =new File("/Users/james/Desktop/reverse/a.out");
 
         try {
             Reader.Read(in);

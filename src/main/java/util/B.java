@@ -173,6 +173,19 @@ public class B {
         return ret;
     }
 
+    public static <T extends Address> T getEndAddressFromOffset(T beginning, Container offset){
+
+        final T ret = (T)beginning.clone();
+
+        if(offset.BYTEORDER == ByteOrder.LITTLE_ENDIAN) {
+            ret.add(offset.flipByteOrder());
+        }else{
+            ret.add(offset);
+        }
+
+        return ret;
+    }
+
 //    public static byte[] getWordAtAddress(final byte[] raw,final byte[] address){
 //
 //        final byte[] ret = new byte[2];

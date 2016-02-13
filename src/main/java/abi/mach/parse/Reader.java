@@ -45,10 +45,10 @@ public class Reader {
 
         Mach ret = null;
 
-        if(B.equals(Loader.MH_MAGIC_64, dWordAtAddress.getContainer()) || B.equals(Loader.MH_CIGAM_64, dWordAtAddress.getContainer())){
+        if(Loader.MH_MAGIC_64.equals(dWordAtAddress) || Loader.MH_CIGAM_64.equals(dWordAtAddress)){
             ret = new MachO64(binary);
             MachParser64.parse((MachO64)ret);
-        } else if(B.equals(Loader.MH_MAGIC, dWordAtAddress.getContainer()) || B.equals(Loader.MH_CIGAM, dWordAtAddress.getContainer())){
+        } else if(Loader.MH_MAGIC.equals(dWordAtAddress) || Loader.MH_CIGAM.equals(dWordAtAddress)){
             ret = new MachO32(binary);
             MachParser32.parse((MachO32)ret);
         }

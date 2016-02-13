@@ -10,4 +10,7 @@ public abstract class Address extends Container {
     public Address(int bytes){
         super(bytes,ByteOrder.BIG_ENDIAN);
     }
+
+    @Override
+    public abstract Address clone();
 }
