@@ -74,13 +74,20 @@ public interface Loader {
      * 32-bit architectures.
      */
     public class mach_header extends Header {
-        public DWord magic;		/* mach magic number identifier */
-        public DWord cputype;	/* cpu specifier */
-        public DWord cpusubtype;	/* machine specifier */
-        public DWord filetype;	/* type of file */
-        public DWord ncmds;		/* number of load commands */
-        public DWord sizeofcmds;	/* the size of all the load commands */
-        public DWord flags;		/* flags */
+        public DWord magic;
+        public final static String magicComment = "/* mach magic number identifier */";
+        public DWord cputype;
+        public final static String cputypeComment = "/* cpu specifier */";
+        public DWord cpusubtype;
+        public final static String cpusubtypeComment = "/* machine specifier */";
+        public DWord filetype;
+        public final static String filetypeComment = "/* type of file */";
+        public DWord ncmds;
+        public final static String ncmdsComment = "/* number of load commands */";
+        public DWord sizeofcmds;
+        public final static String sizeofcmdsComment = "/* the size of all the load commands */";
+        public DWord flags;
+        public final static String flagsComment = "/* flags */";
     }
 
     ;
@@ -94,14 +101,22 @@ public interface Loader {
      * 64-bit architectures.
      */
     public class mach_header_64 extends Header {
-        public DWord magic;		/* mach magic number identifier */
-        public DWord cputype;	/* cpu specifier */
-        public DWord cpusubtype;	/* machine specifier */
-        public DWord filetype;	/* type of file */
-        public DWord ncmds;		/* number of load commands */
-        public DWord sizeofcmds;	/* the size of all the load commands */
-        public DWord flags;		/* flags */
-        public DWord reserved;	/* reserved */
+        public DWord magic;
+        public final static String magicComment = "/* mach magic number identifier */";
+        public DWord cputype;
+        public final static String cputypeComment = "/* cpu specifier */";
+        public DWord cpusubtype;
+        public final static String cpusubtypeComment = "/* machine specifier */";
+        public DWord filetype;
+        public final static String filetypeComment = "/* type of file */";
+        public DWord ncmds;
+        public final static String ncmdsComment = "/* number of load commands */";
+        public DWord sizeofcmds;
+        public final static String sizeofcmdsComment = "/* the size of all the load commands */";
+        public DWord flags;
+        public final static String flagsComment = "/* flags */";
+        public DWord reserved;
+        public final static String reservedComment = "/* reserved */";
     }
 
     ;
@@ -356,17 +371,28 @@ public interface Loader {
      * reflected in cmdsize.
      */
     public class segment_command extends Command { /* for 32-bit architectures */
-        public DWord cmd;		/* LC_SEGMENT */
-        public DWord cmdsize;	/* includes sizeof section public classs */
-        public char16 segname;	/* segment name */
-        public DWord vmaddr;		/* memory address of this segment */
-        public DWord vmsize;		/* memory size of this segment */
-        public DWord fileoff;	/* file offset of this segment */
-        public DWord filesize;	/* amount to map from the file */
-        public DWord maxprot;	/* maximum VM protection */
-        public DWord initprot;	/* initial VM protection */
-        public DWord nsects;		/* number of sections in segment */
-        public DWord flags;		/* flags */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SEGMENT */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes sizeof section public classs */";
+        public char16 segname;
+        public final static String segnameComment = "/* segment name */";
+        public DWord vmaddr;
+        public final static String vmaddrComment = "/* memory address of this segment */";
+        public DWord vmsize;
+        public final static String vmsizeComment = "/* memory size of this segment */";
+        public DWord fileoff;
+        public final static String fileoffComment = "/* file offset of this segment */";
+        public DWord filesize;
+        public final static String filesizeComment = "/* amount to map from the file */";
+        public DWord maxprot;
+        public final static String maxprotComment = "/* max VM protection */";
+        public DWord initprot;
+        public final static String initprotComment = "/* initial VM protection */";
+        public DWord nsects;
+        public final static String nsectsComment = "/* number of sections in segment */";
+        public DWord flags;
+        public final static String flagsComment = "/* flags */";
     }
 
     ;
@@ -378,17 +404,28 @@ public interface Loader {
      * command and their size is reflected in cmdsize.
      */
     public class segment_command_64 extends Command { /* for 64-bit architectures */
-        public DWord cmd;		/* LC_SEGMENT_64 */
-        public DWord cmdsize;	/* includes sizeof section_64 public classs */
-        public char16 segname;	/* segment name */
-        public QWord vmaddr;		/* memory address of this segment */
-        public QWord vmsize;		/* memory size of this segment */
-        public QWord fileoff;	/* file offset of this segment */
-        public QWord filesize;	/* amount to map from the file */
-        public DWord maxprot;	/* maximum VM protection */
-        public DWord initprot;	/* initial VM protection */
-        public DWord nsects;		/* number of sections in segment */
-        public DWord flags;		/* flags */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SEGMENT_64 */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes sizeof section_64 public classs */";
+        public char16 segname;
+        public final static String segnameComment = "/* segment name */";
+        public QWord vmaddr;
+        public final static String vmaddrComment = "/* memory address of this segment */";
+        public QWord vmsize;
+        public final static String vmsizeComment = "/* memory size of this segment */";
+        public QWord fileoff;
+        public final static String fileoffComment = "/* file offset of this segment */";
+        public QWord filesize;
+        public final static String filesizeComment = "/* amount to map from the file */";
+        public DWord maxprot;
+        public final static String maxprotComment = "/* maximum VM protection */";
+        public DWord initprot;
+        public final static String initprotComment = "/* initial VM protection */";
+        public DWord nsects;
+        public final static String nsectsComment = "/* number of sections in segment */";
+        public DWord flags;
+        public final static String flagsComment = "/* flags */";
     }
 
     ;
@@ -438,35 +475,58 @@ public interface Loader {
      */
     public class section extends Section { /* for 32-bit architectures */
         //public section(Segment parent){}
-        public char16 sectname;	/* name of this section */
-        public char16 segname;	/* segment this section goes in */
-        public DWord addr;		/* memory address of this section */
-        public DWord size;		/* size in bytes of this section */
-        public DWord offset;		/* file offset of this section */
-        public DWord align;		/* section alignment (power of 2) */
-        public DWord reloff;		/* file offset of relocation entries */
-        public DWord nreloc;		/* number of relocation entries */
-        public DWord flags;		/* flags (section type and attributes)*/
-        public DWord reserved1;	/* reserved (for offset or index) */
-        public DWord reserved2;	/* reserved (for count or sizeof) */
+        public char16 sectname;
+        public final static String sectnameComment = "/* name of this section */";
+        public char16 segname;
+        public final static String segnameComment = "/* segment this section goes in */";
+        public DWord addr;
+        public final static String addrComment = "/* memory address of this section */";
+        public DWord size;
+        public final static String sizeComment = "/* size in bytes of this section */";
+        public DWord offset;
+        public final static String offsetComment = "/* file offset of this section */";
+        public DWord align;
+        public final static String alignComment = "/* section alignment (power of 2) */";
+        public DWord reloff;
+        public final static String reloffComment = "/* file offset of relocation entries */";
+        public DWord nreloc;
+        public final static String nrelocComment = "/* number of relocation entries */";
+        public DWord flags;
+        public final static String flagsComment = "/* flags (section type and attributes)*/";
+        public DWord reserved1;
+        public final static String reserved1Comment = "/* reserved (for offset or index) */";
+        public DWord reserved2;
+        public final static String reserved2Comment = "/* reserved (for count or sizeof) */";
     }
 
     ;
 
     public class section_64 extends Section { /* for 64-bit architectures */
         //public section_64(Segment parent){}
-        public char16 sectname;	/* name of this section */
-        public char16 segname;	/* segment this section goes in */
-        public QWord addr;		/* memory address of this section */
-        public QWord size;		/* size in bytes of this section */
-        public DWord offset;		/* file offset of this section */
-        public DWord align;		/* section alignment (power of 2) */
-        public DWord reloff;		/* file offset of relocation entries */
-        public DWord nreloc;		/* number of relocation entries */
-        public DWord flags;		/* flags (section type and attributes)*/
-        public DWord reserved1;	/* reserved (for offset or index) */
-        public DWord reserved2;	/* reserved (for count or sizeof) */
-        public DWord reserved3;	/* reserved */
+        public char16 sectname;
+        public final static String sectnameComment = "/* name of this section */";
+        public char16 segname;
+        public final static String segnameComment = "/* segment this section goes in */";
+        public QWord addr;
+        public final static String addrComment = "/* memory address of this section */";
+        public QWord size;
+        public final static String sizeComment = "/* size in bytes of this section */";
+        public DWord offset;
+        public final static String offsetComment = "/* file offset of this section */";
+        public DWord align;
+        public final static String alignComment = "/* section alignment (power of 2) */";
+        public DWord reloff;
+        public final static String reloffComment = "/* file offset of relocation entries */";
+        public DWord nreloc;
+        public final static String nrelocComment = "/* number of relocation entries */";
+        public DWord flags;
+        public final static String flagsComment = "/* flags (section type and attributes)*/";
+        public DWord reserved1;
+        public final static String reserved1Comment = "/* reserved (for offset or index) */";
+        public DWord reserved2;
+        public final static String reserved2Comment = "/* reserved (for count or sizeof) */";
+        public DWord reserved3;
+        public final static String reserved3Comment = "/* reserved */";
     }
 
     ;
@@ -647,9 +707,12 @@ public interface Loader {
      * header_addr. (THIS IS OBSOLETE and no longer supported).
      */
     public class fvmlib {
-        public lc_str name;		/* library's target pathname */
-        public DWord minor_version;	/* library's minor version number */
-        public DWord header_addr;	/* library's header address */
+        public lc_str name;
+        public final static String nameComment = "/* library's target pathname */";
+        public DWord minor_version;
+        public final static String minor_versionComment = "/* library's minor version number */";
+        public DWord header_addr;
+        public final static String header_addrComment = "/* library's header address */";
     }
 
     ;
@@ -662,9 +725,12 @@ public interface Loader {
      * (THIS IS OBSOLETE and no longer supported).
      */
     public class fvmlib_command extends Command {
-        public DWord cmd;		/* LC_IDFVMLIB or LC_LOADFVMLIB */
-        public DWord cmdsize;	/* includes pathname string */
-        public fvmlib fvmlib;		/* the library identification */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_IDFVMLIB or LC_LOADFVMLIB */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes pathname string */";
+        public fvmlib fvmlib;
+        public final static String fvmlibComment = "/* the library identification */";
     }
 
     ;
@@ -679,10 +745,14 @@ public interface Loader {
      * at runtime is exactly the same as used to built the program.
      */
     public class dylib {
-        public lc_str name;			/* library's path name */
-        public DWord timestamp;			/* library's build time stamp */
-        public DWord current_version;		/* library's current version number */
-        public DWord compatibility_version;	/* library's compatibility vers number*/
+        public lc_str name;
+        public final static String nameComment = "/* library's path name */";
+        public DWord timestamp;
+        public final static String timestampComment = "/* library's build time stamp */";
+        public DWord current_version;
+        public final static String current_versionComment = "/* library's current version number */";
+        public DWord compatibility_version;
+        public final static String compatibility_versionComment = "/* library's compatibility vers number*/";
     }
 
     ;
@@ -695,9 +765,12 @@ public interface Loader {
      * LC_REEXPORT_DYLIB) for each library it uses.
      */
     public class dylib_command extends Command {
-        public DWord cmd;		/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB,  LC_REEXPORT_DYLIB */
-        public DWord cmdsize;	/* includes pathname string */
-        public dylib dylib;		/* the library identification */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB, LC_REEXPORT_DYLIB */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes pathname string */";
+        public dylib dylib;
+        public final static String dylibComment = "/* the library identification */";
     }
 
     ;
@@ -713,9 +786,12 @@ public interface Loader {
      * following public classure.
      */
     public class sub_framework_command extends Command {
-        public DWord cmd;		/* LC_SUB_FRAMEWORK */
-        public DWord cmdsize;	/* includes umbrella string */
-        public lc_str umbrella;	/* the umbrella framework name */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SUB_FRAMEWORK */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes umbrella string */";
+        public lc_str umbrella;
+        public final static String umbrellaComment = "/* the umbrella framework name */";
     }
 
     ;
@@ -730,9 +806,12 @@ public interface Loader {
      * where the bundle is built with "-client_name client_name".
      */
     public class sub_client_command extends Command {
-        public DWord cmd;		/* LC_SUB_CLIENT */
-        public DWord cmdsize;	/* includes client string */
-        public lc_str client;		/* the client name */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SUB_CLIENT */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes client string */";
+        public lc_str client;
+        public final static String clientComment = "/* the client name */";
     }
 
     ;
@@ -751,9 +830,12 @@ public interface Loader {
      * The name of a sub_umbrella framework is recorded in the following public classure.
      */
     public class sub_umbrella_command extends Command {
-        public DWord cmd;		/* LC_SUB_UMBRELLA */
-        public DWord cmdsize;	/* includes sub_umbrella string */
-        public lc_str sub_umbrella;	/* the sub_umbrella framework name */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SUB_UMBRELLA */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes sub_umbrella string */";
+        public lc_str sub_umbrella;
+        public final static String sub_umbrellaComment = "/* the sub_umbrella framework name */";
     }
 
     ;
@@ -774,9 +856,12 @@ public interface Loader {
      * For example /usr/lib/libobjc_profile.A.dylib would be recorded as "libobjc".
      */
     public class sub_library_command extends Command {
-        public DWord cmd;		/* LC_SUB_LIBRARY */
-        public DWord cmdsize;	/* includes sub_library string */
-        public lc_str sub_library;	/* the sub_library name */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SUB_LIBRARY */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes sub_library string */";
+        public lc_str sub_library;
+        public final static String sub_libraryComment = "/* the sub_library name */";
     }
 
     ;
@@ -791,11 +876,16 @@ public interface Loader {
      * (linked_modules[N/8] >> N%8) & 1
      */
     public class prebound_dylib_command extends Command {
-        public DWord cmd;		/* LC_PREBOUND_DYLIB */
-        public DWord cmdsize;	/* includes strings */
-        public lc_str name;		/* library's path name */
-        public DWord nmodules;	/* number of modules in library */
-        public lc_str linked_modules;	/* bit vector of linked modules */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_PREBOUND_DYLIB */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes strings */";
+        public lc_str name;
+        public final static String nameComment = "/* library's path name */";
+        public DWord nmodules;
+        public final static String nmodulesComment = "/* number of modules in library */";
+        public lc_str linked_modules;
+        public final static String linked_modulesComment = "/* bit vector of linked modules */";
     }
 
     ;
@@ -807,9 +897,12 @@ public interface Loader {
      * A file can have at most one of these.
      */
     public class dylinker_command extends Command {
-        public DWord cmd;		/* LC_ID_DYLINKER or LC_LOAD_DYLINKER */
-        public DWord cmdsize;	/* includes pathname string */
-        public lc_str name;		/* dynamic linker's path name */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_ID_DYLINKER or LC_LOAD_DYLINKER */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes pathname string */";
+        public lc_str name;
+        public final static String nameComment = "/* dynamic linker's path name */";
     }
 
     ;
@@ -836,8 +929,10 @@ public interface Loader {
      * and environment variables are copied onto that stack.
      */
     public class thread_command extends Command {
-        public DWord cmd;		/* LC_THREAD or  LC_UNIXTHREAD */
-        public DWord cmdsize;	/* total size of this command */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_THREAD or  LC_UNIXTHREAD */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* total size of this command */";
 	/* public DWord flavor		   flavor of thread state */
 	/* public DWord count		   count of longs in thread state */
 	/* public class XXX_thread_state state   thread state for this flavor */
@@ -855,17 +950,26 @@ public interface Loader {
      * routines (used for C++ static conpublic classors) in the library.
      */
     public class routines_command extends Command { /* for 32-bit architectures */
-        public DWord cmd;		/* LC_ROUTINES */
-        public DWord cmdsize;	/* total size of this command */
-        public DWord init_address;	/* address of initialization routine */
-        public DWord init_module;	/* index into the module table that */
-        /*  the init routine is defined in */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_ROUTINES */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* total size of this command */";
+        public DWord init_address;
+        public final static String init_addressComment = "/* address of initialization routine */";
+        public DWord init_module;
+        public final static String init_moduleComment = "/* index into the module table that the init routine is defined in */";
         public DWord reserved1;
+        public final static String reserved1Comment = "/* reserved 1 */";
         public DWord reserved2;
+        public final static String reserved2Comment = "/* reserved 2 */";
         public DWord reserved3;
+        public final static String reserved3Comment = "/* reserved 3 */";
         public DWord reserved4;
+        public final static String reserved4Comment = "/* reserved 4 */";
         public DWord reserved5;
+        public final static String reserved5Comment = "/* reserved 5 */";
         public DWord reserved6;
+        public final static String reserved6Comment = "/* reserved 6 */";
     }
 
     ;
@@ -874,17 +978,26 @@ public interface Loader {
      * The 64-bit routines command.  Same use as above.
      */
     public class routines_command_64 extends Command { /* for 64-bit architectures */
-        public DWord cmd;		/* LC_ROUTINES_64 */
-        public DWord cmdsize;	/* total size of this command */
-        public QWord init_address;	/* address of initialization routine */
-        public QWord init_module;	/* index into the module table that */
-        /*  the init routine is defined in */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_ROUTINES_64 */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* total size of this command */";
+        public QWord init_address;
+        public final static String init_addressComment = "/* address of initialization routine */";
+        public QWord init_module;
+        public final static String init_moduleComment = "/* index into the module table that the init routine is defined in */";
         public QWord reserved1;
+        public final static String reserved1Comment = "/* reserved 1 */";
         public QWord reserved2;
+        public final static String reserved2Comment = "/* reserved 2 */";
         public QWord reserved3;
+        public final static String reserved3Comment = "/* reserved 3 */";
         public QWord reserved4;
+        public final static String reserved4Comment = "/* reserved 4 */";
         public QWord reserved5;
+        public final static String reserved5Comment = "/* reserved 5 */";
         public QWord reserved6;
+        public final static String reserved6Comment = "/* reserved 6 */";
     }
 
     ;
@@ -895,12 +1008,18 @@ public interface Loader {
      * <nlist.h> and <stab.h>.
      */
     public class symtab_command extends Command {
-        public DWord cmd;		/* LC_SYMTAB */
-        public DWord cmdsize;	/* sizeof(public class symtab_command) */
-        public DWord symoff;		/* symbol table offset */
-        public DWord nsyms;		/* number of symbol table entries */
-        public DWord stroff;		/* string table offset */
-        public DWord strsize;	/* string table size in bytes */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SYMTAB */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class symtab_command) */";
+        public DWord symoff;
+        public final static String symoffComment = "/* symbol table offset */";
+        public DWord nsyms;
+        public final static String nsymsComment = "/* number of symbol table entries */";
+        public DWord stroff;
+        public final static String stroffComment = "/* string table offset */";
+        public DWord strsize;
+        public final static String strsizeComment = "/* string table size in bytes */";
     }
 
     ;
@@ -946,8 +1065,10 @@ public interface Loader {
      * off the section public classures.
      */
     public class dysymtab_command extends Command {
-        public DWord cmd;	/* LC_DYSYMTAB */
-        public DWord cmdsize;	/* sizeof(public class dysymtab_command) */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_DYSYMTAB */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class dysymtab_command) */";
 
         /*
          * The symbols indicated by symoff and nsyms of the LC_SYMTAB load command
@@ -964,14 +1085,20 @@ public interface Loader {
          * binding (indirectly through the module table and the reference symbol
          * table when this is a dynamically linked shared library file).
          */
-        public DWord ilocalsym;	/* index to local symbols */
-        public DWord nlocalsym;	/* number of local symbols */
+        public DWord ilocalsym;
+        public final static String ilocalsymComment = "/* index to local symbols */";
+        public DWord nlocalsym;
+        public final static String nlocalsymComment = "/* number of local symbols */";
 
-        public DWord iextdefsym;/* index to externally defined symbols */
-        public DWord nextdefsym;/* number of externally defined symbols */
+        public DWord iextdefsym;
+        public final static String iextdefsymComment = "/* index to externally defined symbols */";
+        public DWord nextdefsym;
+        public final static String nextdefsymComment = "/* number of externally defined symbols */";
 
-        public DWord iundefsym;	/* index to undefined symbols */
-        public DWord nundefsym;	/* number of undefined symbols */
+        public DWord iundefsym;
+        public final static String iundefsymComment = "/* index to undefined symbols */";
+        public DWord nundefsym;
+        public final static String nundefsymComment = "/* number of undefined symbols */";
 
         /*
          * For the for the dynamic binding process to find which module a symbol
@@ -981,8 +1108,10 @@ public interface Loader {
          * library file.  For executable and object modules the defined external
          * symbols are sorted by name and is use as the table of contents.
          */
-        public DWord tocoff;	/* file offset to table of contents */
-        public DWord ntoc;	/* number of entries in table of contents */
+        public DWord tocoff;
+        public final static String tocoffComment = "/* file offset to table of contents */";
+        public DWord ntoc;
+        public final static String ntocComment = "/* number of entries in table of contents */";
 
         /*
          * To support dynamic binding of "modules" (whole object files) the symbol
@@ -993,8 +1122,10 @@ public interface Loader {
          * shared library file.  For executable and object modules the file only
          * contains one module so everything in the file belongs to the module.
          */
-        public DWord modtaboff;	/* file offset to module table */
-        public DWord nmodtab;	/* number of module table entries */
+        public DWord modtaboff;
+        public final static String modtaboffComment = "/* file offset to module table */";
+        public DWord nmodtab;
+        public final static String nmodtabComment = "/* number of module table entries */";
 
         /*
          * To support dynamic module binding the module public classure for each module
@@ -1005,8 +1136,10 @@ public interface Loader {
          * executable and object modules the defined external symbols and the
          * undefined external symbols indicates the external references.
          */
-        public DWord extrefsymoff;	/* offset to referenced symbol table */
-        public DWord nextrefsyms;	/* number of referenced symbol table entries */
+        public DWord extrefsymoff;
+        public final static String extrefsymoffComment = "/* offset to referenced symbol table */";
+        public DWord nextrefsyms;
+        public final static String nextrefsymsComment = "/* number of referenced symbol table entries */";
 
         /*
          * The sections that contain "symbol pointers" and "routine stubs" have
@@ -1018,8 +1151,10 @@ public interface Loader {
          * the symbol table to the symbol that the pointer or stub is referring to.
          * The indirect symbol table is ordered to match the entries in the section.
          */
-        public DWord indirectsymoff; /* file offset to the indirect symbol table */
-        public DWord nindirectsyms;  /* number of indirect symbol table entries */
+        public DWord indirectsymoff;
+        public final static String indirectsymoffComment = "/* file offset to the indirect symbol table */";
+        public DWord nindirectsyms;
+        public final static String nindirectsymsComment = "/* number of indirect symbol table entries */";
 
         /*
          * To support relocating an individual module in a library file quickly the
@@ -1048,16 +1183,20 @@ public interface Loader {
          * remaining external relocation entries for them (for merged sections
          * remaining relocation entries must be local).
          */
-        public DWord extreloff;	/* offset to external relocation entries */
-        public DWord nextrel;	/* number of external relocation entries */
+        public DWord extreloff;
+        public final static String extreloffComment = "/* offset to external relocation entries */";
+        public DWord nextrel;
+        public final static String nextrelComment = "/* number of external relocation entries */";
 
         /*
          * All the local relocation entries are grouped together (they are not
          * grouped by their module since they are only used if the object is moved
          * from it staticly link edited address).
          */
-        public DWord locreloff;	/* offset to local relocation entries */
-        public DWord nlocrel;	/* number of local relocation entries */
+        public DWord locreloff;
+        public final static String locreloffComment = "/* offset to local relocation entries */";
+        public DWord nlocrel;
+        public final static String nlocrelComment = "/* number of local relocation entries */";
 
     }
 
@@ -1076,68 +1215,77 @@ public interface Loader {
 
     /* a table of contents entry */
     public class dylib_table_of_contents {
-        public DWord symbol_index;	/* the defined external symbol
-				   (index into the symbol table) */
-        public DWord module_index;	/* index into the module table this symbol
-				   is defined in */
+        public DWord symbol_index;
+        public final static String symbol_indexComment = "/* the defined external symbol (index into the symbol table) */";
+        public DWord module_index;
+        public final static String module_indexComment = "/* index into the module table this symbol is defined in */";
     }
 
     ;
 
     /* a module table entry */
     public class dylib_module {
-        public DWord module_name;	/* the module name (index into string table) */
+        public DWord module_name;
+        public final static String module_nameComment = "/* the module name (index into string table) */";
 
-        public DWord iextdefsym;	/* index into externally defined symbols */
-        public DWord nextdefsym;	/* number of externally defined symbols */
-        public DWord irefsym;		/* index into reference symbol table */
-        public DWord nrefsym;		/* number of reference symbol table entries */
-        public DWord ilocalsym;		/* index into symbols for local symbols */
-        public DWord nlocalsym;		/* number of local symbols */
+        public DWord iextdefsym;
+        public final static String iextdefsymComment = "/* index into externally defined symbols */";
+        public DWord nextdefsym;
+        public final static String nextdefsymComment = "/* number of externally defined symbols */";
+        public DWord irefsym;
+        public final static String irefsymComment = "/* index into reference symbol table */";
+        public DWord nrefsym;
+        public final static String nrefsymComment = "/* number of reference symbol table entries */";
+        public DWord ilocalsym;
+        public final static String ilocalsymComment = "/* index into symbols for local symbols */";
+        public DWord nlocalsym;
+        public final static String nlocalsymComment = "/* number of local symbols */";
 
-        public DWord iextrel;		/* index into external relocation entries */
-        public DWord nextrel;		/* number of external relocation entries */
+        public DWord iextrel;
+        public final static String iextrelComment = "/* index into external relocation entries */";
+        public DWord nextrel;
+        public final static String nextrelComment = "/* number of external relocation entries */";
 
-        public DWord iinit_iterm;	/* low 16 bits are the index into the init
-				   section, high 16 bits are the index into
-			           the term section */
-        public DWord ninit_nterm;	/* low 16 bits are the number of init section
-				   entries, high 16 bits are the number of
-				   term section entries */
-
-        public DWord			/* for this module address of the start of */
-                objc_module_info_addr;  /*  the (__OBJC,__module_info) section */
-        public DWord			/* for this module size of */
-                objc_module_info_size;	/*  the (__OBJC,__module_info) section */
+        public DWord iinit_iterm;
+        public final static String iinit_itermComment = "/* low 16 bits are the index into the init section, high 16 bits are the index into the term section */";
+        public DWord ninit_nterm;
+        public final static String ninit_ntermComment = "/* low 16 bits are the number of init section entries, high 16 bits are the number of term section entries */";
+        public DWord objc_module_info_addr;
+        public final static String objc_module_info_addrComment = "/* for this module address of the start of the (__OBJC,__module_info) section */";
+        public DWord objc_module_info_size;
+        public final static String objc_module_info_sizeComment = "/* for this module size of the (__OBJC,__module_info) section */";
     }
 
     ;
 
     /* a 64-bit module table entry */
     public class dylib_module_64 {
-        public DWord module_name;	/* the module name (index into string table) */
-
-        public DWord iextdefsym;	/* index into externally defined symbols */
-        public DWord nextdefsym;	/* number of externally defined symbols */
-        public DWord irefsym;		/* index into reference symbol table */
-        public DWord nrefsym;		/* number of reference symbol table entries */
-        public DWord ilocalsym;		/* index into symbols for local symbols */
-        public DWord nlocalsym;		/* number of local symbols */
-
-        public DWord iextrel;		/* index into external relocation entries */
-        public DWord nextrel;		/* number of external relocation entries */
-
-        public DWord iinit_iterm;	/* low 16 bits are the index into the init
-				   section, high 16 bits are the index into
-				   the term section */
-        public DWord ninit_nterm;      /* low 16 bits are the number of init section
-				  entries, high 16 bits are the number of
-				  term section entries */
-
-        public DWord			/* for this module size of */
-                objc_module_info_size;	/*  the (__OBJC,__module_info) section */
-        public QWord			/* for this module address of the start of */
-                objc_module_info_addr;	/*  the (__OBJC,__module_info) section */
+        public DWord module_name;
+        public final static String module_nameComment = "/* the module name (index into string table) */";
+        public DWord iextdefsym;
+        public final static String iextdefsymComment = "/* index into externally defined symbols */";
+        public DWord nextdefsym;
+        public final static String nextdefsymComment = "/* number of externally defined symbols */";
+        public DWord irefsym;
+        public final static String irefsymComment = "/* index into reference symbol table */";
+        public DWord nrefsym;
+        public final static String nrefsymComment = "/* number of reference symbol table entries */";
+        public DWord ilocalsym;
+        public final static String ilocalsymComment = "/* index into symbols for local symbols */";
+        public DWord nlocalsym;
+        public final static String nlocalsymComment = "/* number of local symbols */";
+        public DWord iextrel;
+        public final static String iextrelComment = "/* index into external relocation entries */";
+        public DWord nextrel;
+        public final static String nextrelComment = "/* number of external relocation entries */";
+        public DWord iinit_iterm;
+        public final static String iinit_itermComment = "/* low 16 bits are the index into the init section, high 16 bits are the index into the term section */";
+        public DWord ninit_nterm;
+        public final static String ninit_ntermComment = "/* low 16 bits are the number of init section entries, high 16 bits are the number of term section entries */";
+        public DWord objc_module_info_size;
+        public final static String objc_module_info_sizeComment = "/* for this module size of the (__OBJC,__module_info) section */";
+        public QWord objc_module_info_addr;
+        public final static String objc_module_info_addrComment = "/* for this module address of the start of the (__OBJC,__module_info) section */";
     }
 
     ;
@@ -1151,8 +1299,11 @@ public interface Loader {
      * <mach-o/nlist.h> as they are also used for symbol table entries.
      */
     public class dylib_reference {
-        public DWord isym;		/* index into the symbol table */
-        public DWord flags;	/* flags to indicate the type of reference */
+        public DWord isym;
+        public final static String isymComment = "/* index into the symbol table */";
+        public DWord flags;
+        public final static String flagsComment = "/* flags to indicate the type of reference */";
+
     }
 
     ;
@@ -1162,10 +1313,14 @@ public interface Loader {
      * two-level namespace lookup hints table.
      */
     public class twolevel_hints_command extends Command {
-        public DWord cmd;	/* LC_TWOLEVEL_HINTS */
-        public DWord cmdsize;	/* sizeof(public class twolevel_hints_command) */
-        public DWord offset;	/* offset to the hint table */
-        public DWord nhints;	/* number of hints in the hint table */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_TWOLEVEL_HINTS */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class twolevel_hints_command) */";
+        public DWord offset;
+        public final static String offsetComment = "/* offset to the hint table */";
+        public DWord nhints;
+        public final static String nhintsComment = "/* number of hints in the hint table */";
     }
 
     ;
@@ -1187,8 +1342,10 @@ public interface Loader {
      * binary search or a directed linear search.
      */
     public class twolevel_hint {
-        public DWord isub_image;	/* index into the sub images */
-        public DWord itoc;	/* index into the table of contents */
+        public DWord isub_image;
+        public final static String isub_imageComment = "/* index into the sub images */";
+        public DWord itoc;
+        public final static String itocComment = "/* index into the table of contents */";
     }
 
     ;
@@ -1204,9 +1361,12 @@ public interface Loader {
      * input file.
      */
     public class prebind_cksum_command extends Command {
-        public DWord cmd;	/* LC_PREBIND_CKSUM */
-        public DWord cmdsize;	/* sizeof(public class prebind_cksum_command) */
-        public DWord cksum;	/* the check sum or zero */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_PREBIND_CKSUM */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class prebind_cksum_command) */";
+        public DWord cksum;
+        public final static String cksumComment = "/* the check sum or zero */";
     }
 
     ;
@@ -1216,9 +1376,12 @@ public interface Loader {
      * identifies an object produced by the static link editor.
      */
     public class uuid_command extends Command {
-        public DWord cmd;		/* LC_UUID */
-        public DWord cmdsize;	/* sizeof(public class uuid_command) */
-        public byte[] uuid = new byte[16];	/* the 128-bit uuid */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_UUID */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class uuid_command) */";
+        public byte[] uuid = new byte[16];
+        public final static String uuidComment = "/* the 128-bit uuid */";
     }
 
     ;
@@ -1228,9 +1391,12 @@ public interface Loader {
      * the current run path used to find @rpath prefixed dylibs.
      */
     public class rpath_command extends Command {
-        public DWord cmd;		/* LC_RPATH */
-        public DWord cmdsize;	/* includes string */
-        public lc_str path;		/* path to add to run path */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_RPATH */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes string */";
+        public lc_str path;
+        public final static String pathComment = "/* path to add to run path */";
     }
 
     ;
@@ -1240,11 +1406,14 @@ public interface Loader {
  * binary was built to run.
  */
     public class version_min_command extends Command {
-        public DWord cmd;		/* LC_VERSION_MIN_MACOSX or
-				   LC_VERSION_MIN_IPHONEOS  */
-        public DWord cmdsize;	/* sizeof(struct min_version_command) */
-        public DWord version;	/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
-        public DWord sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_VERSION_MIN_MACOSX or LC_VERSION_MIN_IPHONEOS  */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(struct min_version_command) */";
+        public DWord version;
+        public final static String versionComment = "/* X.Y.Z is encoded in nibbles xxxx.yy.zz */";
+        public DWord sdk;
+        public final static String sdkComment = "/* X.Y.Z is encoded in nibbles xxxx.yy.zz */";
     }
 
     ;
@@ -1255,12 +1424,14 @@ public interface Loader {
  * of data in the __LINKEDIT segment.
  */
     public class linkedit_data_command extends Command {
-        public DWord cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
-                                   LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
-				   or LC_DYLIB_CODE_SIGN_DRS */
-        public DWord cmdsize;	/* sizeof(public class linkedit_data_command) */
-        public DWord dataoff;	/* file offset of data in __LINKEDIT segment */
-        public DWord datasize;	/* file size of data in __LINKEDIT segment  */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, or LC_DYLIB_CODE_SIGN_DRS */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class linkedit_data_command) */";
+        public DWord dataoff;
+        public final static String dataoffComment = "/* file offset of data in __LINKEDIT segment */";
+        public DWord datasize;
+        public final static String datasizeComment = "/* file size of data in __LINKEDIT segment  */";
     }
 
     ;
@@ -1270,12 +1441,16 @@ public interface Loader {
      * of an encrypted segment.
      */
     public class encryption_info_command extends Command {
-        public DWord cmd;		/* LC_ENCRYPTION_INFO */
-        public DWord cmdsize;	/* sizeof(public class encryption_info_command) */
-        public DWord cryptoff;	/* file offset of encrypted range */
-        public DWord cryptsize;	/* file size of encrypted range */
-        public DWord cryptid;	/* which enryption system,
-				   0 means not-encrypted yet */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_ENCRYPTION_INFO */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class encryption_info_command) */";
+        public DWord cryptoff;
+        public final static String cryptoffComment = "/* file offset of encrypted range */";
+        public DWord cryptsize;
+        public final static String cryptsizeComment = "/* file size of encrypted range */";
+        public DWord cryptid;
+        public final static String cryptidComment = "/* which enryption system, 0 means not-encrypted yet */";
     }
 
     ;
@@ -1289,8 +1464,10 @@ public interface Loader {
      * to interpret it.
      */
     public class dyld_info_command extends Command {
-        public DWord cmd;		/* LC_DYLD_INFO or LC_DYLD_INFO_ONLY */
-        public DWord cmdsize;		/* sizeof(public class dyld_info_command) */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_DYLD_INFO or LC_DYLD_INFO_ONLY */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class dyld_info_command) */";
 
         /*
          * Dyld rebases an image whenever dyld loads it at an address different
@@ -1303,8 +1480,10 @@ public interface Loader {
          * like "every n'th offset for m times" can be encoded in a few
          * bytes.
          */
-        public DWord rebase_off;	/* file offset to rebase info  */
-        public DWord rebase_size;	/* size of rebase info   */
+        public DWord rebase_off;
+        public final static String rebase_offComment = "/* file offset to rebase info  */";
+        public DWord rebase_size;
+        public final static String rebase_sizeComment = "/* size of rebase info   */";
 
         /*
          * Dyld binds an image during the loading process, if the image
@@ -1318,8 +1497,10 @@ public interface Loader {
          * like for runs of pointers initialzed to the same value can be
          * encoded in a few bytes.
          */
-        public DWord bind_off;	/* file offset to binding info   */
-        public DWord bind_size;	/* size of binding info  */
+        public DWord bind_off;
+        public final static String bind_offComment = "/* file offset to binding info   */";
+        public DWord bind_size;
+        public final static String bind_sizeComment = "/* size of binding info  */";
 
         /*
          * Some C++ programs require dyld to unique symbols so that all
@@ -1336,8 +1517,10 @@ public interface Loader {
          * that is detected when the weak_bind information is processed
          * and the call to operator new is then rebound.
          */
-        public DWord weak_bind_off;	/* file offset to weak binding info   */
-        public DWord weak_bind_size;  /* size of weak binding info  */
+        public DWord weak_bind_off;
+        public final static String weak_bind_offComment = "/* file offset to weak binding info   */";
+        public DWord weak_bind_size;
+        public final static String weak_bind_sizeComment = "/* size of weak binding info  */";
 
         /*
          * Some uses of external symbols do not need to be bound immediately.
@@ -1351,8 +1534,10 @@ public interface Loader {
          * the offset to lazy_bind_off to get the information on what
          * to bind.
          */
-        public DWord lazy_bind_off;	/* file offset to lazy binding info */
-        public DWord lazy_bind_size;  /* size of lazy binding infs */
+        public DWord lazy_bind_off;
+        public final static String lazy_bind_offComment = "/* file offset to lazy binding info */";
+        public DWord lazy_bind_size;
+        public final static String lazy_bind_sizeComment = "/* size of lazy binding infs */";
 
         /*
          * The symbols exported by a dylib are encoded in a trie.  This
@@ -1379,8 +1564,10 @@ public interface Loader {
          * edge points to.
          *
          */
-        public DWord export_off;	/* file offset to lazy binding info */
-        public DWord export_size;	/* size of lazy binding infs */
+        public DWord export_off;
+        public final static String export_offComment = "/* file offset to lazy binding info */";
+        public DWord export_size;
+        public final static String export_sizeComment = "/* size of lazy binding infs */";
     }
 
     ;
@@ -1461,10 +1648,14 @@ public interface Loader {
      * zeroed. (THIS IS OBSOLETE and no longer supported).
      */
     public class symseg_command extends Command {
-        public DWord cmd;		/* LC_SYMSEG */
-        public DWord cmdsize;	/* sizeof(public class symseg_command) */
-        public DWord offset;		/* symbol segment offset */
-        public DWord size;		/* symbol segment size in bytes */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SYMSEG */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* sizeof(public class symseg_command) */";
+        public DWord offset;
+        public final static String offsetComment = "/* symbol segment offset */";
+        public DWord size;
+        public final static String sizeComment = "/* symbol segment size in bytes */";
     }
 
     ;
@@ -1476,8 +1667,10 @@ public interface Loader {
      * (THIS IS OBSOLETE and no longer supported).
      */
     public class ident_command extends Command {
-        public DWord cmd;		/* LC_IDENT */
-        public DWord cmdsize;	/* strings that follow this command */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_IDENT */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* strings that follow this command */";
     }
 
     ;
@@ -1489,10 +1682,14 @@ public interface Loader {
      * memory).
      */
     public class fvmfile_command extends Command {
-        public DWord cmd;			/* LC_FVMFILE */
-        public DWord cmdsize;		/* includes pathname string */
-        public lc_str name;		/* files pathname */
-        public DWord header_addr;	/* files virtual address */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_FVMFILE */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* includes pathname string */";
+        public lc_str name;
+        public final static String nameComment = "/* files pathname */";
+        public DWord header_addr;
+        public final static String header_addrComment = "/* files virtual address */";
     }
 
     ;
@@ -1505,10 +1702,14 @@ public interface Loader {
      * field will contain the stack size need for the main thread.
      */
     public class entry_point_command extends Command {
-        public DWord cmd;	/* LC_MAIN only used in MH_EXECUTE filetypes */
-        public DWord cmdsize;	/* 24 */
-        public QWord entryoff;	/* file (__TEXT) offset of main() */
-        public QWord stacksize;/* if not zero, initial stack size */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_MAIN only used in MH_EXECUTE filetypes */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* 24 */";
+        public QWord entryoff;
+        public final static String entryoffComment = "/* file (__TEXT) offset of main() */";
+        public QWord stacksize;
+        public final static String stacksizeComment = "/* if not zero, initial stack size */";
     }
 
     ;
@@ -1519,9 +1720,12 @@ public interface Loader {
      * the version of the sources used to build the binary.
      */
     public class source_version_command extends Command {
-        public DWord cmd;	/* LC_SOURCE_VERSION */
-        public DWord cmdsize;	/* 16 */
-        public QWord version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
+        public DWord cmd;
+        public final static String cmdComment = "/* LC_SOURCE_VERSION */";
+        public DWord cmdsize;
+        public final static String cmdsizeComment = "/* 16 */";
+        public QWord version;
+        public final static String versionComment = "/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */";
     }
 
     ;
@@ -1534,9 +1738,12 @@ public interface Loader {
      * is only used in final linked images.
      */
     public class data_in_code_entry {
-        public DWord offset;  /* from mach_header to start of data range*/
-        public Word length;  /* number of bytes in data range */
-        public Word kind;    /* a DICE_KIND_* value  */
+        public DWord offset;
+        public final static String offsetComment = "/* from mach_header to start of data range*/";
+        public Word length;
+        public final static String lengthComment = "/* number of bytes in data range */";
+        public Word kind;
+        public final static String kindComment = " /* a DICE_KIND_* value  */";
     }
 
     ;
@@ -1553,8 +1760,11 @@ public interface Loader {
      */
     public class tlv_descriptor {
         byte[] tlv_descriptor;
+        public final static String tlv_descriptorComment = "/*tlv_descriptor/*";
         public QWord key;
+        public final static String keyComment = "/*key*/";
         public QWord offset;
+        public final static String offsetComment = "/*offset*/";
     }
 
     ;
