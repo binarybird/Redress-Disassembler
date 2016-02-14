@@ -84,8 +84,8 @@ public class mach_header extends Header {
 };
 
 /* Constant for the magic field of the mach_header (32-bit architectures) */
-public static final DWord MH_MAGIC = new DWord("0xfeedface",ByteOrder.LITTLE_ENDIAN);	/* the mach magic number */
-public static final DWord MH_CIGAM = new DWord("0xcefaedfe",ByteOrder.LITTLE_ENDIAN);	/* NXSwapInt(MH_MAGIC) */
+public static final DWord MH_MAGIC = new DWord("0xfeedface",ByteOrder.BIG_ENDIAN);	/* the mach magic number */
+public static final DWord MH_CIGAM = new DWord("0xcefaedfe",ByteOrder.BIG_ENDIAN);	/* NXSwapInt(MH_MAGIC) */
 
 /*
  * The 64-bit mach header appears at the very beginning of object files for
@@ -103,8 +103,8 @@ public class mach_header_64 extends Header{
 };
 
 /* Constant for the magic field of the mach_header_64 (64-bit architectures) */
-public static final DWord MH_MAGIC_64 = new DWord("0xfeedfacf",ByteOrder.LITTLE_ENDIAN); /* the 64-bit mach magic number */
-public static final DWord MH_CIGAM_64 = new DWord("0xcffaedfe",ByteOrder.LITTLE_ENDIAN); /* NXSwapInt(MH_MAGIC_64) */
+public static final DWord MH_MAGIC_64 = new DWord("0xfeedfacf",ByteOrder.BIG_ENDIAN); /* the 64-bit mach magic number */
+public static final DWord MH_CIGAM_64 = new DWord("0xcffaedfe",ByteOrder.BIG_ENDIAN); /* NXSwapInt(MH_MAGIC_64) */
 
 /*
  * The layout of the file depends on the filetype.  For all but the MH_OBJECT
@@ -278,25 +278,55 @@ public static final DWord	LC_SUB_CLIENT	= new DWord("0x00000014",ByteOrder.BIG_E
 public static final DWord	LC_SUB_LIBRARY  = new DWord("0x00000015",ByteOrder.BIG_ENDIAN);	/* sub library */
 public static final DWord	LC_TWOLEVEL_HINTS = new DWord("0x00000016",ByteOrder.BIG_ENDIAN);	/* two-level namespace lookup hints */
 public static final DWord	LC_PREBIND_CKSUM  = new DWord("0x00000017",ByteOrder.BIG_ENDIAN);	/* prebind checksum */
+//    public static final DWord LC_VERSION_MIN_MACOSX = new DWord("0x00000024",ByteOrder.BIG_ENDIAN);
+//    public static final DWord LC_SOURCE_VERSION = new DWord("0x0000002a",ByteOrder.BIG_ENDIAN);
 
 /*
  * load a dynamically linked shared library that is allowed to be missing
  * (all symbols are weak imported).
  */
-public static final DWord	LC_LOAD_WEAK_DYLIB =new DWord("0x80000018",ByteOrder.BIG_ENDIAN);
+public static final DWord LC_LOAD_WEAK_DYLIB =new DWord("0x80000018",ByteOrder.BIG_ENDIAN);
 
-public static final DWord	LC_SEGMENT_64	= new DWord("0x00000019",ByteOrder.BIG_ENDIAN);	/* 64-bit segment of this file to be
+public static final DWord LC_SEGMENT_64	= new DWord("0x00000019",ByteOrder.BIG_ENDIAN);	/* 64-bit segment of this file to be
 				   mapped */
-public static final DWord	LC_ROUTINES_64	= new DWord("0x0000001a",ByteOrder.BIG_ENDIAN);	/* 64-bit image routines */
+public static final DWord LC_ROUTINES_64	= new DWord("0x0000001a",ByteOrder.BIG_ENDIAN);	/* 64-bit image routines */
 public static final DWord LC_UUID		= new DWord("0x0000001b",ByteOrder.BIG_ENDIAN);	/* the uuid */
 public static final DWord LC_RPATH      =new DWord("0x8000001c",ByteOrder.BIG_ENDIAN);    /* runpath additions */
 public static final DWord LC_CODE_SIGNATURE =new DWord("0x0000001d",ByteOrder.BIG_ENDIAN);	/* local of code signature */
 public static final DWord LC_SEGMENT_SPLIT_INFO =new DWord("0x0000001e",ByteOrder.BIG_ENDIAN); /* local of info to split segments */
 public static final DWord LC_REEXPORT_DYLIB =new DWord("0x8000001f",ByteOrder.BIG_ENDIAN); /* load and re-export dylib */
-public static final DWord	LC_LAZY_LOAD_DYLIB =new DWord("0x00000020",ByteOrder.BIG_ENDIAN);	/* delay load of dylib until first use */
-public static final DWord	LC_ENCRYPTION_INFO = new DWord("0x00000021",ByteOrder.BIG_ENDIAN);	/* encrypted segment information */
-public static final DWord	LC_DYLD_INFO 	= new DWord("0x00000022",ByteOrder.BIG_ENDIAN);	/* compressed dyld information */
-public static final DWord	LC_DYLD_INFO_ONLY =new DWord("0x80000022",ByteOrder.BIG_ENDIAN);	/* compressed dyld information only */
+public static final DWord LC_LAZY_LOAD_DYLIB =new DWord("0x00000020",ByteOrder.BIG_ENDIAN);	/* delay load of dylib until first use */
+public static final DWord LC_ENCRYPTION_INFO = new DWord("0x00000021",ByteOrder.BIG_ENDIAN);	/* encrypted segment information */
+public static final DWord LC_DYLD_INFO 	= new DWord("0x00000022",ByteOrder.BIG_ENDIAN);	/* compressed dyld information */
+public static final DWord LC_DYLD_INFO_ONLY =new DWord("0x80000022",ByteOrder.BIG_ENDIAN);	/* compressed dyld information only */
+
+   // public static final DWord	MH_DEAD_STRIPPABLE_DYLIB = new DWord("0x00400000",ByteOrder.LITTLE_ENDIAN);
+    /* Only for use on dylibs.  When
+					     linking against a dylib that
+					     has this bit set, the static linker
+					     will automatically not create a
+					     LC_LOAD_DYLIB load command to the
+					     dylib if no symbols are being
+					     referenced from the dylib. */
+            public static final DWord MH_HAS_TLV_DESCRIPTORS = new DWord("0x00800000",ByteOrder.BIG_ENDIAN); /* Contains a section of type
+					    S_THREAD_LOCAL_VARIABLES */
+
+            public static final DWord MH_NO_HEAP_EXECUTION =new DWord("0x01000000",ByteOrder.BIG_ENDIAN);	/* When this bit is set, the OS will
+					   run the main executable with
+					   a non-executable heap even on
+					   platforms (e.g. i386) that don't
+					   require it. Only used in MH_EXECUTE
+					   filetypes. */
+            public static final DWord	LC_LOAD_UPWARD_DYLIB = new DWord("0x80000023",ByteOrder.BIG_ENDIAN);// | LC_REQ_DYLD) /* load upward dylib */
+    public static final DWord LC_VERSION_MIN_MACOSX = new DWord("0x00000024",ByteOrder.BIG_ENDIAN);   /* build for MacOSX min OS version */
+            public static final DWord LC_VERSION_MIN_IPHONEOS =new DWord("0x00000025",ByteOrder.BIG_ENDIAN); /* build for iPhoneOS min OS version */
+            public static final DWord LC_FUNCTION_STARTS =new DWord("0x00000026",ByteOrder.BIG_ENDIAN); /* compressed table of function start addresses */
+            public static final DWord LC_DYLD_ENVIRONMENT =new DWord("0x00000027",ByteOrder.BIG_ENDIAN); /* string for dyld to treat
+				    like environment variable */
+            public static final DWord LC_MAIN =new DWord("0x80000028",ByteOrder.BIG_ENDIAN);//|LC_REQ_DYLD) /* replacement for LC_UNIXTHREAD */
+    public static final DWord LC_DATA_IN_CODE =new DWord("0x00000029",ByteOrder.BIG_ENDIAN); /* table of non-instructions in __text */
+            public static final DWord LC_SOURCE_VERSION =new DWord("0x0000002A",ByteOrder.BIG_ENDIAN); /* source version used to build binary */
+            public static final DWord LC_DYLIB_CODE_SIGN_DRS =new DWord("0x0000002B",ByteOrder.BIG_ENDIAN); /* Code signing DRs copied from linked dylibs */
 
 /*
  * A variable length string in a load command is represented by an lc_str
@@ -503,7 +533,23 @@ public static final DWord S_ATTR_LIVE_SUPPORT	 = new DWord("0x08000000",ByteOrde
 						   reference live blocks */
 public static final DWord S_ATTR_SELF_MODIFYING_CODE = new DWord("0x04000000",ByteOrder.BIG_ENDIAN);	/* Used with i386 code stubs
 						   written on by dyld */
-/*
+
+    /*
+ * Section types to support thread local variables
+ */
+    public static final DWord S_THREAD_LOCAL_REGULAR  = new DWord("0x00000011",ByteOrder.BIG_ENDIAN);  /* template of initial
+							  values for TLVs */
+            public static final DWord S_THREAD_LOCAL_ZEROFILL  = new DWord("0x00000012",ByteOrder.BIG_ENDIAN);  /* template of initial
+							  values for TLVs */
+            public static final DWord S_THREAD_LOCAL_VARIABLES =new DWord("0x00000013",ByteOrder.BIG_ENDIAN);  /* TLV descriptors */
+            public static final DWord S_THREAD_LOCAL_VARIABLE_POINTERS = new DWord("0x00000014",ByteOrder.BIG_ENDIAN);  /* pointers to TLV
+                                                          descriptors */
+            public static final DWord S_THREAD_LOCAL_INIT_FUNCTION_POINTERS = new DWord("0x00000015",ByteOrder.BIG_ENDIAN);  /* functions to call
+							  to initialize TLV
+							  values */
+
+
+    /*
  * If a segment contains any sections marked with S_ATTR_DEBUG then all
  * sections in that segment must have this attribute.  No section other than
  * a section marked with this attribute may reference the contents of this
@@ -1129,12 +1175,27 @@ public class rpath_command extends Command{
     public lc_str path;		/* path to add to run path */
 };
 
-/*
+    /*
+ * The version_min_command contains the min OS version on which this
+ * binary was built to run.
+ */
+    public class version_min_command extends Command{
+        public DWord	cmd;		/* LC_VERSION_MIN_MACOSX or
+				   LC_VERSION_MIN_IPHONEOS  */
+        public DWord	cmdsize;	/* sizeof(struct min_version_command) */
+        public DWord	version;	/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
+        public DWord	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
+    };
+
+
+    /*
  * The linkedit_data_command contains the offsets and sizes of a blob
  * of data in the __LINKEDIT segment.
  */
 public class linkedit_data_command extends Command{
-    public DWord	cmd;		/* LC_CODE_SIGNATURE or LC_SEGMENT_SPLIT_INFO */
+    public DWord	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
+                                   LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
+				   or LC_DYLIB_CODE_SIGN_DRS */
     public DWord	cmdsize;	/* sizeof(public class linkedit_data_command) */
     public DWord	dataoff;	/* file offset of data in __LINKEDIT segment */
     public DWord	datasize;	/* file size of data in __LINKEDIT segment  */
@@ -1317,6 +1378,10 @@ public static final DWord EXPORT_SYMBOL_FLAGS_KIND_THREAD_LOCAL			= new DWord("0
 public static final DWord EXPORT_SYMBOL_FLAGS_WEAK_DEFINITION			= new DWord("0x00000004",ByteOrder.BIG_ENDIAN);
 public static final DWord EXPORT_SYMBOL_FLAGS_INDIRECT_DEFINITION			= new DWord("0x00000008",ByteOrder.BIG_ENDIAN);
 public static final DWord EXPORT_SYMBOL_FLAGS_HAS_SPECIALIZATIONS			= new DWord("0x00000010",ByteOrder.BIG_ENDIAN);
+    /* In Version 2010:
+    #define EXPORT_SYMBOL_FLAGS_REEXPORT				0x08
+#define EXPORT_SYMBOL_FLAGS_STUB_AND_RESOLVER			0x10
+     */
 
 /*
  * The symseg_command contains the offset and size of the GNU style
@@ -1357,6 +1422,62 @@ public class fvmfile_command extends Command{
 	public lc_str	name;		/* files pathname */
 	public DWord	header_addr;	/* files virtual address */
 };
+
+
+    /*
+     * The entry_point_command is a replacement for thread_command.
+     * It is used for main executables to specify the location (file offset)
+     * of main().  If -stack_size was used at link time, the stacksize
+     * field will contain the stack size need for the main thread.
+     */
+    public class entry_point_command extends Command{
+        public DWord  cmd;	/* LC_MAIN only used in MH_EXECUTE filetypes */
+        public DWord  cmdsize;	/* 24 */
+        public QWord  entryoff;	/* file (__TEXT) offset of main() */
+        public QWord  stacksize;/* if not zero, initial stack size */
+    };
+
+
+    /*
+     * The source_version_command is an optional load command containing
+     * the version of the sources used to build the binary.
+     */
+    public class source_version_command extends Command{
+        public DWord  cmd;	/* LC_SOURCE_VERSION */
+        public DWord  cmdsize;	/* 16 */
+        public QWord  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
+    };
+
+
+    /*
+     * The LC_DATA_IN_CODE load commands uses a linkedit_data_command
+     * to point to an array of data_in_code_entry entries. Each entry
+     * describes a range of data in a code section.  This load command
+     * is only used in final linked images.
+     */
+    public class data_in_code_entry {
+        public DWord	offset;  /* from mach_header to start of data range*/
+        public Word	length;  /* number of bytes in data range */
+        public Word	kind;    /* a DICE_KIND_* value  */
+    };
+    public static final Word DICE_KIND_DATA   =new Word("0x0001",ByteOrder.BIG_ENDIAN);  /* L$start$data$...  label */
+    public static final Word DICE_KIND_JUMP_TABLE8       =new Word("0x0002",ByteOrder.BIG_ENDIAN);  /* L$start$jt8$...   label */
+    public static final Word DICE_KIND_JUMP_TABLE16      =new Word("0x0003",ByteOrder.BIG_ENDIAN);  /* L$start$jt16$...  label */
+    public static final Word DICE_KIND_JUMP_TABLE32      =new Word("0x0004",ByteOrder.BIG_ENDIAN);  /* L$start$jt32$...  label */
+    public static final Word DICE_KIND_ABS_JUMP_TABLE32  =new Word("0x0005",ByteOrder.BIG_ENDIAN);  /* L$start$jta32$... label */
+
+
+
+    /*
+     * Sections of type S_THREAD_LOCAL_VARIABLES contain an array
+     * of tlv_descriptor structures.
+     */
+    public class tlv_descriptor
+    {
+        byte[] tlv_descriptor;
+        public QWord	key;
+        public QWord	offset;
+    };
 }
 
 //#endif /* _MACHO_LOADER_H_ */
