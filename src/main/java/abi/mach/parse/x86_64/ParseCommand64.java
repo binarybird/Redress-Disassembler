@@ -49,6 +49,7 @@ public class ParseCommand64 {
                 linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.setEndAddress(pointer.clone());
 
                 in.getCommands().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_DYLD_ENVIRONMENT)) {
@@ -355,8 +356,7 @@ public class ParseCommand64 {
 
                 final int sections = segment_command_641.nsects.getIntValue();
                 for (int i = 0; i < sections; i++) {
-                    ParseSection64.parse(in);
-                    pointer.add(new Word("0x0050", ByteOrder.BIG_ENDIAN));
+                    segment_command_641.getSections().add(ParseSection64.parse(in,pointer));
                 }
                 segment_command_641.setEndAddress(pointer.clone());
 

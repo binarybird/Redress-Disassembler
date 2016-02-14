@@ -9,6 +9,8 @@ import java.util.LinkedList;
  */
 public abstract class Command extends Addressable {
 
-    private Segment segment;
+    private final LinkedList<Section> sections = new LinkedList<>();
+    public LinkedList<Section> getSections(){return sections;}
+
 
 }

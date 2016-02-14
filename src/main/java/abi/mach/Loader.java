@@ -437,7 +437,7 @@ public interface Loader {
      * header file <reloc.h>.
      */
     public class section extends Section { /* for 32-bit architectures */
-        public section(Segment parent){super(parent);}
+        //public section(Segment parent){}
         public char16 sectname;	/* name of this section */
         public char16 segname;	/* segment this section goes in */
         public DWord addr;		/* memory address of this section */
@@ -454,7 +454,7 @@ public interface Loader {
     ;
 
     public class section_64 extends Section { /* for 64-bit architectures */
-        public section_64(Segment parent){super(parent);}
+        //public section_64(Segment parent){}
         public char16 sectname;	/* name of this section */
         public char16 segname;	/* segment this section goes in */
         public QWord addr;		/* memory address of this section */
