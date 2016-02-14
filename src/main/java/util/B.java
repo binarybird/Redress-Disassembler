@@ -126,14 +126,38 @@ public class B {
         return new Word(raw[addr],raw[addr+1],resultOrder);
     }
 
+    public static Word getWordAtAddressAndIncrement(final byte[] raw, final Address address, ByteOrder resultOrder){
+        final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
+
+        address.add(Word.SIZEOF_B);
+
+        return new Word(raw[addr],raw[addr+1],resultOrder);
+    }
+
     public static DWord getDWordAtAddress(final byte[] raw, final Address address, ByteOrder resultOrder){
         final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
 
         return new DWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],resultOrder);
     }
 
+    public static DWord getDWordAtAddressAndIncrement(final byte[] raw, final Address address, ByteOrder resultOrder){
+        final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
+
+        address.add(DWord.SIZEOF_B);
+
+        return new DWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],resultOrder);
+    }
+
     public static QWord getQWordAtAddress(final byte[] raw, final Address address, ByteOrder resultOrder){
         final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
+
+        return new QWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7],resultOrder);
+    }
+
+    public static QWord getQWordAtAddressAndIncrement(final byte[] raw, final Address address, ByteOrder resultOrder){
+        final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
+
+        address.add(QWord.SIZEOF_B);
 
         return new QWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7],resultOrder);
     }

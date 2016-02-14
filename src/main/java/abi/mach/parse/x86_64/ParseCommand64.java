@@ -35,11 +35,11 @@ public class ParseCommand64 {
                 //Loader.dyld_info_command
             }else if(command.equals(Loader.LC_DYLD_INFO_ONLY)){
                 Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command();
-                dyld_info_command.setBeginAddress(pointer.clone());
 
-                dyld_info_command.cmd = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command.cmdsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.setBeginAddress(pointer.clone());
+                dyld_info_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                //TODO
 
                 in.getCommands().add(dyld_info_command);
             }else if(command.equals(Loader.LC_REEXPORT_DYLIB)){
@@ -65,23 +65,17 @@ public class ParseCommand64 {
 
             }else if (command.equals(Loader.LC_SYMTAB)) {
                 Loader.symtab_command symtab_command = new Loader.symtab_command();
-                symtab_command.setBeginAddress(pointer.clone());
 
-                symtab_command.cmd = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                symtab_command.cmdsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                symtab_command.symoff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                symtab_command.nsyms = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                symtab_command.stroff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                symtab_command.strsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
+                symtab_command.setBeginAddress(pointer.clone());
+                symtab_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.symoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.nsyms = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.stroff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.strsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.setEndAddress(pointer.clone());
 
                 in.getCommands().add(symtab_command);
-                
             } else if (command.equals(Loader.LC_SYMSEG)) {
                 Loader.symseg_command symseg_command = new Loader.symseg_command();
                 symseg_command.setBeginAddress(pointer.clone());
@@ -131,49 +125,29 @@ public class ParseCommand64 {
                 Loader.dysymtab_command dysymtab_command = new Loader.dysymtab_command();
                 dysymtab_command.setBeginAddress(pointer.clone());
 
-                dysymtab_command.cmd = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.cmdsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.ilocalsym = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nlocalsym = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.iextdefsym = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nextdefsym = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.iundefsym = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nundefsym = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.tocoff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.ntoc = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.modtaboff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nmodtab = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.extrefsymoff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nextrefsyms = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.indirectsymoff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nindirectsyms = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.extreloff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nextrel = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.locreloff = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dysymtab_command.nlocrel = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
+                dysymtab_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.ilocalsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nlocalsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.iextdefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nextdefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.iundefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nundefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.tocoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.ntoc = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.modtaboff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nmodtab = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.extrefsymoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nextrefsyms = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.indirectsymoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nindirectsyms = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.extreloff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nextrel = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.locreloff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nlocrel = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dysymtab_command.setEndAddress(pointer.clone());
+
                 in.getCommands().add(dysymtab_command);
-                
             } else if (command.equals(Loader.LC_LOAD_DYLIB)) {
                 Loader.dylib_command dylib_command = new Loader.dylib_command();
                 dylib_command.setBeginAddress(pointer.clone());
@@ -185,17 +159,20 @@ public class ParseCommand64 {
                 
             } else if (command.equals(Loader.LC_LOAD_DYLINKER)) {
                 Loader.dylinker_command dylinker_command = new Loader.dylinker_command();
-                dylinker_command.setBeginAddress(pointer.clone());
 
-                dylinker_command.cmd = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dylinker_command.cmdsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dylinker_command.setEndAddress(B.getEndAddressFromOffset(dylinker_command.getBeginAddress(), dylinker_command.cmdsize));
-                pointer.add(DWord.SIZEOF_B);
+                dylinker_command.setBeginAddress(pointer.clone());
+                dylinker_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylinker_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+
+                final Address a = dylinker_command.getBeginAddress().clone();
+                a.add(dylinker_command.cmdsize);
+                dylinker_command.setEndAddress(a);
+
                 Loader.lc_str lc_str = new Loader.lc_str();
-                lc_str.offset = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
+                lc_str.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 lc_str.ptr = B.getRangeAtAddress(in.getRaw(), pointer, dylinker_command.getEndAddress());
+
+                dylinker_command.name=lc_str;
 
                 pointer = (Address32) dylinker_command.getEndAddress();
                 in.getCommands().add(dylinker_command);
@@ -253,39 +230,28 @@ public class ParseCommand64 {
                 
             } else if (command.equals(Loader.LC_SEGMENT_64)) {
                 Loader.segment_command_64 segment_command_641 = new Loader.segment_command_64();
+
                 segment_command_641.setBeginAddress(pointer.clone());
-
-                segment_command_641.cmd = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                segment_command_641.cmdsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                final byte[] container = B.getQWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-                pointer.add(QWord.SIZEOF_B);
-                final byte[] container2 = B.getQWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                segment_command_641.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                final byte[] container = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                final byte[] container2 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
                 segment_command_641.segname = new Loader.char16(B.mergeBytes(container, container2));
-                pointer.add(QWord.SIZEOF_B);
-                segment_command_641.vmaddr = B.getQWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(QWord.SIZEOF_B);
-                segment_command_641.vmsize = B.getQWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(QWord.SIZEOF_B);
-                segment_command_641.fileoff = B.getQWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(QWord.SIZEOF_B);
-                segment_command_641.filesize = B.getQWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(QWord.SIZEOF_B);
-                segment_command_641.maxprot = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                segment_command_641.initprot = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                segment_command_641.nsects = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                segment_command_641.flags = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
+                segment_command_641.vmaddr = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.vmsize = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.fileoff = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.filesize = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.maxprot = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.initprot = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.nsects = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.flags = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
-                int sections = segment_command_641.nsects.getIntValue();
+                final int sections = segment_command_641.nsects.getIntValue();
                 for (int i = 0; i < sections; i++) {
                     ParseSection64.parse(in);
                     pointer.add(new Word("0x0050", ByteOrder.BIG_ENDIAN));
                 }
+                segment_command_641.setEndAddress(pointer.clone());
 
                 in.getCommands().add(segment_command_641);
                 
@@ -297,13 +263,12 @@ public class ParseCommand64 {
                 
             } else if (command.equals(Loader.LC_UUID)) {
                 Loader.uuid_command uuid_command = new Loader.uuid_command();
-                uuid_command.setBeginAddress(pointer.clone());
 
-                uuid_command.cmd = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                uuid_command.cmdsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                uuid_command.uuid = B.getQWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                uuid_command.setBeginAddress(pointer.clone());
+                uuid_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);;
+                uuid_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                uuid_command.uuid = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                uuid_command.setEndAddress(pointer.clone());
 
                 in.getCommands().add(uuid_command);
                 
@@ -329,32 +294,21 @@ public class ParseCommand64 {
                 in.getCommands();
             } else if (command.equals(Loader.LC_DYLD_INFO)) {
                 Loader.dyld_info_command dyld_info_command1 = new Loader.dyld_info_command();
-                dyld_info_command1.setBeginAddress(pointer.clone());
 
-                dyld_info_command1.cmd = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.cmdsize = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.rebase_off = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.rebase_size = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.bind_off = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.bind_size = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.weak_bind_off = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.weak_bind_size = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.lazy_bind_off = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.lazy_bind_size = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.export_off = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
-                dyld_info_command1.export_size = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                pointer.add(DWord.SIZEOF_B);
+                dyld_info_command1.setBeginAddress(pointer.clone());
+                dyld_info_command1.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.rebase_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.rebase_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.weak_bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.weak_bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.lazy_bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.lazy_bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.export_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.export_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.setEndAddress(pointer.clone());
 
                 in.getCommands().add(dyld_info_command1);
             }
