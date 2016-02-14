@@ -7,11 +7,14 @@ import abi.mach.MachO64;
 import util.B;
 
 import java.nio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by jamesrichardson on 2/10/16.
  */
 public class ParseCommand64 {
+    private final static Logger LOGGER = Logger.getLogger(ParseCommand64.class.getName());
 
     private ParseCommand64() {}
 
@@ -23,25 +26,35 @@ public class ParseCommand64 {
 
         Address32 pointer = new Address32("0x00000020");
 
-        boolean finished = false;
-        while (!finished) {
+        int MAX_LIMIT = 0;
+        while (MAX_LIMIT < 500) {
+            MAX_LIMIT++;
             final DWord command = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
             if (pointer.equals(sizeOfCommands)) {
-                finished = true;
+                LOGGER.log(Level.INFO,"Load Command parsing complete");
+                break;
             }
 
+            boolean parsedSomething = false;
+
             if(command.equals(Loader.LC_LOAD_UPWARD_DYLIB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_LOAD_UPWARD_DYLIB");
                 Loader.load_command load_command = new Loader.load_command();
                 load_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(load_command);
             }else if(command.equals(Loader.LC_VERSION_MIN_IPHONEOS)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_VERSION_MIN_IPHONEOS");
                 Loader.version_min_command version_min_command = new Loader.version_min_command();
                 version_min_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(version_min_command);
             }else if(command.equals(Loader.LC_FUNCTION_STARTS)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_FUNCTION_STARTS");
                 Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
 
                 linkedit_data_command.setBeginAddress(pointer.clone());
@@ -53,11 +66,15 @@ public class ParseCommand64 {
 
                 in.getCommands().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_DYLD_ENVIRONMENT)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_DYLD_ENVIRONMENT");
                 Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command();
                 dyld_info_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(dyld_info_command);
             }else if(command.equals(Loader.LC_MAIN)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_MAIN");
                 Loader.entry_point_command entry_point_command = new Loader.entry_point_command();
 
                 entry_point_command.setBeginAddress(pointer.clone());
@@ -69,6 +86,8 @@ public class ParseCommand64 {
 
                 in.getCommands().add(entry_point_command);
             }else if(command.equals(Loader.LC_DATA_IN_CODE)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_DATA_IN_CODE");
                 Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
 
                 linkedit_data_command.setBeginAddress(pointer.clone());
@@ -79,6 +98,8 @@ public class ParseCommand64 {
 
                 in.getCommands().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_SOURCE_VERSION)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SOURCE_VERSION");
                 Loader.source_version_command source_version_command = new Loader.source_version_command();
 
                 source_version_command.setBeginAddress(pointer.clone());
@@ -89,9 +110,12 @@ public class ParseCommand64 {
 
                 in.getCommands().add(source_version_command);
             }else if(command.equals(Loader.LC_DYLIB_CODE_SIGN_DRS)) {
-                System.out.println("Cannot parse LC_DYLIB_CODE_SIGN_DRS");
+                parsedSomething = true;
+                LOGGER.log(Level.SEVERE,"Unknown parse command LC_DYLIB_CODE_SIGN_DRS");
 
             }else if(command.equals(Loader.LC_VERSION_MIN_MACOSX)){
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_VERSION_MIN_MACOSX");
                 Loader.version_min_command version_min_command = new Loader.version_min_command();
 
                 version_min_command.setBeginAddress(pointer.clone());
@@ -103,11 +127,15 @@ public class ParseCommand64 {
 
                 in.getCommands().add(version_min_command);
             }else if (command.equals(Loader.LC_REQ_DYLD)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_REQ_DYLD");
                 Loader.load_command load_command = new Loader.load_command();
                 load_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(load_command);
             }else if(command.equals(Loader.LC_DYLD_INFO_ONLY)){
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_DYLD_INFO_ONLY");
                 Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command();
 
                 dyld_info_command.setBeginAddress(pointer.clone());
@@ -127,27 +155,37 @@ public class ParseCommand64 {
 
                 in.getCommands().add(dyld_info_command);
             }else if(command.equals(Loader.LC_REEXPORT_DYLIB)){
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_REEXPORT_DYLIB");
                 Loader.dylinker_command dylinker_command = new Loader.dylinker_command();
                 dylinker_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(dylinker_command);
             }else if(command.equals(Loader.LC_RPATH)){
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_RPATH");
                 Loader.rpath_command rpath_command = new Loader.rpath_command();
                 rpath_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(rpath_command);
             }else if(command.equals(Loader.LC_LOAD_WEAK_DYLIB)){
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_LOAD_WEAK_DYLIB");
                 Loader.load_command load_command = new Loader.load_command();
                 load_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(load_command);
             }else if (command.equals(Loader.LC_SEGMENT)){
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SEGMENT");
                 Loader.segment_command segment_command = new Loader.segment_command();
                 segment_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(segment_command);
 
             }else if (command.equals(Loader.LC_SYMTAB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SYMTAB");
                 Loader.symtab_command symtab_command = new Loader.symtab_command();
 
                 symtab_command.setBeginAddress(pointer.clone());
@@ -161,51 +199,68 @@ public class ParseCommand64 {
 
                 in.getCommands().add(symtab_command);
             } else if (command.equals(Loader.LC_SYMSEG)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SYMSEG");
                 Loader.symseg_command symseg_command = new Loader.symseg_command();
                 symseg_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(symseg_command);
                 
             } else if (command.equals(Loader.LC_THREAD)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_THREAD");
                 Loader.thread_command thread_command = new Loader.thread_command();
                 thread_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(thread_command);
                 
             } else if (command.equals(Loader.LC_UNIXTHREAD)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_UNIXTHREAD");
                 Loader.thread_command unix_thread_command = new Loader.thread_command();
                 unix_thread_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(unix_thread_command);
                 
             } else if (command.equals(Loader.LC_LOADFVMLIB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_LOADFVMLIB");
                 Loader.fvmlib_command fvmlib_command = new Loader.fvmlib_command();
                 fvmlib_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(fvmlib_command);
                 
             } else if (command.equals(Loader.LC_IDFVMLIB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_IDFVMLIB");
                 Loader.fvmlib_command fvmlib_command1 = new Loader.fvmlib_command();
                 fvmlib_command1.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(fvmlib_command1);
                 
             } else if (command.equals(Loader.LC_IDENT)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_IDENT");
                 Loader.ident_command ident_command = new Loader.ident_command();
                 ident_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(ident_command);
                 
             } else if (command.equals(Loader.LC_FVMFILE)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_FVMFILE");
                 Loader.fvmfile_command fvmfile_command = new Loader.fvmfile_command();
                 fvmfile_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(fvmfile_command);
                 
             } else if (command.equals(Loader.LC_PREPAGE)) {
-                System.out.println("Cannot parse LC_PREPAGE");
+                parsedSomething = true;
+                LOGGER.log(Level.SEVERE,"Unknow parse command LC_PREPAGE");
                 
             } else if (command.equals(Loader.LC_DYSYMTAB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_DYSYMTAB");
                 Loader.dysymtab_command dysymtab_command = new Loader.dysymtab_command();
 
                 dysymtab_command.setBeginAddress(pointer.clone());
@@ -233,6 +288,8 @@ public class ParseCommand64 {
 
                 in.getCommands().add(dysymtab_command);
             } else if (command.equals(Loader.LC_LOAD_DYLIB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_LOAD_DYLIB");
                 Loader.dylib_command dylib_command = new Loader.dylib_command();
 
                 dylib_command.setBeginAddress(pointer.clone());
@@ -263,9 +320,12 @@ public class ParseCommand64 {
                 in.getCommands().add(dylib_command);
                 
             } else if (command.equals(Loader.LC_ID_DYLIB)) {
-                System.out.println("Cannot parse LC_ID_DYLIB");
-                
+                parsedSomething = true;
+                LOGGER.log(Level.SEVERE,"Unknown parse command LC_ID_DYLIB");
+
             } else if (command.equals(Loader.LC_LOAD_DYLINKER)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parseing LC_LOAD_DYLINKER");
                 Loader.dylinker_command dylinker_command = new Loader.dylinker_command();
 
                 dylinker_command.setBeginAddress(pointer.clone());
@@ -286,57 +346,76 @@ public class ParseCommand64 {
                 in.getCommands().add(dylinker_command);
                 
             } else if (command.equals(Loader.LC_ID_DYLINKER)) {
-                System.out.println("Cannot parse LC_ID_DYLINKER");
-                
+                parsedSomething = true;
+                LOGGER.log(Level.SEVERE,"Unknown parse command LC_ID_DYLINKER");
+
             } else if (command.equals(Loader.LC_PREBOUND_DYLIB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_PREBOUND_DYLIB");
                 Loader.prebound_dylib_command prebound_dylib_command = new Loader.prebound_dylib_command();
                 prebound_dylib_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(prebound_dylib_command);
                 
             } else if (command.equals(Loader.LC_ROUTINES)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_ROUTINES");
                 Loader.routines_command routines_command = new Loader.routines_command();
                 routines_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(routines_command);
                 
             } else if (command.equals(Loader.LC_SUB_FRAMEWORK)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SUB_FRAMEWORK");
                 Loader.sub_framework_command sub_framework_command = new Loader.sub_framework_command();
                 sub_framework_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(sub_framework_command);
                 
             } else if (command.equals(Loader.LC_SUB_UMBRELLA)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SUB_UMBRELLA");
                 Loader.sub_umbrella_command sub_umbrella_command = new Loader.sub_umbrella_command();
                 sub_umbrella_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(sub_umbrella_command);
                 
             } else if (command.equals(Loader.LC_SUB_CLIENT)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SUB_CLIENT");
                 Loader.sub_client_command sub_client_command = new Loader.sub_client_command();
                 sub_client_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(sub_client_command);
                 
             } else if (command.equals(Loader.LC_SUB_LIBRARY)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SUB_LIBRARY");
                 Loader.sub_library_command sub_library_command = new Loader.sub_library_command();
                 sub_library_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(sub_library_command);
                 
             } else if (command.equals(Loader.LC_TWOLEVEL_HINTS)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_TWOLEVEL_HINTS");
                 Loader.twolevel_hints_command twolevel_hints_command = new Loader.twolevel_hints_command();
                 twolevel_hints_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(twolevel_hints_command);
                 
             } else if (command.equals(Loader.LC_PREBIND_CKSUM)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_PREBIND_CKSUM");
                 Loader.prebind_cksum_command prebind_cksum_command = new Loader.prebind_cksum_command();
                 prebind_cksum_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(prebind_cksum_command);
                 
             } else if (command.equals(Loader.LC_SEGMENT_64)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SEGMENT_64");
                 Loader.segment_command_64 segment_command_641 = new Loader.segment_command_64();
 
                 segment_command_641.setBeginAddress(pointer.clone());
@@ -356,19 +435,24 @@ public class ParseCommand64 {
 
                 final int sections = segment_command_641.nsects.getIntValue();
                 for (int i = 0; i < sections; i++) {
-                    segment_command_641.getSections().add(ParseSection64.parse(in,pointer));
+                    LOGGER.log(Level.INFO,"Parsing section {0} for segment {1}",new Object[]{i,segment_command_641.segname.value});
+                    segment_command_641.getSections().add(ParseSection64.parse(in,pointer,segment_command_641));
                 }
                 segment_command_641.setEndAddress(pointer.clone());
 
                 in.getCommands().add(segment_command_641);
                 
             } else if (command.equals(Loader.LC_ROUTINES_64)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_ROUTINES_64");
                 Loader.routines_command_64 routines_command_64 = new Loader.routines_command_64();
                 routines_command_64.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(routines_command_64);
                 
             } else if (command.equals(Loader.LC_UUID)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_UUID");
                 Loader.uuid_command uuid_command = new Loader.uuid_command();
 
                 uuid_command.setBeginAddress(pointer.clone());
@@ -382,26 +466,36 @@ public class ParseCommand64 {
                 in.getCommands().add(uuid_command);
                 
             } else if (command.equals(Loader.LC_CODE_SIGNATURE)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_CODE_SIGNATURE");
                 Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
                 
             } else if (command.equals(Loader.LC_SEGMENT_SPLIT_INFO)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_SEGMENT_SPLIT_INFO");
                 Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command();
                 dyld_info_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(dyld_info_command);
                 
             } else if (command.equals(Loader.LC_LAZY_LOAD_DYLIB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_LAZY_LOAD_DYLIB");
                 Loader.load_command load_command = new Loader.load_command();
                 load_command.setBeginAddress(pointer.clone());
 
                 in.getCommands().add(load_command);
                 
             } else if (command.equals(Loader.LC_ENCRYPTION_INFO)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_ENCRYPTION_INFO");
                 Loader.encryption_info_command encryption_info_command = new Loader.encryption_info_command();
                 encryption_info_command.setBeginAddress(pointer.clone());
 
                 in.getCommands();
             } else if (command.equals(Loader.LC_DYLD_INFO)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_DYLD_INFO");
                 Loader.dyld_info_command dyld_info_command1 = new Loader.dyld_info_command();
 
                 dyld_info_command1.setBeginAddress(pointer.clone());
@@ -422,7 +516,9 @@ public class ParseCommand64 {
                 in.getCommands().add(dyld_info_command1);
             }
 
-            System.out.println();
+            if(parsedSomething == false){
+                LOGGER.log(Level.SEVERE,"Unable to parse load command: "+command.toString());
+            }
         }
     }
 }

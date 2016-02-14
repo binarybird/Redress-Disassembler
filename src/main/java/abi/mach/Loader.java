@@ -64,7 +64,7 @@ public interface Loader {
 
     public class char16 {
         public char16(byte[] in) {
-            this.value = B.bytesToString(in);
+            this.value = new String(in);
         }
         public String value;
     }

@@ -20,6 +20,7 @@ public class ParseSection64{
     public static Loader.section_64 parse(MachO64 in,Address32 pointer,Command parent){
 //        pointer.add(new Word("0x0050", ByteOrder.BIG_ENDIAN));
         Loader.section_64 section_64 = new Loader.section_64();
+        section_64.setParentCommand(parent);
 
         section_64.setBeginAddress(pointer.clone());
         final byte[] container = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();

@@ -14,19 +14,36 @@ import java.util.Arrays;
  *
  * Byte Utils
  */
-public class B {
+public final class B {
 
     private B(){}
 
+    /**
+     * Wraps a single byte in to a byte[]
+     * @param b byte to be wrapped
+     * @return byte array containing byte b
+     */
     public static byte[] byteToBytes(byte b){
         final byte[] bytes = {b};
         return bytes;
     }
 
+    /**
+     * Transform an in to an unsigned byte[] array
+     * @param in integer to be wrapped
+     * @param order resulting byte order to be returned
+     * @return byte array containing the ints value
+     */
     public static byte[] intToBytes(int in,ByteOrder order){
         return ByteBuffer.allocate(Integer.BYTES).order(order).putInt(in).array();
     }
 
+    /**
+     * Byte array to int. Assumes unsigned integer in the byte array
+     * @param in byte array to be transformed
+     * @param order byte order the array is in
+     * @return integer
+     */
     public static int bytesToInt(byte [] in,ByteOrder order){
 
         byte[] tmp;

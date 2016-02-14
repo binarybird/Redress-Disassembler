@@ -15,11 +15,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by jamesrichardson on 2/10/16.
  */
 public class Reader {
+
+    private final static Logger LOGGER = Logger.getLogger(Reader.class.getName());
 
     private Reader(){}
 
@@ -30,10 +34,14 @@ public class Reader {
             fileLengthInBytes = in.length();
         }
 
-        if(fileLengthInBytes == -1)
+        if(fileLengthInBytes == -1){
+            LOGGER.log(Level.SEVERE,"Unable to get size of binary!");
             throw new IOException("Unable to get binary size.");
+        }
 
         final byte[] binary = new byte[java.lang.Math.toIntExact(fileLengthInBytes)];
+
+        LOGGER.log(Level.INFO,"Reading binary: {0}, size: {1}bytes",new Object[] {in.getAbsolutePath(),fileLengthInBytes});
 
         final FileInputStream fis = new FileInputStream(in);
         fis.read(binary);
