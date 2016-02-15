@@ -7,7 +7,7 @@ import java.util.LinkedList;
 /**
  * Created by jamesrichardson on 2/10/16.
  */
-public class MachO32 extends ABI implements Mach {
+public class MachO32 extends Mach {
 
     private static final ABIType ABI_TYPE = ABIType.MACH_32;
     private LinkedList<Command> commands = new LinkedList<>();

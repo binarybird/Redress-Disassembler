@@ -18,7 +18,7 @@ public class ParseCommand64 {
 
     private ParseCommand64() {}
 
-    public static void parse(MachO64 in) {
+    public static void parse(MachO64 in) throws Exception{
 
         final DWord numberOfCommands = in.getHeader().ncmds;
         final DWord sizeOfCommands = in.getHeader().sizeofcmds;
@@ -111,8 +111,17 @@ public class ParseCommand64 {
                 in.getCommands().add(source_version_command);
             }else if(command.equals(Loader.LC_DYLIB_CODE_SIGN_DRS)) {
                 parsedSomething = true;
-                LOGGER.log(Level.SEVERE,"Unknown parse command LC_DYLIB_CODE_SIGN_DRS");
+                LOGGER.log(Level.INFO,"Parsing LC_DYLIB_CODE_SIGN_DRS");
+                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
 
+                linkedit_data_command.setBeginAddress(pointer.clone());
+                linkedit_data_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.datasize =B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.setEndAddress(pointer.clone());
+
+                in.getCommands().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_VERSION_MIN_MACOSX)){
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_VERSION_MIN_MACOSX");
@@ -296,33 +305,31 @@ public class ParseCommand64 {
                 dylib_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dylib_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
-                Loader.lc_str lcstr = new Loader.lc_str();
-                lcstr.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
+                end.add(dylib_command.cmdsize);
 
-                Address32 begin = (Address32)dylib_command.getBeginAddress().clone();
-                begin.add(lcstr.offset);
+                dylib_command.dylib = getDylib(in, pointer, dylib_command);
+                dylib_command.setEndAddress(end.clone());
+                pointer = end;
+
+                in.getCommands().add(dylib_command);
+            } else if (command.equals(Loader.LC_ID_DYLIB)) {
+                parsedSomething = true;
+                LOGGER.log(Level.INFO,"Parsing LC_ID_DYLIB");
+                Loader.dylib_command dylib_command = new Loader.dylib_command();
+
+                dylib_command.setBeginAddress(pointer.clone());
+                dylib_command.cmd=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylib_command.cmdsize=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
                 Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
                 end.add(dylib_command.cmdsize);
 
-                lcstr.ptr = B.getRangeAtAddress(in.getRaw(), begin, end);
-
-                Loader.dylib l = new Loader.dylib();
-                l.timestamp = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                l.current_version = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                l.compatibility_version = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                l.name = lcstr;
-
-                dylib_command.dylib = l;
-                dylib_command.setEndAddress(end);
+                dylib_command.dylib = getDylib(in, pointer, dylib_command);
+                dylib_command.setEndAddress(end.clone());
                 pointer = end;
 
                 in.getCommands().add(dylib_command);
-                
-            } else if (command.equals(Loader.LC_ID_DYLIB)) {
-                parsedSomething = true;
-                LOGGER.log(Level.SEVERE,"Unknown parse command LC_ID_DYLIB");
-
             } else if (command.equals(Loader.LC_LOAD_DYLINKER)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parseing LC_LOAD_DYLINKER");
@@ -518,7 +525,29 @@ public class ParseCommand64 {
 
             if(parsedSomething == false){
                 LOGGER.log(Level.SEVERE,"Unable to parse load command: "+command.toString());
+                throw new Exception("Unknown Load Command: "+command.toString());
             }
         }
     }
+
+    private static Loader.dylib getDylib(MachO64 in, Address32 pointer, Loader.dylib_command dylib_command) {
+        Loader.lc_str lcstr = new Loader.lc_str();
+        lcstr.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+
+        Address32 begin = (Address32)dylib_command.getBeginAddress().clone();
+        begin.add(lcstr.offset);
+
+        Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
+        end.add(dylib_command.cmdsize);
+
+        lcstr.ptr = B.getRangeAtAddress(in.getRaw(), begin, end);
+
+        Loader.dylib l = new Loader.dylib();
+        l.timestamp = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+        l.current_version = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+        l.compatibility_version = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+        l.name = lcstr;
+        return l;
+    }
+
 }

@@ -1,20 +1,37 @@
+import abi.mach.Mach;
 import abi.mach.parse.Reader;
+import gui.MainController;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Main {
+public class Main extends Application {
     private final static Logger LOGGER = Logger.getLogger(Main.class.getName());
-
     public static void main(String[] args){
         LOGGER.log(Level.INFO,"Starting Disassemble...");
-        File in =new File("/Users/james/Desktop/reverse/a.out");
+        Application.launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+
+        Mach read = null;
 
         try {
-            Reader.Read(in);
+            read = Reader.Read(new File("/Users/jamesrichardson/Desktop/reverse/a.out"));
         }catch(Exception e){
             e.printStackTrace();
         }
+
+        final MainController mainController = new MainController(read);
+
+        final Scene scene = new Scene(mainController);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 }

@@ -27,7 +27,7 @@ public class Reader {
 
     private Reader(){}
 
-    public static Mach Read(final File in) throws IOException,ArithmeticException{
+    public static Mach Read(final File in) throws Exception{
 
         long fileLengthInBytes = -1;
         if(in.exists()){

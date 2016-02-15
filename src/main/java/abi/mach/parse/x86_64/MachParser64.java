@@ -15,7 +15,7 @@ public class MachParser64{
     private MachParser64(){
     }
 
-    public static void parse(MachO64 model) {
+    public static void parse(MachO64 model) throws Exception{
         LOGGER.log(Level.INFO,"Parsing header");
         ParseHeader64.parse(model);
         LOGGER.log(Level.INFO,"Parsing load commands");
