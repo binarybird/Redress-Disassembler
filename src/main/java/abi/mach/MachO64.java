@@ -1,7 +1,9 @@
 package abi.mach;
 
 import abi.generic.abi.*;
+import abi.generic.memory.data.Data;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -18,6 +20,13 @@ public class MachO64 extends Mach{
 
     public MachO64(byte[] binary){
         super(binary);
+    }
+
+    @Override
+    public HashSet<Data> getProcessedData() {
+        final HashSet<Data> processedData = new HashSet<>();
+
+        return null;
     }
 
     @Override

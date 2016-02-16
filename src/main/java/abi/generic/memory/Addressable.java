@@ -1,5 +1,10 @@
 package abi.generic.memory;
 
+import abi.generic.memory.address.Address;
+import abi.generic.memory.data.Data;
+
+import java.util.HashSet;
+
 /**
  * Created by jamesrichardson on 2/11/16.
  */
@@ -10,4 +15,5 @@ public abstract class Addressable {
     public void setBeginAddress(Address in){this.beginAddress = in;}
     public Address getEndAddress(){return endAddress;}
     public void setEndAddress(Address in){this.endAddress = in;}
+    public abstract Data[] getProcessedData();
 }

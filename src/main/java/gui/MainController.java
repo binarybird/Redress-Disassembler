@@ -4,28 +4,46 @@ import abi.generic.abi.ABI;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.MenuBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.dockfx.*;
 import org.dockfx.demo.DockFX;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Created by jamesrichardson on 2/15/16.
  */
 public class MainController extends AnchorPane {
+    public static final String CODEWINDOW_NAME = "Code Window";
+
+    private final static Logger LOGGER = Logger.getLogger(MainController.class.getName());
+    private static MainController mainController;
+    private static final Image dockImage = new Image(DockFX.class.getResource("docknode.png").toExternalForm());
+
     private ABI abi;
+    private CodePaneController codePaneController;
+    private MenuBarController menuBarController;
+    private DockNode codePaneDock;
+    private Stage primaryStage;
+
     @FXML
     private AnchorPane content;
+    @FXML
+    private MenuBar menuBar;
 
+    public static MainController getSharedMainController(){
+        if(mainController == null) {
+            mainController = new MainController();
+        }
+        return mainController;
+    }
 
-    public MainController(ABI abi){
-        this.abi = abi;
+    private MainController(){
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainController.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -42,33 +60,27 @@ public class MainController extends AnchorPane {
         DockPane dockPane = new DockPane();
         dockPane.prefWidthProperty().bind(content.widthProperty());
         dockPane.prefHeightProperty().bind(content.heightProperty());
-        final Image dockImage = new Image(DockFX.class.getResource("docknode.png").toExternalForm());
 
-        TableView<String> tableView = new TableView<String>();
-        tableView.getColumns().addAll(new TableColumn<String, String>("A"), new TableColumn<String, String>("B"), new TableColumn<String, String>("C"));
+        codePaneController= new CodePaneController();
+        menuBarController = new MenuBarController(menuBar);
 
-        Pane paneLeft = new Pane();
-        paneLeft.setStyle("fx-background-color:blue;");
-
-        Pane paneRight = new Pane();
-        paneRight.setStyle("fx-background-color:red;");
-
-        DockNode tableDock = new DockNode(tableView,"MAIN",new ImageView(dockImage));
-        tableDock.setDockTitleBar(null);
-        tableDock.setPrefSize(300, 100);
-        tableDock.dock(dockPane, DockPos.BOTTOM);
-
-        DockNode paneLeftDoc = new DockNode(paneLeft,"LEFT",new ImageView(dockImage));
-        paneLeftDoc.setPrefSize(300, 100);
-        paneLeftDoc.dock(dockPane, DockPos.LEFT);
-
-        DockNode paneRightDoc = new DockNode(paneRight,"RIGHT",new ImageView(dockImage));
-        paneRightDoc.setPrefSize(300, 100);
-        paneRightDoc.dock(dockPane, DockPos.RIGHT);
+        codePaneDock = new DockNode(codePaneController,CODEWINDOW_NAME,new ImageView(dockImage));
+        codePaneDock.setDockTitleBar(null);
+        codePaneDock.setPrefSize(300, 100);
+        codePaneDock.dock(dockPane, DockPos.BOTTOM);
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         DockPane.initializeDefaultUserAgentStylesheet();
 
         content.getChildren().add(dockPane);
+
     }
+
+    public Stage getPrimaryStage(){return primaryStage;}
+    public void setPrimaryStage(Stage stage){this.primaryStage = stage;}
+    public ABI getABI(){return abi;}
+    public void setABI(ABI abi){this.abi = abi;}
+    public CodePaneController getCodePaneController(){return codePaneController;}
+    public MenuBarController getMenuBarController(){return menuBarController;}
+
 }

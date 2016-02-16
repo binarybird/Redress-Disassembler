@@ -1,6 +1,6 @@
 package abi.generic.memory;
 
-import util.B;
+import abi.generic.memory.data.DWord;
 
 import java.nio.ByteOrder;
 

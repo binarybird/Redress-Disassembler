@@ -1,8 +1,8 @@
 package abi.mach.parse;
 
 
-import abi.generic.memory.Address64;
-import abi.generic.memory.DWord;
+import abi.generic.memory.address.Address64;
+import abi.generic.memory.data.DWord;
 import abi.mach.Loader;
 import abi.mach.Mach;
 import abi.mach.MachO32;

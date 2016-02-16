@@ -1,8 +1,9 @@
 package abi.mach;
 
 import abi.generic.abi.*;
-import abi.generic.memory.*;
-import util.B;
+import abi.generic.memory.Addressable;
+import abi.generic.memory.Container;
+import abi.generic.memory.data.*;
 
 import java.nio.ByteOrder;
 
@@ -62,11 +63,25 @@ public interface Loader {
         public byte[] value;
     }
 
-    public class char16 {
+    public class char16 extends Data{
         public char16(byte[] in) {
+            super(in.length,ByteOrder.LITTLE_ENDIAN);
+            for(int i=0;i<in.length;i++){
+                container[i]=in[i];
+            }
             this.value = new String(in);
         }
         public String value;
+
+        @Override
+        public Container flipByteOrder() {
+            return null;
+        }
+
+        @Override
+        public Data clone() {
+            return null;
+        }
     }
 
     /*
@@ -74,20 +89,27 @@ public interface Loader {
      * 32-bit architectures.
      */
     public class mach_header extends Header {
-        public DWord magic;
+        public DWord magic = new DWord();
         public final static String magicComment = "/* mach magic number identifier */";
-        public DWord cputype;
+        public DWord cputype = new DWord();
         public final static String cputypeComment = "/* cpu specifier */";
-        public DWord cpusubtype;
+        public DWord cpusubtype = new DWord();
         public final static String cpusubtypeComment = "/* machine specifier */";
-        public DWord filetype;
+        public DWord filetype = new DWord();
         public final static String filetypeComment = "/* type of file */";
-        public DWord ncmds;
+        public DWord ncmds = new DWord();
         public final static String ncmdsComment = "/* number of load commands */";
-        public DWord sizeofcmds;
+        public DWord sizeofcmds = new DWord();
         public final static String sizeofcmdsComment = "/* the size of all the load commands */";
-        public DWord flags;
+        public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[] {magic.setComment(magicComment),cputype.setComment(cputypeComment),
+                    cpusubtype.setComment(cpusubtypeComment),filetype.setComment(filetypeComment),
+                    ncmds.setComment(ncmdsComment),sizeofcmds.setComment(sizeofcmdsComment),flags.setComment(flagsComment)};
+        }
     }
 
     ;
@@ -101,22 +123,30 @@ public interface Loader {
      * 64-bit architectures.
      */
     public class mach_header_64 extends Header {
-        public DWord magic;
+        public DWord magic = new DWord();
         public final static String magicComment = "/* mach magic number identifier */";
-        public DWord cputype;
+        public DWord cputype = new DWord();
         public final static String cputypeComment = "/* cpu specifier */";
-        public DWord cpusubtype;
+        public DWord cpusubtype = new DWord();
         public final static String cpusubtypeComment = "/* machine specifier */";
-        public DWord filetype;
+        public DWord filetype = new DWord();
         public final static String filetypeComment = "/* type of file */";
-        public DWord ncmds;
+        public DWord ncmds = new DWord();
         public final static String ncmdsComment = "/* number of load commands */";
-        public DWord sizeofcmds;
+        public DWord sizeofcmds = new DWord();
         public final static String sizeofcmdsComment = "/* the size of all the load commands */";
-        public DWord flags;
+        public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
-        public DWord reserved;
+        public DWord reserved = new DWord();
         public final static String reservedComment = "/* reserved */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[] {magic.setComment(magicComment),cputype.setComment(cputypeComment),
+                    cpusubtype.setComment(cpusubtypeComment),filetype.setComment(filetypeComment),
+                    ncmds.setComment(ncmdsComment),sizeofcmds.setComment(sizeofcmdsComment),
+                    flags.setComment(flagsComment),reserved.setComment(reservedComment)};
+        }
     }
 
     ;
@@ -257,8 +287,15 @@ public interface Loader {
      * padding zeroed like objects will compare byte for byte.
      */
     public class load_command extends Command {
-        public DWord cmd;		/* type of load command */
-        public DWord cmdsize;	/* total size of command in bytes */
+        public DWord cmd = new DWord();
+        public static final String cmdComment = "/* type of load command */";
+        public DWord cmdsize = new DWord();
+        public static final String cmdsizeComment = "/* total size of command in bytes */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[] {cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment)};
+        }
     }
 
     ;
@@ -353,9 +390,14 @@ public interface Loader {
      * Once again any padded bytes to bring the cmdsize field to a multiple
      * of 4 bytes must be zero.
      */
-    public class lc_str {
-        public DWord offset;
-        public byte[] ptr;
+    public class lc_str extends Addressable{
+        public DWord offset = new DWord();
+        public ArbitrarySize ptr = new ArbitrarySize();
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{offset,ptr};
+        }
     }
 
     /*
@@ -371,28 +413,38 @@ public interface Loader {
      * reflected in cmdsize.
      */
     public class segment_command extends Command { /* for 32-bit architectures */
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SEGMENT */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sizeof section public classs */";
-        public char16 segname;
+        public char16 segname = new char16(new byte[0]);
         public final static String segnameComment = "/* segment name */";
-        public DWord vmaddr;
+        public DWord vmaddr = new DWord();
         public final static String vmaddrComment = "/* memory address of this segment */";
-        public DWord vmsize;
+        public DWord vmsize = new DWord();
         public final static String vmsizeComment = "/* memory size of this segment */";
-        public DWord fileoff;
+        public DWord fileoff = new DWord();
         public final static String fileoffComment = "/* file offset of this segment */";
-        public DWord filesize;
+        public DWord filesize = new DWord();
         public final static String filesizeComment = "/* amount to map from the file */";
-        public DWord maxprot;
+        public DWord maxprot = new DWord();
         public final static String maxprotComment = "/* max VM protection */";
-        public DWord initprot;
+        public DWord initprot = new DWord();
         public final static String initprotComment = "/* initial VM protection */";
-        public DWord nsects;
+        public DWord nsects = new DWord();
         public final static String nsectsComment = "/* number of sections in segment */";
-        public DWord flags;
+        public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[] {cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    segname.setComment(segnameComment),vmaddr.setComment(vmaddrComment),
+                    vmsize.setComment(vmsizeComment),fileoff.setComment(fileoffComment),
+                    filesize.setComment(filesizeComment),maxprot.setComment(maxprotComment),
+                    initprot.setComment(initprotComment),
+                    nsects.setComment(nsectsComment),flags.setComment(flagsComment)};
+        }
     }
 
     ;
@@ -404,28 +456,38 @@ public interface Loader {
      * command and their size is reflected in cmdsize.
      */
     public class segment_command_64 extends Command { /* for 64-bit architectures */
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SEGMENT_64 */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sizeof section_64 public classs */";
-        public char16 segname;
+        public char16 segname = new char16(new byte[0]);
         public final static String segnameComment = "/* segment name */";
-        public QWord vmaddr;
+        public QWord vmaddr = new QWord();
         public final static String vmaddrComment = "/* memory address of this segment */";
-        public QWord vmsize;
+        public QWord vmsize = new QWord();
         public final static String vmsizeComment = "/* memory size of this segment */";
-        public QWord fileoff;
+        public QWord fileoff = new QWord();
         public final static String fileoffComment = "/* file offset of this segment */";
-        public QWord filesize;
+        public QWord filesize = new QWord();
         public final static String filesizeComment = "/* amount to map from the file */";
-        public DWord maxprot;
+        public DWord maxprot = new DWord();
         public final static String maxprotComment = "/* maximum VM protection */";
-        public DWord initprot;
+        public DWord initprot = new DWord();
         public final static String initprotComment = "/* initial VM protection */";
-        public DWord nsects;
+        public DWord nsects = new DWord();
         public final static String nsectsComment = "/* number of sections in segment */";
-        public DWord flags;
+        public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    segname.setComment(segnameComment),vmaddr.setComment(vmaddrComment),
+                    vmsize.setComment(vmsizeComment),fileoff.setComment(fileoffComment),
+                    filesize.setComment(filesizeComment),maxprot.setComment(maxprotComment),
+                    initprot.setComment(initprotComment),nsects.setComment(nsectsComment),
+                    flags.setComment(flagsComment)};
+        }
     }
 
     ;
@@ -475,58 +537,78 @@ public interface Loader {
      */
     public class section extends Section { /* for 32-bit architectures */
         //public section(Segment parent){}
-        public char16 sectname;
+        public char16 sectname = new char16(new byte[0]);
         public final static String sectnameComment = "/* name of this section */";
-        public char16 segname;
+        public char16 segname = new char16(new byte[0]);
         public final static String segnameComment = "/* segment this section goes in */";
-        public DWord addr;
+        public DWord addr = new DWord();
         public final static String addrComment = "/* memory address of this section */";
-        public DWord size;
+        public DWord size = new DWord();
         public final static String sizeComment = "/* size in bytes of this section */";
-        public DWord offset;
+        public DWord offset = new DWord();
         public final static String offsetComment = "/* file offset of this section */";
-        public DWord align;
+        public DWord align = new DWord();
         public final static String alignComment = "/* section alignment (power of 2) */";
-        public DWord reloff;
+        public DWord reloff = new DWord();
         public final static String reloffComment = "/* file offset of relocation entries */";
-        public DWord nreloc;
+        public DWord nreloc = new DWord();
         public final static String nrelocComment = "/* number of relocation entries */";
-        public DWord flags;
+        public DWord flags = new DWord();
         public final static String flagsComment = "/* flags (section type and attributes)*/";
-        public DWord reserved1;
+        public DWord reserved1 = new DWord();
         public final static String reserved1Comment = "/* reserved (for offset or index) */";
-        public DWord reserved2;
+        public DWord reserved2 = new DWord();
         public final static String reserved2Comment = "/* reserved (for count or sizeof) */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{sectname.setComment(sectnameComment),segname.setComment(segnameComment),
+                    addr.setComment(addrComment),size.setComment(sizeComment),
+                    offset.setComment(offsetComment),align.setComment(alignComment),
+                    reloff.setComment(reloffComment),nreloc.setComment(nrelocComment),
+                    flags.setComment(flagsComment),reserved1.setComment(reserved1Comment),
+                    reserved2.setComment(reserved2Comment)};
+        }
     }
 
     ;
 
     public class section_64 extends Section { /* for 64-bit architectures */
         //public section_64(Segment parent){}
-        public char16 sectname;
+        public char16 sectname = new char16(new byte[0]);
         public final static String sectnameComment = "/* name of this section */";
-        public char16 segname;
+        public char16 segname = new char16(new byte[0]);
         public final static String segnameComment = "/* segment this section goes in */";
-        public QWord addr;
+        public QWord addr = new QWord();
         public final static String addrComment = "/* memory address of this section */";
-        public QWord size;
+        public QWord size = new QWord();
         public final static String sizeComment = "/* size in bytes of this section */";
-        public DWord offset;
+        public DWord offset = new DWord();
         public final static String offsetComment = "/* file offset of this section */";
-        public DWord align;
+        public DWord align = new DWord();
         public final static String alignComment = "/* section alignment (power of 2) */";
-        public DWord reloff;
+        public DWord reloff = new DWord();
         public final static String reloffComment = "/* file offset of relocation entries */";
-        public DWord nreloc;
+        public DWord nreloc = new DWord();
         public final static String nrelocComment = "/* number of relocation entries */";
-        public DWord flags;
+        public DWord flags = new DWord();
         public final static String flagsComment = "/* flags (section type and attributes)*/";
-        public DWord reserved1;
+        public DWord reserved1 = new DWord();
         public final static String reserved1Comment = "/* reserved (for offset or index) */";
-        public DWord reserved2;
+        public DWord reserved2 = new DWord();
         public final static String reserved2Comment = "/* reserved (for count or sizeof) */";
-        public DWord reserved3;
+        public DWord reserved3 = new DWord();
         public final static String reserved3Comment = "/* reserved */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{sectname.setComment(sectnameComment),segname.setComment(segnameComment),
+                    addr.setComment(addrComment),size.setComment(sizeComment),
+                    offset.setComment(offsetComment),reloff.setComment(reloffComment),
+                    nreloc.setComment(nrelocComment),flags.setComment(flagsComment),
+                    reserved1.setComment(reserved1Comment),reserved2.setComment(reserved2Comment),
+                    reserved3.setComment(reserved3Comment)};
+        }
     }
 
     ;
@@ -706,13 +788,25 @@ public interface Loader {
      * minor version number.  The address of where the headers are loaded is in
      * header_addr. (THIS IS OBSOLETE and no longer supported).
      */
-    public class fvmlib {
-        public lc_str name;
+    public class fvmlib extends Addressable{
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* library's target pathname */";
-        public DWord minor_version;
+        public DWord minor_version = new DWord();
         public final static String minor_versionComment = "/* library's minor version number */";
-        public DWord header_addr;
+        public DWord header_addr = new DWord();
         public final static String header_addrComment = "/* library's header address */";
+
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =name.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<name.getProcessedData().length;i++){
+                ret[i]=name.getProcessedData()[i];
+            }
+            ret[name.getProcessedData().length]=minor_version.setComment(minor_versionComment);
+            ret[name.getProcessedData().length+1]=header_addr.setComment(header_addrComment);
+            return ret;
+        }
     }
 
     ;
@@ -725,12 +819,24 @@ public interface Loader {
      * (THIS IS OBSOLETE and no longer supported).
      */
     public class fvmlib_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_IDFVMLIB or LC_LOADFVMLIB */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public fvmlib fvmlib;
+        public fvmlib fvmlib = new fvmlib();
         public final static String fvmlibComment = "/* the library identification */";
+
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =fvmlib.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<fvmlib.getProcessedData().length;i++){
+                ret[i]=fvmlib.getProcessedData()[i];
+            }
+            ret[fvmlib.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[fvmlib.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -744,15 +850,28 @@ public interface Loader {
      * built and copied into user so it can be use to determined if the library used
      * at runtime is exactly the same as used to built the program.
      */
-    public class dylib {
-        public lc_str name;
+    public class dylib extends Addressable{
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* library's path name */";
-        public DWord timestamp;
+        public DWord timestamp = new DWord();
         public final static String timestampComment = "/* library's build time stamp */";
-        public DWord current_version;
+        public DWord current_version = new DWord();
         public final static String current_versionComment = "/* library's current version number */";
-        public DWord compatibility_version;
+        public DWord compatibility_version = new DWord();
         public final static String compatibility_versionComment = "/* library's compatibility vers number*/";
+
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =name.getProcessedData().length+3;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<name.getProcessedData().length;i++){
+                ret[i]=name.getProcessedData()[i];
+            }
+            ret[name.getProcessedData().length]=timestamp.setComment(timestampComment);
+            ret[name.getProcessedData().length+1]=current_version.setComment(current_versionComment);
+            ret[name.getProcessedData().length+2]=compatibility_version.setComment(compatibility_versionComment);
+            return ret;
+        }
     }
 
     ;
@@ -765,12 +884,23 @@ public interface Loader {
      * LC_REEXPORT_DYLIB) for each library it uses.
      */
     public class dylib_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB, LC_REEXPORT_DYLIB */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public dylib dylib;
+        public dylib dylib = new dylib();
         public final static String dylibComment = "/* the library identification */";
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =dylib.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<dylib.getProcessedData().length;i++){
+                ret[i]=dylib.getProcessedData()[i];
+            }
+            ret[dylib.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[dylib.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -786,12 +916,23 @@ public interface Loader {
      * following public classure.
      */
     public class sub_framework_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_FRAMEWORK */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes umbrella string */";
-        public lc_str umbrella;
+        public lc_str umbrella = new lc_str();
         public final static String umbrellaComment = "/* the umbrella framework name */";
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =umbrella.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<umbrella.getProcessedData().length;i++){
+                ret[i]=umbrella.getProcessedData()[i];
+            }
+            ret[umbrella.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[umbrella.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -806,12 +947,23 @@ public interface Loader {
      * where the bundle is built with "-client_name client_name".
      */
     public class sub_client_command extends Command {
-        public DWord cmd;
+        public DWord cmd  = new DWord();
         public final static String cmdComment = "/* LC_SUB_CLIENT */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes client string */";
-        public lc_str client;
+        public lc_str client = new lc_str();
         public final static String clientComment = "/* the client name */";
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =client.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<client.getProcessedData().length;i++){
+                ret[i]=client.getProcessedData()[i];
+            }
+            ret[client.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[client.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -830,12 +982,23 @@ public interface Loader {
      * The name of a sub_umbrella framework is recorded in the following public classure.
      */
     public class sub_umbrella_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_UMBRELLA */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sub_umbrella string */";
-        public lc_str sub_umbrella;
+        public lc_str sub_umbrella = new lc_str();
         public final static String sub_umbrellaComment = "/* the sub_umbrella framework name */";
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =sub_umbrella.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<sub_umbrella.getProcessedData().length;i++){
+                ret[i]=sub_umbrella.getProcessedData()[i];
+            }
+            ret[sub_umbrella.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[sub_umbrella.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -856,12 +1019,23 @@ public interface Loader {
      * For example /usr/lib/libobjc_profile.A.dylib would be recorded as "libobjc".
      */
     public class sub_library_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_LIBRARY */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sub_library string */";
-        public lc_str sub_library;
+        public lc_str sub_library = new lc_str();
         public final static String sub_libraryComment = "/* the sub_library name */";
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =sub_library.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<sub_library.getProcessedData().length;i++){
+                ret[i]=sub_library.getProcessedData()[i];
+            }
+            ret[sub_library.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[sub_library.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -876,16 +1050,31 @@ public interface Loader {
      * (linked_modules[N/8] >> N%8) & 1
      */
     public class prebound_dylib_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_PREBOUND_DYLIB */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes strings */";
-        public lc_str name;
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* library's path name */";
-        public DWord nmodules;
+        public DWord nmodules = new DWord();
         public final static String nmodulesComment = "/* number of modules in library */";
-        public lc_str linked_modules;
+        public lc_str linked_modules = new lc_str();
         public final static String linked_modulesComment = "/* bit vector of linked modules */";
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize = name.getProcessedData().length+linked_modules.getProcessedData().length+3;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<name.getProcessedData().length;i++){
+                ret[i]=name.getProcessedData()[i];
+            }
+            for(int i=0;i<linked_modules.getProcessedData().length;i++){
+                ret[i]=linked_modules.getProcessedData()[i];
+            }
+            ret[retSize]=cmd.setComment(cmdComment);
+            ret[retSize+1]=cmdsize.setComment(cmdsizeComment);
+            ret[retSize+2]=nmodules.setComment(nmodulesComment);
+            return ret;
+        }
     }
 
     ;
@@ -897,12 +1086,23 @@ public interface Loader {
      * A file can have at most one of these.
      */
     public class dylinker_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ID_DYLINKER or LC_LOAD_DYLINKER */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public lc_str name;
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* dynamic linker's path name */";
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =name.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<name.getProcessedData().length;i++){
+                ret[i]=name.getProcessedData()[i];
+            }
+            ret[name.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[name.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -929,10 +1129,15 @@ public interface Loader {
      * and environment variables are copied onto that stack.
      */
     public class thread_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_THREAD or  LC_UNIXTHREAD */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* total size of this command */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment)};
+        }
 	/* public DWord flavor		   flavor of thread state */
 	/* public DWord count		   count of longs in thread state */
 	/* public class XXX_thread_state state   thread state for this flavor */
@@ -950,26 +1155,35 @@ public interface Loader {
      * routines (used for C++ static conpublic classors) in the library.
      */
     public class routines_command extends Command { /* for 32-bit architectures */
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ROUTINES */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* total size of this command */";
-        public DWord init_address;
+        public DWord init_address = new DWord();
         public final static String init_addressComment = "/* address of initialization routine */";
-        public DWord init_module;
+        public DWord init_module = new DWord();
         public final static String init_moduleComment = "/* index into the module table that the init routine is defined in */";
-        public DWord reserved1;
+        public DWord reserved1 = new DWord();
         public final static String reserved1Comment = "/* reserved 1 */";
-        public DWord reserved2;
+        public DWord reserved2 = new DWord();
         public final static String reserved2Comment = "/* reserved 2 */";
-        public DWord reserved3;
+        public DWord reserved3 = new DWord();
         public final static String reserved3Comment = "/* reserved 3 */";
-        public DWord reserved4;
+        public DWord reserved4 = new DWord();
         public final static String reserved4Comment = "/* reserved 4 */";
-        public DWord reserved5;
+        public DWord reserved5 = new DWord();
         public final static String reserved5Comment = "/* reserved 5 */";
-        public DWord reserved6;
+        public DWord reserved6 = new DWord();
         public final static String reserved6Comment = "/* reserved 6 */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    init_address.setComment(init_addressComment),init_module.setComment(init_moduleComment),
+                    reserved1.setComment(reserved1Comment),reserved2.setComment(reserved2Comment),
+                    reserved3.setComment(reserved3Comment),reserved4.setComment(reserved4Comment),
+                    reserved5.setComment(reserved5Comment),reserved6.setComment(reserved6Comment)};
+        }
     }
 
     ;
@@ -978,26 +1192,35 @@ public interface Loader {
      * The 64-bit routines command.  Same use as above.
      */
     public class routines_command_64 extends Command { /* for 64-bit architectures */
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ROUTINES_64 */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* total size of this command */";
-        public QWord init_address;
+        public QWord init_address = new QWord();
         public final static String init_addressComment = "/* address of initialization routine */";
-        public QWord init_module;
+        public QWord init_module = new QWord();
         public final static String init_moduleComment = "/* index into the module table that the init routine is defined in */";
-        public QWord reserved1;
+        public QWord reserved1 = new QWord();
         public final static String reserved1Comment = "/* reserved 1 */";
-        public QWord reserved2;
+        public QWord reserved2 = new QWord();
         public final static String reserved2Comment = "/* reserved 2 */";
-        public QWord reserved3;
+        public QWord reserved3 = new QWord();
         public final static String reserved3Comment = "/* reserved 3 */";
-        public QWord reserved4;
+        public QWord reserved4 = new QWord();
         public final static String reserved4Comment = "/* reserved 4 */";
-        public QWord reserved5;
+        public QWord reserved5 = new QWord();
         public final static String reserved5Comment = "/* reserved 5 */";
-        public QWord reserved6;
+        public QWord reserved6 = new QWord();
         public final static String reserved6Comment = "/* reserved 6 */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    init_address.setComment(init_addressComment),init_module.setComment(init_moduleComment),
+                    reserved1.setComment(reserved1Comment),reserved2.setComment(reserved2Comment),
+                    reserved3.setComment(reserved3Comment),reserved4.setComment(reserved4Comment),
+                    reserved5.setComment(reserved5Comment),reserved6.setComment(reserved6Comment)};
+        }
     }
 
     ;
@@ -1008,18 +1231,25 @@ public interface Loader {
      * <nlist.h> and <stab.h>.
      */
     public class symtab_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SYMTAB */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class symtab_command) */";
-        public DWord symoff;
+        public DWord symoff = new DWord();
         public final static String symoffComment = "/* symbol table offset */";
-        public DWord nsyms;
+        public DWord nsyms = new DWord();
         public final static String nsymsComment = "/* number of symbol table entries */";
-        public DWord stroff;
+        public DWord stroff = new DWord();
         public final static String stroffComment = "/* string table offset */";
-        public DWord strsize;
+        public DWord strsize = new DWord();
         public final static String strsizeComment = "/* string table size in bytes */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    symoff.setComment(symoffComment),nsyms.setComment(nsymsComment),
+                    stroff.setComment(stroffComment),strsize.setComment(strsizeComment)};
+        }
     }
 
     ;
@@ -1065,9 +1295,9 @@ public interface Loader {
      * off the section public classures.
      */
     public class dysymtab_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_DYSYMTAB */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class dysymtab_command) */";
 
         /*
@@ -1085,19 +1315,19 @@ public interface Loader {
          * binding (indirectly through the module table and the reference symbol
          * table when this is a dynamically linked shared library file).
          */
-        public DWord ilocalsym;
+        public DWord ilocalsym = new DWord();
         public final static String ilocalsymComment = "/* index to local symbols */";
-        public DWord nlocalsym;
+        public DWord nlocalsym = new DWord();
         public final static String nlocalsymComment = "/* number of local symbols */";
 
-        public DWord iextdefsym;
+        public DWord iextdefsym = new DWord();
         public final static String iextdefsymComment = "/* index to externally defined symbols */";
-        public DWord nextdefsym;
+        public DWord nextdefsym = new DWord();
         public final static String nextdefsymComment = "/* number of externally defined symbols */";
 
-        public DWord iundefsym;
+        public DWord iundefsym = new DWord();
         public final static String iundefsymComment = "/* index to undefined symbols */";
-        public DWord nundefsym;
+        public DWord nundefsym = new DWord();
         public final static String nundefsymComment = "/* number of undefined symbols */";
 
         /*
@@ -1108,9 +1338,9 @@ public interface Loader {
          * library file.  For executable and object modules the defined external
          * symbols are sorted by name and is use as the table of contents.
          */
-        public DWord tocoff;
+        public DWord tocoff = new DWord();
         public final static String tocoffComment = "/* file offset to table of contents */";
-        public DWord ntoc;
+        public DWord ntoc = new DWord();
         public final static String ntocComment = "/* number of entries in table of contents */";
 
         /*
@@ -1122,9 +1352,9 @@ public interface Loader {
          * shared library file.  For executable and object modules the file only
          * contains one module so everything in the file belongs to the module.
          */
-        public DWord modtaboff;
+        public DWord modtaboff = new DWord();
         public final static String modtaboffComment = "/* file offset to module table */";
-        public DWord nmodtab;
+        public DWord nmodtab = new DWord();
         public final static String nmodtabComment = "/* number of module table entries */";
 
         /*
@@ -1136,9 +1366,9 @@ public interface Loader {
          * executable and object modules the defined external symbols and the
          * undefined external symbols indicates the external references.
          */
-        public DWord extrefsymoff;
+        public DWord extrefsymoff = new DWord();
         public final static String extrefsymoffComment = "/* offset to referenced symbol table */";
-        public DWord nextrefsyms;
+        public DWord nextrefsyms = new DWord();
         public final static String nextrefsymsComment = "/* number of referenced symbol table entries */";
 
         /*
@@ -1151,9 +1381,9 @@ public interface Loader {
          * the symbol table to the symbol that the pointer or stub is referring to.
          * The indirect symbol table is ordered to match the entries in the section.
          */
-        public DWord indirectsymoff;
+        public DWord indirectsymoff = new DWord();
         public final static String indirectsymoffComment = "/* file offset to the indirect symbol table */";
-        public DWord nindirectsyms;
+        public DWord nindirectsyms = new DWord();
         public final static String nindirectsymsComment = "/* number of indirect symbol table entries */";
 
         /*
@@ -1183,9 +1413,9 @@ public interface Loader {
          * remaining external relocation entries for them (for merged sections
          * remaining relocation entries must be local).
          */
-        public DWord extreloff;
+        public DWord extreloff = new DWord();
         public final static String extreloffComment = "/* offset to external relocation entries */";
-        public DWord nextrel;
+        public DWord nextrel = new DWord();
         public final static String nextrelComment = "/* number of external relocation entries */";
 
         /*
@@ -1193,11 +1423,24 @@ public interface Loader {
          * grouped by their module since they are only used if the object is moved
          * from it staticly link edited address).
          */
-        public DWord locreloff;
+        public DWord locreloff = new DWord();
         public final static String locreloffComment = "/* offset to local relocation entries */";
-        public DWord nlocrel;
+        public DWord nlocrel = new DWord();
         public final static String nlocrelComment = "/* number of local relocation entries */";
 
+        @Override
+        public Data[] getProcessedData() {//TODO - dups
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    ilocalsym.setComment(ilocalsymComment),nlocalsym.setComment(nlocalsymComment),
+                    iextdefsym.setComment(iextdefsymComment),nextrefsyms.setComment(nextrefsymsComment),
+                    iundefsym.setComment(iundefsymComment),nundefsym.setComment(nundefsymComment),
+                    tocoff.setComment(tocoffComment),ntoc.setComment(ntocComment),
+                    modtaboff.setComment(modtaboffComment),nmodtab.setComment(nmodtabComment),
+                    extrefsymoff.setComment(extrefsymoffComment),nextrefsyms.setComment(nextrefsymsComment),
+                    indirectsymoff.setComment(indirectsymoffComment),nindirectsyms.setComment(nindirectsymsComment),
+                    extreloff.setComment(extreloffComment),nextrel.setComment(nextrelComment),
+                    locreloff.setComment(locreloffComment),nlocrel.setComment(nlocrelComment)};
+        }
     }
 
     ;
@@ -1214,78 +1457,105 @@ public interface Loader {
 
 
     /* a table of contents entry */
-    public class dylib_table_of_contents {
-        public DWord symbol_index;
+    public class dylib_table_of_contents extends Addressable{
+        public DWord symbol_index = new DWord();
         public final static String symbol_indexComment = "/* the defined external symbol (index into the symbol table) */";
-        public DWord module_index;
+        public DWord module_index = new DWord();
         public final static String module_indexComment = "/* index into the module table this symbol is defined in */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{symbol_index.setComment(symbol_indexComment),module_index.setComment(module_indexComment)};
+        }
     }
 
     ;
 
     /* a module table entry */
-    public class dylib_module {
-        public DWord module_name;
+    public class dylib_module extends Addressable{
+        public DWord module_name = new DWord();
         public final static String module_nameComment = "/* the module name (index into string table) */";
 
-        public DWord iextdefsym;
+        public DWord iextdefsym = new DWord();
         public final static String iextdefsymComment = "/* index into externally defined symbols */";
-        public DWord nextdefsym;
+        public DWord nextdefsym = new DWord();
         public final static String nextdefsymComment = "/* number of externally defined symbols */";
-        public DWord irefsym;
+        public DWord irefsym = new DWord();
         public final static String irefsymComment = "/* index into reference symbol table */";
-        public DWord nrefsym;
+        public DWord nrefsym = new DWord();
         public final static String nrefsymComment = "/* number of reference symbol table entries */";
-        public DWord ilocalsym;
+        public DWord ilocalsym = new DWord();
         public final static String ilocalsymComment = "/* index into symbols for local symbols */";
-        public DWord nlocalsym;
+        public DWord nlocalsym = new DWord();
         public final static String nlocalsymComment = "/* number of local symbols */";
 
-        public DWord iextrel;
+        public DWord iextrel = new DWord();
         public final static String iextrelComment = "/* index into external relocation entries */";
-        public DWord nextrel;
+        public DWord nextrel = new DWord();
         public final static String nextrelComment = "/* number of external relocation entries */";
 
-        public DWord iinit_iterm;
+        public DWord iinit_iterm = new DWord();
         public final static String iinit_itermComment = "/* low 16 bits are the index into the init section, high 16 bits are the index into the term section */";
-        public DWord ninit_nterm;
+        public DWord ninit_nterm = new DWord();
         public final static String ninit_ntermComment = "/* low 16 bits are the number of init section entries, high 16 bits are the number of term section entries */";
-        public DWord objc_module_info_addr;
+        public DWord objc_module_info_addr = new DWord();
         public final static String objc_module_info_addrComment = "/* for this module address of the start of the (__OBJC,__module_info) section */";
-        public DWord objc_module_info_size;
+        public DWord objc_module_info_size = new DWord();
         public final static String objc_module_info_sizeComment = "/* for this module size of the (__OBJC,__module_info) section */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{module_name.setComment(module_nameComment),iextdefsym.setComment(iextdefsymComment),
+                    nextdefsym.setComment(nextdefsymComment),irefsym.setComment(irefsymComment),
+                    ilocalsym.setComment(ilocalsymComment),nlocalsym.setComment(nlocalsymComment),
+                    iextrel.setComment(iextrelComment),nextrel.setComment(nextrelComment),
+                    iinit_iterm.setComment(iinit_itermComment),ninit_nterm.setComment(ninit_ntermComment),
+                    objc_module_info_addr.setComment(objc_module_info_addrComment),
+                    objc_module_info_size.setComment(objc_module_info_sizeComment),nrefsym.setComment(nrefsymComment)};
+        }
     }
 
     ;
 
     /* a 64-bit module table entry */
-    public class dylib_module_64 {
-        public DWord module_name;
+    public class dylib_module_64 extends Addressable{
+        public DWord module_name = new DWord();
         public final static String module_nameComment = "/* the module name (index into string table) */";
-        public DWord iextdefsym;
+        public DWord iextdefsym = new DWord();
         public final static String iextdefsymComment = "/* index into externally defined symbols */";
-        public DWord nextdefsym;
+        public DWord nextdefsym = new DWord();
         public final static String nextdefsymComment = "/* number of externally defined symbols */";
-        public DWord irefsym;
+        public DWord irefsym = new DWord();
         public final static String irefsymComment = "/* index into reference symbol table */";
-        public DWord nrefsym;
+        public DWord nrefsym = new DWord();
         public final static String nrefsymComment = "/* number of reference symbol table entries */";
-        public DWord ilocalsym;
+        public DWord ilocalsym = new DWord();
         public final static String ilocalsymComment = "/* index into symbols for local symbols */";
-        public DWord nlocalsym;
+        public DWord nlocalsym = new DWord();
         public final static String nlocalsymComment = "/* number of local symbols */";
-        public DWord iextrel;
+        public DWord iextrel = new DWord();
         public final static String iextrelComment = "/* index into external relocation entries */";
-        public DWord nextrel;
+        public DWord nextrel = new DWord();
         public final static String nextrelComment = "/* number of external relocation entries */";
-        public DWord iinit_iterm;
+        public DWord iinit_iterm = new DWord();
         public final static String iinit_itermComment = "/* low 16 bits are the index into the init section, high 16 bits are the index into the term section */";
-        public DWord ninit_nterm;
+        public DWord ninit_nterm = new DWord();
         public final static String ninit_ntermComment = "/* low 16 bits are the number of init section entries, high 16 bits are the number of term section entries */";
-        public DWord objc_module_info_size;
+        public DWord objc_module_info_size = new DWord();
         public final static String objc_module_info_sizeComment = "/* for this module size of the (__OBJC,__module_info) section */";
-        public QWord objc_module_info_addr;
+        public QWord objc_module_info_addr = new QWord();
         public final static String objc_module_info_addrComment = "/* for this module address of the start of the (__OBJC,__module_info) section */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{module_name.setComment(module_nameComment),iextdefsym.setComment(iextdefsymComment),
+                    nextdefsym.setComment(nextdefsymComment),irefsym.setComment(irefsymComment),
+                    ilocalsym.setComment(ilocalsymComment),nlocalsym.setComment(nlocalsymComment),
+                    iextrel.setComment(iextrelComment),nextrel.setComment(nextrelComment),
+                    iinit_iterm.setComment(iinit_itermComment),ninit_nterm.setComment(ninit_ntermComment),
+                    objc_module_info_addr.setComment(objc_module_info_addrComment),
+                    objc_module_info_size.setComment(objc_module_info_sizeComment),nrefsym.setComment(nrefsymComment)};
+        }
     }
 
     ;
@@ -1298,12 +1568,16 @@ public interface Loader {
      * reference that is being made.  The constants for the flags are defined in
      * <mach-o/nlist.h> as they are also used for symbol table entries.
      */
-    public class dylib_reference {
-        public DWord isym;
+    public class dylib_reference extends Addressable{
+        public DWord isym = new DWord();
         public final static String isymComment = "/* index into the symbol table */";
-        public DWord flags;
+        public DWord flags = new DWord();
         public final static String flagsComment = "/* flags to indicate the type of reference */";
 
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{isym.setComment(isymComment),flags.setComment(flagsComment)};
+        }
     }
 
     ;
@@ -1313,14 +1587,20 @@ public interface Loader {
      * two-level namespace lookup hints table.
      */
     public class twolevel_hints_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_TWOLEVEL_HINTS */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class twolevel_hints_command) */";
-        public DWord offset;
+        public DWord offset = new DWord();
         public final static String offsetComment = "/* offset to the hint table */";
-        public DWord nhints;
+        public DWord nhints = new DWord();
         public final static String nhintsComment = "/* number of hints in the hint table */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    offset.setComment(offsetComment),nhints.setComment(nhintsComment)};
+        }
     }
 
     ;
@@ -1341,11 +1621,16 @@ public interface Loader {
      * library's table of contents.  This is used as the starting point of the
      * binary search or a directed linear search.
      */
-    public class twolevel_hint {
-        public DWord isub_image;
+    public class twolevel_hint extends Command{
+        public DWord isub_image = new DWord();
         public final static String isub_imageComment = "/* index into the sub images */";
-        public DWord itoc;
+        public DWord itoc = new DWord();
         public final static String itocComment = "/* index into the table of contents */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{isub_image.setComment(isub_imageComment),itoc.setComment(itocComment)};
+        }
     }
 
     ;
@@ -1361,12 +1646,18 @@ public interface Loader {
      * input file.
      */
     public class prebind_cksum_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_PREBIND_CKSUM */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class prebind_cksum_command) */";
-        public DWord cksum;
+        public DWord cksum = new DWord();
         public final static String cksumComment = "/* the check sum or zero */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    cksum.setComment(cksumComment)};
+        }
     }
 
     ;
@@ -1376,12 +1667,18 @@ public interface Loader {
      * identifies an object produced by the static link editor.
      */
     public class uuid_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_UUID */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class uuid_command) */";
-        public byte[] uuid = new byte[16];
+        public char16 uuid = new char16(new byte[0]);
         public final static String uuidComment = "/* the 128-bit uuid */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    uuid.setComment(uuidComment)};
+        }
     }
 
     ;
@@ -1391,12 +1688,23 @@ public interface Loader {
      * the current run path used to find @rpath prefixed dylibs.
      */
     public class rpath_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_RPATH */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes string */";
-        public lc_str path;
+        public lc_str path = new lc_str();
         public final static String pathComment = "/* path to add to run path */";
+
+        public Data[] getProcessedData() {
+            final int retSize = path.getProcessedData().length+2;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<path.getProcessedData().length;i++){
+                ret[i]=path.getProcessedData()[i];
+            }
+            ret[retSize]=cmd.setComment(cmdComment);
+            ret[retSize+1]=cmdsize.setComment(cmdsizeComment);
+            return ret;
+        }
     }
 
     ;
@@ -1406,14 +1714,20 @@ public interface Loader {
  * binary was built to run.
  */
     public class version_min_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_VERSION_MIN_MACOSX or LC_VERSION_MIN_IPHONEOS  */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(struct min_version_command) */";
-        public DWord version;
+        public DWord version = new DWord();
         public final static String versionComment = "/* X.Y.Z is encoded in nibbles xxxx.yy.zz */";
-        public DWord sdk;
+        public DWord sdk = new DWord();
         public final static String sdkComment = "/* X.Y.Z is encoded in nibbles xxxx.yy.zz */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    version.setComment(versionComment),sdk.setComment(sdkComment)};
+        }
     }
 
     ;
@@ -1424,14 +1738,20 @@ public interface Loader {
  * of data in the __LINKEDIT segment.
  */
     public class linkedit_data_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, or LC_DYLIB_CODE_SIGN_DRS */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class linkedit_data_command) */";
-        public DWord dataoff;
+        public DWord dataoff = new DWord();
         public final static String dataoffComment = "/* file offset of data in __LINKEDIT segment */";
-        public DWord datasize;
+        public DWord datasize = new DWord();
         public final static String datasizeComment = "/* file size of data in __LINKEDIT segment  */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    dataoff.setComment(dataoffComment),datasize.setComment(datasizeComment)};
+        }
     }
 
     ;
@@ -1441,16 +1761,23 @@ public interface Loader {
      * of an encrypted segment.
      */
     public class encryption_info_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ENCRYPTION_INFO */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class encryption_info_command) */";
-        public DWord cryptoff;
+        public DWord cryptoff = new DWord();
         public final static String cryptoffComment = "/* file offset of encrypted range */";
-        public DWord cryptsize;
+        public DWord cryptsize = new DWord();
         public final static String cryptsizeComment = "/* file size of encrypted range */";
-        public DWord cryptid;
+        public DWord cryptid = new DWord();
         public final static String cryptidComment = "/* which enryption system, 0 means not-encrypted yet */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    cryptoff.setComment(cryptoffComment),cryptsize.setComment(cryptsizeComment),
+                    cryptid.setComment(cryptidComment)};
+        }
     }
 
     ;
@@ -1464,9 +1791,9 @@ public interface Loader {
      * to interpret it.
      */
     public class dyld_info_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_DYLD_INFO or LC_DYLD_INFO_ONLY */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class dyld_info_command) */";
 
         /*
@@ -1480,9 +1807,9 @@ public interface Loader {
          * like "every n'th offset for m times" can be encoded in a few
          * bytes.
          */
-        public DWord rebase_off;
+        public DWord rebase_off = new DWord();
         public final static String rebase_offComment = "/* file offset to rebase info  */";
-        public DWord rebase_size;
+        public DWord rebase_size = new DWord();
         public final static String rebase_sizeComment = "/* size of rebase info   */";
 
         /*
@@ -1497,9 +1824,9 @@ public interface Loader {
          * like for runs of pointers initialzed to the same value can be
          * encoded in a few bytes.
          */
-        public DWord bind_off;
+        public DWord bind_off = new DWord();
         public final static String bind_offComment = "/* file offset to binding info   */";
-        public DWord bind_size;
+        public DWord bind_size = new DWord();
         public final static String bind_sizeComment = "/* size of binding info  */";
 
         /*
@@ -1517,9 +1844,9 @@ public interface Loader {
          * that is detected when the weak_bind information is processed
          * and the call to operator new is then rebound.
          */
-        public DWord weak_bind_off;
+        public DWord weak_bind_off = new DWord();
         public final static String weak_bind_offComment = "/* file offset to weak binding info   */";
-        public DWord weak_bind_size;
+        public DWord weak_bind_size = new DWord();
         public final static String weak_bind_sizeComment = "/* size of weak binding info  */";
 
         /*
@@ -1534,9 +1861,9 @@ public interface Loader {
          * the offset to lazy_bind_off to get the information on what
          * to bind.
          */
-        public DWord lazy_bind_off;
+        public DWord lazy_bind_off = new DWord();
         public final static String lazy_bind_offComment = "/* file offset to lazy binding info */";
-        public DWord lazy_bind_size;
+        public DWord lazy_bind_size = new DWord();
         public final static String lazy_bind_sizeComment = "/* size of lazy binding infs */";
 
         /*
@@ -1564,10 +1891,20 @@ public interface Loader {
          * edge points to.
          *
          */
-        public DWord export_off;
+        public DWord export_off = new DWord();
         public final static String export_offComment = "/* file offset to lazy binding info */";
-        public DWord export_size;
+        public DWord export_size = new DWord();
         public final static String export_sizeComment = "/* size of lazy binding infs */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    rebase_off.setComment(rebase_offComment),rebase_size.setComment(rebase_sizeComment),
+                    bind_off.setComment(bind_offComment),bind_size.setComment(bind_sizeComment),
+                    weak_bind_off.setComment(weak_bind_offComment),weak_bind_size.setComment(weak_bind_sizeComment),
+                    lazy_bind_off.setComment(lazy_bind_offComment),lazy_bind_size.setComment(lazy_bind_sizeComment),
+                    export_off.setComment(export_offComment),export_size.setComment(export_sizeComment)};
+        }
     }
 
     ;
@@ -1648,14 +1985,20 @@ public interface Loader {
      * zeroed. (THIS IS OBSOLETE and no longer supported).
      */
     public class symseg_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SYMSEG */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class symseg_command) */";
-        public DWord offset;
+        public DWord offset = new DWord();
         public final static String offsetComment = "/* symbol segment offset */";
-        public DWord size;
+        public DWord size = new DWord();
         public final static String sizeComment = "/* symbol segment size in bytes */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    offset.setComment(offsetComment),size.setComment(sizeComment)};
+        }
     }
 
     ;
@@ -1667,10 +2010,15 @@ public interface Loader {
      * (THIS IS OBSOLETE and no longer supported).
      */
     public class ident_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_IDENT */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* strings that follow this command */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment)};
+        }
     }
 
     ;
@@ -1682,14 +2030,27 @@ public interface Loader {
      * memory).
      */
     public class fvmfile_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_FVMFILE */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public lc_str name;
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* files pathname */";
-        public DWord header_addr;
+        public DWord header_addr = new DWord();
         public final static String header_addrComment = "/* files virtual address */";
+
+        @Override
+        public Data[] getProcessedData() {
+            final int retSize =name.getProcessedData().length+3;
+            Data[] ret = new Data[retSize];
+            for(int i=0;i<name.getProcessedData().length;i++){
+                ret[i]=name.getProcessedData()[i];
+            }
+            ret[name.getProcessedData().length]=cmd.setComment(cmdComment);
+            ret[name.getProcessedData().length+1]=cmdsize.setComment(cmdsizeComment);
+            ret[name.getProcessedData().length+2]=header_addr.setComment(header_addrComment);
+            return ret;
+        }
     }
 
     ;
@@ -1702,14 +2063,20 @@ public interface Loader {
      * field will contain the stack size need for the main thread.
      */
     public class entry_point_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_MAIN only used in MH_EXECUTE filetypes */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* 24 */";
-        public QWord entryoff;
+        public QWord entryoff = new QWord();
         public final static String entryoffComment = "/* file (__TEXT) offset of main() */";
-        public QWord stacksize;
+        public QWord stacksize = new QWord();
         public final static String stacksizeComment = "/* if not zero, initial stack size */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    entryoff.setComment(entryoffComment),stacksize.setComment(stacksizeComment)};
+        }
     }
 
     ;
@@ -1720,12 +2087,18 @@ public interface Loader {
      * the version of the sources used to build the binary.
      */
     public class source_version_command extends Command {
-        public DWord cmd;
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SOURCE_VERSION */";
-        public DWord cmdsize;
+        public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* 16 */";
-        public QWord version;
+        public QWord version = new QWord();
         public final static String versionComment = "/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
+                    version.setComment(versionComment)};
+        }
     }
 
     ;
@@ -1737,13 +2110,19 @@ public interface Loader {
      * describes a range of data in a code section.  This load command
      * is only used in final linked images.
      */
-    public class data_in_code_entry {
-        public DWord offset;
+    public class data_in_code_entry extends Addressable{
+        public DWord offset = new DWord();
         public final static String offsetComment = "/* from mach_header to start of data range*/";
-        public Word length;
+        public Word length = new Word();
         public final static String lengthComment = "/* number of bytes in data range */";
-        public Word kind;
+        public Word kind = new Word();
         public final static String kindComment = " /* a DICE_KIND_* value  */";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{offset.setComment(offsetComment),length.setComment(lengthComment),
+                    kind.setComment(kindComment)};
+        }
     }
 
     ;
@@ -1758,13 +2137,18 @@ public interface Loader {
      * Sections of type S_THREAD_LOCAL_VARIABLES contain an array
      * of tlv_descriptor structures.
      */
-    public class tlv_descriptor {
+    public class tlv_descriptor extends Addressable{
         byte[] tlv_descriptor;
         public final static String tlv_descriptorComment = "/*tlv_descriptor/*";
-        public QWord key;
+        public QWord key = new QWord();
         public final static String keyComment = "/*key*/";
-        public QWord offset;
+        public QWord offset = new QWord();
         public final static String offsetComment = "/*offset*/";
+
+        @Override
+        public Data[] getProcessedData() {
+            return new Data[]{key.setComment(keyComment),offset.setComment(offsetComment)};
+        }
     }
 
     ;

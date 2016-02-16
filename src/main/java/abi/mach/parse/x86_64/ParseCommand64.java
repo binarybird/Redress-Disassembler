@@ -1,7 +1,10 @@
 package abi.mach.parse.x86_64;
 
 
-import abi.generic.memory.*;
+import abi.generic.memory.address.Address;
+import abi.generic.memory.address.Address32;
+import abi.generic.memory.data.ArbitrarySize;
+import abi.generic.memory.data.DWord;
 import abi.mach.Loader;
 import abi.mach.MachO64;
 import util.B;
@@ -345,7 +348,7 @@ public class ParseCommand64 {
 
                 Loader.lc_str lc_str = new Loader.lc_str();
                 lc_str.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                lc_str.ptr = B.getRangeAtAddress(in.getRaw(), pointer, dylinker_command.getEndAddress());
+                lc_str.ptr = new ArbitrarySize(B.getRangeAtAddress(in.getRaw(), pointer, dylinker_command.getEndAddress()),ByteOrder.LITTLE_ENDIAN);
 
                 dylinker_command.name=lc_str;
 
@@ -467,7 +470,7 @@ public class ParseCommand64 {
                 uuid_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 byte[] tmp1 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
                 byte[] tmp2 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-                uuid_command.uuid = B.mergeBytes(tmp1,tmp2);
+                uuid_command.uuid = new Loader.char16(B.mergeBytes(tmp1,tmp2));
                 uuid_command.setEndAddress(pointer.clone());
 
                 in.getCommands().add(uuid_command);
@@ -540,7 +543,7 @@ public class ParseCommand64 {
         Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
         end.add(dylib_command.cmdsize);
 
-        lcstr.ptr = B.getRangeAtAddress(in.getRaw(), begin, end);
+        lcstr.ptr = new ArbitrarySize(B.getRangeAtAddress(in.getRaw(), begin, end),ByteOrder.LITTLE_ENDIAN);
 
         Loader.dylib l = new Loader.dylib();
         l.timestamp = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);

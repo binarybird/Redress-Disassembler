@@ -1,7 +1,7 @@
 package abi.mach.parse.x86_64;
 
-import abi.generic.memory.Address32;
-import abi.generic.memory.Address64;
+import abi.generic.memory.address.Address32;
+import abi.generic.memory.address.Address64;
 import abi.mach.Loader;
 import abi.mach.MachO64;
 import util.B;

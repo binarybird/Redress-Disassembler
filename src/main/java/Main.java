@@ -19,19 +19,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
-        Mach read = null;
-
-        try {
-            read = Reader.Read(new File("/Users/jamesrichardson/Desktop/reverse/a.out"));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        final MainController mainController = new MainController(read);
-
-        final Scene scene = new Scene(mainController);
+        final Scene scene = new Scene(MainController.getSharedMainController());
         primaryStage.setScene(scene);
         primaryStage.show();
+        MainController.getSharedMainController().setPrimaryStage(primaryStage);
     }
 }

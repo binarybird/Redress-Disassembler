@@ -1,16 +1,14 @@
-package abi.generic.memory;
+package abi.generic.memory.address;
 
 import util.B;
-
-import java.nio.ByteOrder;
 
 /**
  * Created by jamesrichardson on 2/11/16.
  */
-public class Address16 extends Address{
+public class Address32 extends Address{
 
-    public Address16(byte[] in){
-        super(2);
+    public Address32(byte[] in){
+        super(4);
         if(in.length != BYTES)
             return;
 
@@ -19,13 +17,15 @@ public class Address16 extends Address{
         }
 
     }
-    public Address16(byte mostSignificant, byte leastSignificant){
-        super(2);
+    public Address32(byte mostSignificant,byte three,byte two,byte leastSignificant){
+        super(4);
         container[0]=mostSignificant;
-        container[1]=leastSignificant;
+        container[1]=three;
+        container[2]=two;
+        container[3]=leastSignificant;
     }
-    public Address16(String in){
-        super(2);
+    public Address32(String in){
+        super(4);
         final byte[] tmp = B.stringToBytes(in);
         for(int i=0;i<BYTES;i++){
             container[i]=tmp[i];
@@ -33,19 +33,18 @@ public class Address16 extends Address{
     }
 
     @Override
-    public Address16 flipByteOrder() {
-
+    public Address32 flipByteOrder() {
         byte[] flip = new byte[BYTES];
         for(int i=0;i<BYTES;i++){
             flip[i] = container[(BYTES-1)-i];
         }
 
-        return new Address16(flip);
+        return new Address32(flip);
     }
 
     @Override
-    public Address16 clone() {
-        return new Address16(container);
+    public Address32 clone() {
+        return new Address32(container);
     }
 
 }

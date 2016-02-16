@@ -1,5 +1,6 @@
 package abi.generic.memory;
 
+import abi.generic.memory.address.Address;
 import util.B;
 
 import java.math.BigInteger;
@@ -12,7 +13,7 @@ import java.util.Arrays;
  * for enforcing some order on byte[]
  * instead of arrays around all willynilly
  */
-public abstract class Container {
+public abstract class Container implements Comparable<Container>{
 
     public final int BYTES;
     public final ByteOrder BYTEORDER;
@@ -231,6 +232,26 @@ public abstract class Container {
 
     @Override
     public String toString(){
-        return "0x"+getStringValue()+" "+BYTEORDER;
+        return "0x"+getStringValue();
+    }
+
+    @Override
+    public int compareTo(Container o) {
+        if(o == null)
+            return 0;
+
+        if(o.getDoubleValue() == this.getDoubleValue()){
+            return 0;
+        }
+
+        if(o.getDoubleValue() > this.getDoubleValue()){
+            return -1;
+        }
+
+        if(o.getDoubleValue() < this.getDoubleValue()){
+            return 1;
+        }
+
+        return 0;
     }
 }

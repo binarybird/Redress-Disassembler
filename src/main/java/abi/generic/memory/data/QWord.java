@@ -1,5 +1,6 @@
-package abi.generic.memory;
+package abi.generic.memory.data;
 
+import abi.generic.memory.address.Address;
 import util.B;
 
 import java.nio.ByteOrder;
@@ -7,9 +8,28 @@ import java.nio.ByteOrder;
 /**
  * Created by jamesrichardson on 2/11/16.
  */
-public class QWord extends Container{
+public class QWord extends Data{
     public static final Word SIZEOF_B = new Word("0x0008",ByteOrder.BIG_ENDIAN);
     public static final Word SIZEOF_L = new Word("0x0800",ByteOrder.LITTLE_ENDIAN);
+
+    public QWord(){
+        this(new byte[0],ByteOrder.BIG_ENDIAN);
+    }
+
+    public QWord(byte[] in,Address addr,ByteOrder order){
+        this(in,order);
+        this.address = addr;
+    }
+
+    public QWord(byte zero,byte one,byte two,byte three,byte four,byte five,byte six,byte seven,Address addr,ByteOrder order){
+        this(zero,one,two,three,four,five,six,seven,order);
+        this.address = addr;
+    }
+
+    public QWord(String in,Address addr,ByteOrder order){
+        this(in,order);
+        this.address = addr;
+    }
 
     public QWord(byte[] in,ByteOrder order){
         super(8,order);

@@ -1,5 +1,6 @@
-package abi.generic.memory;
+package abi.generic.memory.data;
 
+import abi.generic.memory.address.Address;
 import util.B;
 
 import java.nio.ByteOrder;
@@ -7,9 +8,28 @@ import java.nio.ByteOrder;
 /**
  * Created by jamesrichardson on 2/11/16.
  */
-public class Word extends Container {
+public class Word extends Data {
     public static final Word SIZEOF_B = new Word("0x0002",ByteOrder.BIG_ENDIAN);
     public static final Word SIZEOF_L = new Word("0x0200",ByteOrder.LITTLE_ENDIAN);
+
+    public Word(){
+        this(new byte[0],ByteOrder.BIG_ENDIAN);
+    }
+
+    public Word(byte[] in,Address addr,ByteOrder order){
+        this(in,order);
+        this.address = addr;
+    }
+
+    public Word(byte zero,byte one,Address addr,ByteOrder order){
+        this(zero,one,order);
+        this.address = addr;
+    }
+
+    public Word(String in,Address addr,ByteOrder order){
+        this(in,order);
+        this.address = addr;
+    }
 
     public Word(byte[] in,ByteOrder order){
         super(2,order);

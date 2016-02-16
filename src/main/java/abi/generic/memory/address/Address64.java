@@ -1,8 +1,6 @@
-package abi.generic.memory;
+package abi.generic.memory.address;
 
 import util.B;
-
-import java.nio.ByteOrder;
 
 /**
  * Created by jamesrichardson on 2/11/16.
@@ -52,4 +50,5 @@ public class Address64 extends Address {
     public Address64 clone() {
         return new Address64(container);
     }
+
 }
