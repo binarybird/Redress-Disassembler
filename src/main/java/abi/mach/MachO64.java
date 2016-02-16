@@ -3,8 +3,7 @@ package abi.mach;
 import abi.generic.abi.*;
 import abi.generic.memory.data.Data;
 
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Created by jamesrichardson on 2/10/16.
@@ -23,10 +22,15 @@ public class MachO64 extends Mach{
     }
 
     @Override
-    public HashSet<Data> getProcessedData() {
-        final HashSet<Data> processedData = new HashSet<>();
+    public ArrayList<Data> getProcessedData() {
+        final ArrayList<Data> processedData = new ArrayList<>();
 
-        return null;
+        processedData.addAll(Arrays.asList(mach_header_64.getProcessedData()));
+        commands.forEach(e -> processedData.addAll(Arrays.asList(e.getProcessedData())));
+        segments.forEach(e -> processedData.addAll(Arrays.asList(e.getProcessedData())));
+        sections.forEach(e -> processedData.addAll(Arrays.asList(e.getProcessedData())));
+
+        return processedData;
     }
 
     @Override

@@ -240,15 +240,15 @@ public abstract class Container implements Comparable<Container>{
         if(o == null)
             return 0;
 
-        if(o.getDoubleValue() == this.getDoubleValue()){
+        if(o.getIntValue() == this.getIntValue()){
             return 0;
         }
 
-        if(o.getDoubleValue() > this.getDoubleValue()){
+        if(o.getIntValue() > this.getIntValue()){
             return -1;
         }
 
-        if(o.getDoubleValue() < this.getDoubleValue()){
+        if(o.getIntValue() < this.getIntValue()){
             return 1;
         }
 

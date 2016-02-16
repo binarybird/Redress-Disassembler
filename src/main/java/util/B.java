@@ -69,11 +69,11 @@ public final class B {
         byte[] tmp = new byte[Double.BYTES];
         Arrays.fill(tmp, (byte)0x0);
         if(order == ByteOrder.BIG_ENDIAN) {
-            for (int i = tmp.length-1; i >= 0; i--) {
+            for (int i = in.length-1; i >= 0; i--) {
                 tmp[i] = in[i];
             }
         }else{
-            for (int i = 0; i <tmp.length; i++) {
+            for (int i = 0; i <in.length; i++) {
                 tmp[i] = in[i];
             }
         }

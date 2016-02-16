@@ -3,8 +3,10 @@ package abi.mach;
 import abi.generic.abi.*;
 import abi.generic.memory.data.Data;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 /**
  * Created by jamesrichardson on 2/10/16.
@@ -23,7 +25,7 @@ public class MachO32 extends Mach {
     }
 
     @Override
-    public HashSet<Data> getProcessedData() {
+    public ArrayList<Data> getProcessedData() {
         return null;
     }
 

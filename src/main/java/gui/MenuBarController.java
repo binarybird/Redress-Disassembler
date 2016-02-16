@@ -78,7 +78,7 @@ public class MenuBarController {
 
             ABI read = null;
             try {
-                read = Reader.Read(new File("/Users/jamesrichardson/Desktop/reverse/a.out"));
+                read = Reader.Read(toOpen);
             }catch(Exception e){
                 e.printStackTrace();
             }

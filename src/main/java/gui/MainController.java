@@ -1,6 +1,7 @@
 package gui;
 
 import abi.generic.abi.ABI;
+import abi.generic.memory.data.Data;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,10 @@ import org.dockfx.*;
 import org.dockfx.demo.DockFX;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -79,8 +84,29 @@ public class MainController extends AnchorPane {
     public Stage getPrimaryStage(){return primaryStage;}
     public void setPrimaryStage(Stage stage){this.primaryStage = stage;}
     public ABI getABI(){return abi;}
-    public void setABI(ABI abi){this.abi = abi;}
+    public void setABI(ABI abi){
+        this.abi = abi;
+        final ArrayList<Data> processedData = abi.getProcessedData();
+
+        final TreeSet<Data> sortedData = new TreeSet<Data>(new AddrComparator());
+        processedData.forEach(sortedData::add);
+
+        this.codePaneController.set(sortedData);
+
+        System.out.println();
+    }
     public CodePaneController getCodePaneController(){return codePaneController;}
     public MenuBarController getMenuBarController(){return menuBarController;}
+
+    public class AddrComparator implements Comparator<Data>{
+        @Override
+        public int compare(Data o1, Data o2) {
+            if(o1 == null || o2 == null)
+                return 0;
+            if(o1.getAddress() == null || o2.getAddress() == null)
+                return 0;
+            return o1.getAddress().compareTo(o2.getAddress());
+        }
+    }
 
 }

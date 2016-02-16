@@ -2,8 +2,10 @@ package abi.generic.abi;
 
 import abi.generic.memory.data.Data;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 /**
  * Created by jamesrichardson on 2/10/16.
@@ -16,7 +18,7 @@ public abstract class ABI {
         raw=binary;
     }
 
-    public abstract HashSet<Data> getProcessedData();
+    public abstract ArrayList<Data> getProcessedData();
     public abstract byte[] getRaw();
     public abstract Header getHeader();
     public abstract ABIType getArch();
