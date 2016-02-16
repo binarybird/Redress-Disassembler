@@ -74,6 +74,17 @@ public class MainController extends AnchorPane {
         codePaneDock.setPrefSize(300, 100);
         codePaneDock.dock(dockPane, DockPos.BOTTOM);
 
+        RightPane rp = new RightPane();
+        LeftPane lp = new LeftPane();
+
+        DockNode lpdn = new DockNode(lp);
+        lpdn.setPrefSize(300, 100);
+        lpdn.dock(dockPane, DockPos.LEFT);
+
+        DockNode rpdn = new DockNode(rp);
+        rpdn.setPrefSize(300, 100);
+        rpdn.dock(dockPane, DockPos.RIGHT);
+
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         DockPane.initializeDefaultUserAgentStylesheet();
 
