@@ -1,6 +1,7 @@
 package abi.generic.memory.data;
 
 import abi.generic.memory.address.Address;
+import abi.generic.memory.address.Address32;
 import util.B;
 
 import java.nio.ByteOrder;
@@ -13,26 +14,24 @@ public class Word extends Data {
     public static final Word SIZEOF_L = new Word("0x0200",ByteOrder.LITTLE_ENDIAN);
 
     public Word(){
-        this(new byte[0],ByteOrder.BIG_ENDIAN);
-    }
-
-    public Word(byte[] in,Address addr,ByteOrder order){
-        this(in,order);
-        this.address = addr;
-    }
-
-    public Word(byte zero,byte one,Address addr,ByteOrder order){
-        this(zero,one,order);
-        this.address = addr;
-    }
-
-    public Word(String in,Address addr,ByteOrder order){
-        this(in,order);
-        this.address = addr;
+        super(0, new Address32("0x00000000"), new Address32("0x00000000"), ByteOrder.BIG_ENDIAN);
     }
 
     public Word(byte[] in,ByteOrder order){
-        super(2,order);
+        this(in,new Address32("0x00000000"),order);
+    }
+
+    public Word(byte zero,byte one,ByteOrder order){
+        this(zero,one,new Address32("0x00000000"),order);
+    }
+
+    public Word(String in,ByteOrder order){
+        this(in,new Address32("0x00000000"),order);
+    }
+
+    public Word(byte[] in,Address beginAddress,ByteOrder order){
+        super(2,beginAddress,beginAddress.clone(),order);
+        this.endAddress.add(SIZEOF_B);
         if(in.length != BYTES){
             return;
         }
@@ -41,14 +40,16 @@ public class Word extends Data {
         }
     }
 
-    public Word(byte zero,byte one,ByteOrder order){
-        super(2,order);
+    public Word(byte zero,byte one,Address beginAddress,ByteOrder order){
+        super(2,beginAddress,beginAddress.clone(),order);
+        this.endAddress.add(SIZEOF_B);
         container[0]=zero;
         container[1]=one;
     }
 
-    public Word(String in,ByteOrder order){
-        super(2,order);
+    public Word(String in,Address beginAddress,ByteOrder order){
+        super(2,beginAddress,beginAddress.clone(),order);
+        this.endAddress.add(SIZEOF_B);
         final byte[] tmp = B.stringToBytes(in);
         if(tmp.length != BYTES){
             System.out.println("Size Overflow!");

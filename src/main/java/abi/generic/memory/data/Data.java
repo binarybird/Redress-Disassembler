@@ -1,5 +1,6 @@
 package abi.generic.memory.data;
 
+import abi.generic.memory.Addressable;
 import abi.generic.memory.Container;
 import abi.generic.memory.address.Address;
 
@@ -8,28 +9,43 @@ import java.nio.ByteOrder;
 /**
  * Created by jamesrichardson on 2/16/16.
  */
-public abstract class Data extends Container {
-    public Data(int bytes,ByteOrder order){
-        super(bytes, order);
-    }
+public abstract class Data extends Container implements Addressable{
 
-    public Data(int bytes,Address addr, ByteOrder order){
-        super(bytes, order);
-        this.address = addr;
-    }
+    final Address beginAddress;
+    final Address endAddress;
 
-    protected Address address;
-    protected String comment ="";
-    public void setAddress(Address in){this.address = in;}
-    public Address getAddress(){return address;}
-    public Data setComment(String comment){this.comment = comment;return this;}
-    public String getComment(){return comment;}
+    protected String comment;
+
+    public Data(int bytes,Address beginAddr,Address endAddress, ByteOrder order){
+        super(bytes, order);
+        this.beginAddress = beginAddr;
+        this.endAddress = endAddress;
+    }
 
     @Override
+    public Address getBeginAddress(){
+        return beginAddress;
+    }
+
+    @Override
+    public Address getEndAddress(){
+        return endAddress;
+    }
+
+    @Override
+    public void setComment(String comment){
+        this.comment = comment;
+    }
+    @Override
+    public String getComment(){
+        return comment;
+    }
+
     public abstract Data clone();
 
     @Override
     public String toString(){
         return "0x"+getStringValue()+" "+BYTEORDER;
     }
+
 }

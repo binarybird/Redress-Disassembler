@@ -1,6 +1,6 @@
 package abi.mach.parse.x86_64;
 
-import abi.generic.abi.Command;
+import abi.generic.abi.DataStructure;
 import abi.generic.memory.address.Address32;
 import abi.mach.Loader;
 import abi.mach.MachO64;
@@ -15,7 +15,7 @@ public class ParseSection64{
 
     private ParseSection64() {}
 
-    public static Loader.section_64 parse(MachO64 in,Address32 pointer,Command parent){
+    public static Loader.section_64 parse(MachO64 in,Address32 pointer,DataStructure parent){
 //        pointer.add(new Word("0x0050", ByteOrder.BIG_ENDIAN));
         Loader.section_64 section_64 = new Loader.section_64();
         section_64.setParentCommand(parent);

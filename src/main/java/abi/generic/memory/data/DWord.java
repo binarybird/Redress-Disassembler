@@ -1,6 +1,7 @@
 package abi.generic.memory.data;
 
 import abi.generic.memory.address.Address;
+import abi.generic.memory.address.Address32;
 import util.B;
 
 import java.nio.ByteOrder;
@@ -13,26 +14,24 @@ public class DWord extends Data {
     public static final Word SIZEOF_L = new Word("0x0400",ByteOrder.LITTLE_ENDIAN);
 
     public DWord(){
-        this(new byte[0],ByteOrder.BIG_ENDIAN);
-    }
-
-    public DWord(byte[] in,Address addr,ByteOrder order){
-        this(in, order);
-        this.address = addr;
-    }
-
-    public DWord(byte zero,byte one,byte two,byte three,Address addr,ByteOrder order){
-        this(zero,one,two,three,order);
-        this.address = addr;
-    }
-
-    public DWord(String in,Address addr,ByteOrder order){
-        this(in,order);
-        this.address = addr;
+        super(0, new Address32("0x00000000"), new Address32("0x00000000"), ByteOrder.BIG_ENDIAN);
     }
 
     public DWord(byte[] in,ByteOrder order){
-        super(4,order);
+        this(in,new Address32("0x00000000"),order);
+    }
+
+    public DWord(byte zero,byte one,byte two,byte three,ByteOrder order){
+        this(zero,one,two,three,new Address32("0x00000000"),order);
+    }
+
+    public DWord(String in,ByteOrder order){
+        this(in,new Address32("0x00000000"),order);
+    }
+
+    public DWord(byte[] in,Address beginAddress,ByteOrder order){
+        super(4,beginAddress,beginAddress.clone(),order);
+        this.endAddress.add(SIZEOF_B);
         if(in.length != BYTES){
             return;
         }
@@ -41,16 +40,18 @@ public class DWord extends Data {
         }
     }
 
-    public DWord(byte zero,byte one,byte two,byte three,ByteOrder order){
-        super(4,order);
+    public DWord(byte zero,byte one,byte two,byte three,Address beginAddress,ByteOrder order){
+        super(4,beginAddress,beginAddress.clone(),order);
+        this.endAddress.add(SIZEOF_B);
         container[0]=zero;
         container[1]=one;
         container[2]=two;
         container[3]=three;
     }
 
-    public DWord(String in,ByteOrder order){
-        super(4,order);
+    public DWord(String in,Address beginAddress,ByteOrder order){
+        super(4,beginAddress,beginAddress.clone(),order);
+        this.endAddress.add(SIZEOF_B);
         final byte[] tmp = B.stringToBytes(in);
         if(tmp.length != BYTES){
             System.out.println("Size Overflow!");

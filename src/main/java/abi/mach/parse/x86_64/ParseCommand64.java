@@ -3,7 +3,7 @@ package abi.mach.parse.x86_64;
 
 import abi.generic.memory.address.Address;
 import abi.generic.memory.address.Address32;
-import abi.generic.memory.data.ArbitrarySize;
+import abi.generic.memory.data.DataRange;
 import abi.generic.memory.data.DWord;
 import abi.mach.Loader;
 import abi.mach.MachO64;
@@ -66,6 +66,8 @@ public class ParseCommand64 {
                 linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.setEndAddress(pointer.clone());
+
+
 
                 in.getCommands().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_DYLD_ENVIRONMENT)) {
@@ -348,7 +350,7 @@ public class ParseCommand64 {
 
                 Loader.lc_str lc_str = new Loader.lc_str();
                 lc_str.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                lc_str.ptr = new ArbitrarySize(B.getRangeAtAddress(in.getRaw(), pointer, dylinker_command.getEndAddress()),ByteOrder.LITTLE_ENDIAN);
+                lc_str.ptr = new DataRange(B.getRangeAtAddress(in.getRaw(), pointer, dylinker_command.getEndAddress()),ByteOrder.LITTLE_ENDIAN);
 
                 dylinker_command.name=lc_str;
 
@@ -543,7 +545,7 @@ public class ParseCommand64 {
         Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
         end.add(dylib_command.cmdsize);
 
-        lcstr.ptr = new ArbitrarySize(B.getRangeAtAddress(in.getRaw(), begin, end),ByteOrder.LITTLE_ENDIAN);
+        lcstr.ptr = new DataRange(B.getRangeAtAddress(in.getRaw(), begin, end),ByteOrder.LITTLE_ENDIAN);
 
         Loader.dylib l = new Loader.dylib();
         l.timestamp = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
