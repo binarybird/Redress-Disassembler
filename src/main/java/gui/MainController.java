@@ -1,8 +1,11 @@
 package gui;
 
-import abi.generic.abi.ABI;
-import abi.generic.memory.data.Data;
+import abi.generic.ABI;
+import abi.memory.DataStructure;
+import abi.memory.data.Data;
 import javafx.application.Application;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.MenuBar;
@@ -14,10 +17,7 @@ import org.dockfx.*;
 import org.dockfx.demo.DockFX;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -29,6 +29,7 @@ public class MainController extends AnchorPane {
     private final static Logger LOGGER = Logger.getLogger(MainController.class.getName());
     private static MainController mainController;
     private static final Image dockImage = new Image(DockFX.class.getResource("docknode.png").toExternalForm());
+    private final SimpleBooleanProperty loadedProperty = new SimpleBooleanProperty(false);
 
     private ABI abi;
     private CodePaneController codePaneController;
@@ -59,7 +60,8 @@ public class MainController extends AnchorPane {
             throw new RuntimeException(exception);
         }
     }
-
+    RightPane rp;
+    LeftPane lp;
     @FXML
     public void initialize() {
         DockPane dockPane = new DockPane();
@@ -74,8 +76,8 @@ public class MainController extends AnchorPane {
         codePaneDock.setPrefSize(300, 100);
         codePaneDock.dock(dockPane, DockPos.BOTTOM);
 
-        RightPane rp = new RightPane();
-        LeftPane lp = new LeftPane();
+        rp = new RightPane();
+        lp = new LeftPane();
 
         DockNode lpdn = new DockNode(lp);
         lpdn.setPrefSize(300, 100);
@@ -91,21 +93,49 @@ public class MainController extends AnchorPane {
         content.getChildren().add(dockPane);
 
     }
+    public void registerLoadListener(ChangeListener<? super Boolean> in){
+        loadedProperty.addListener(in);
+    }
 
+    public boolean isLoaded(){return loadedProperty.get();}
     public Stage getPrimaryStage(){return primaryStage;}
     public void setPrimaryStage(Stage stage){this.primaryStage = stage;}
     public ABI getABI(){return abi;}
     public void setABI(ABI abi){
         this.abi = abi;
-        final ArrayList<Data> processedData = abi.getProcessedData();
+        final LinkedList<Data> processedData = getAllData(abi);
 
         final TreeSet<Data> sortedData = new TreeSet<Data>(new AddrComparator());
         processedData.forEach(sortedData::add);
 
-        this.codePaneController.set(sortedData);
+        this.codePaneController.set(sortedData,abi.getCompiledCodeBlocks());
+        this.loadedProperty.set(true);
 
-        System.out.println();
+
     }
+
+    public LinkedList<Data> getAllData(ABI abi){
+        final LinkedList<Data> ret = new LinkedList<>();
+        for(DataStructure s : abi.getChildren()){
+            ret.addAll(getAllData(s));
+        }
+        return ret;
+    }
+
+    private LinkedList<Data> getAllData(DataStructure dataStructure){
+        final LinkedList<Data> ret = new LinkedList<>();
+
+        if(dataStructure == null)
+            return ret;
+
+        ret.addAll(dataStructure.getStructureData());
+        for(DataStructure child : dataStructure.getChildren()){
+            ret.addAll(getAllData(child));
+        }
+
+        return ret;
+    }
+
     public CodePaneController getCodePaneController(){return codePaneController;}
     public MenuBarController getMenuBarController(){return menuBarController;}
 
@@ -114,9 +144,9 @@ public class MainController extends AnchorPane {
         public int compare(Data o1, Data o2) {
             if(o1 == null || o2 == null)
                 return 0;
-            if(o1.getAddress() == null || o2.getAddress() == null)
+            if(o1.getBeginAddress() == null || o2.getBeginAddress() == null)
                 return 0;
-            return o1.getAddress().compareTo(o2.getAddress());
+            return o1.getBeginAddress().compareTo(o2.getBeginAddress());
         }
     }
 

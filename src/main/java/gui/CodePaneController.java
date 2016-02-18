@@ -1,12 +1,11 @@
 package gui;
 
-import abi.generic.memory.address.Address;
-import abi.generic.memory.Container;
-import abi.generic.memory.data.Data;
+import abi.memory.data.CompiledText;
+import abi.memory.data.Data;
+import abi.memory.data.DataRange;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -17,7 +16,7 @@ import java.util.logging.Logger;
 /**
  * Created by jamesrichardson on 2/16/16.
  */
-public class CodePaneController extends TableView<CodePaneController.CodeSet> {
+public class CodePaneController extends TableView<CodeSet> {
     private final static Logger LOGGER = Logger.getLogger(CodePaneController.class.getName());
     private final TableColumn<CodeSet,String> addressColumn = new TableColumn<>("Address");
     private final TableColumn<CodeSet,String> codeColumn = new TableColumn<>("Code");
@@ -37,48 +36,22 @@ public class CodePaneController extends TableView<CodePaneController.CodeSet> {
         this.getColumns().addAll(addressColumn,codeColumn,commentColumn);
     }
 
-    public void set(TreeSet<Data> in){
+    public void set(TreeSet<Data> in,LinkedList<CompiledText> in2){
 
         List<CodeSet> tmp = new LinkedList<>();
         in.forEach(e-> tmp.add(new CodeSet(e)));
+
+        in2.forEach(e->{tmp.addAll(e.deCompileText());});
 
         final ObservableList<CodeSet> wrapped = FXCollections.<CodeSet>observableList(tmp);
 
         this.setItems(wrapped);
     }
 
-    public class CodeSet implements Comparable<Data>{
-
-        private final SimpleStringProperty address;
-        private final SimpleStringProperty code;
-        private final SimpleStringProperty comment;
-        private final Data data;
-
-        public CodeSet(Data in){
-            this.address = new SimpleStringProperty(in.getAddress().toString());
-            this.code = new SimpleStringProperty(in.toString());
-            this.comment = new SimpleStringProperty(in.getComment());
-            this.data=in;
-        }
-
-        public String getAddress(){return address.get();}
-        public void setAddress(String in){address.set(in);}
-        public String getCode(){return code.get();}
-        public void setCode(String in){code.set(in);}
-        public String getComment(){return comment.get();}
-        public void setComment(String in){comment.set(in);}
-
-        public Data getData(){
-            return data;
-        }
-
-        @Override
-        public int compareTo(Data o) {
-            if(o == null || o.getAddress() == null)
-                return 0;
-
-            return this.getData().getAddress().compareTo(o.getAddress());
-        }
+    public CodeSet initCodeSet(String address,String code,String comment,DataRange in){
+        return new CodeSet(address,code,comment,in);
     }
+
+
 
 }

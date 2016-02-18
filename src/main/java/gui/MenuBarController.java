@@ -1,8 +1,8 @@
 package gui;
 
-import abi.generic.abi.ABI;
-import abi.mach.Mach;
-import abi.mach.parse.Reader;
+import abi.generic.ABI;
+import abi.generic.Reader;
+
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -10,7 +10,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -72,7 +71,7 @@ public class MenuBarController {
 
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             File toOpen = fileChooser.showOpenDialog(MainController.getSharedMainController().getPrimaryStage());
-
+            toOpen = new File("/Users/jamesrichardson/Desktop/ReverseEngineering/a.out");
             if(toOpen == null)
                 return;
 

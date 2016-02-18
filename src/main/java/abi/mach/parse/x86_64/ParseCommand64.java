@@ -1,12 +1,14 @@
 package abi.mach.parse.x86_64;
 
 
-import abi.generic.memory.address.Address;
-import abi.generic.memory.address.Address32;
-import abi.generic.memory.data.DataRange;
-import abi.generic.memory.data.DWord;
+import abi.memory.DataStructure;
+import abi.memory.address.Address;
+import abi.memory.address.Address32;
+import abi.memory.data.DataRange;
+import abi.memory.data.DWord;
 import abi.mach.Loader;
 import abi.mach.MachO64;
+import abi.memory.data.QWord;
 import util.B;
 
 import java.nio.ByteOrder;
@@ -21,18 +23,27 @@ public class ParseCommand64 {
 
     private ParseCommand64() {}
 
-    public static void parse(MachO64 in) throws Exception{
+    public static void parse(MachO64 parent) throws Exception{
 
-        final DWord numberOfCommands = in.getHeader().ncmds;
-        final DWord sizeOfCommands = in.getHeader().sizeofcmds;
-        sizeOfCommands.add(in.getHeader().getEndAddress());
+        final DataStructure dataStructure = parent.getChildren().get(0);
+
+        if(dataStructure == null) {
+            LOGGER.log(Level.SEVERE, "Header must exist!");
+            return;
+        }
+
+        DWord sizeOfCommands = DWord.NULL;
+        if(dataStructure instanceof Loader.mach_header_64) {
+            sizeOfCommands = ((Loader.mach_header_64)dataStructure).sizeofcmds;
+            sizeOfCommands.add(dataStructure.getEndAddress());
+        }
 
         Address32 pointer = new Address32("0x00000020");
 
         int MAX_LIMIT = 0;
         while (MAX_LIMIT < 500) {
             MAX_LIMIT++;
-            final DWord command = B.getDWordAtAddress(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+            final DWord command = B.getDWordAtAddress(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
             if (pointer.equals(sizeOfCommands)) {
                 LOGGER.log(Level.INFO,"Load Command parsing complete");
@@ -44,229 +55,275 @@ public class ParseCommand64 {
             if(command.equals(Loader.LC_LOAD_UPWARD_DYLIB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_LOAD_UPWARD_DYLIB");
-                Loader.load_command load_command = new Loader.load_command();
-                load_command.setBeginAddress(pointer.clone());
+                Loader.load_command load_command = new Loader.load_command(parent);
 
-                in.getCommands().add(load_command);
+                load_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                load_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(load_command);
             }else if(command.equals(Loader.LC_VERSION_MIN_IPHONEOS)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_VERSION_MIN_IPHONEOS");
-                Loader.version_min_command version_min_command = new Loader.version_min_command();
-                version_min_command.setBeginAddress(pointer.clone());
+                Loader.version_min_command version_min_command = new Loader.version_min_command(parent);
 
-                in.getCommands().add(version_min_command);
+                version_min_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                version_min_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(version_min_command);
             }else if(command.equals(Loader.LC_FUNCTION_STARTS)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_FUNCTION_STARTS");
-                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
+                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command(parent);
 
                 linkedit_data_command.setBeginAddress(pointer.clone());
-                linkedit_data_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.setEndAddress(pointer.clone());
 
+//                addCodeRange32ToABI(parent,)
 
-
-                in.getCommands().add(linkedit_data_command);
+                parent.getChildren().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_DYLD_ENVIRONMENT)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_DYLD_ENVIRONMENT");
-                Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command();
-                dyld_info_command.setBeginAddress(pointer.clone());
+                Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command(parent);
 
-                in.getCommands().add(dyld_info_command);
+                dyld_info_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                dyld_info_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(dyld_info_command);
             }else if(command.equals(Loader.LC_MAIN)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_MAIN");
-                Loader.entry_point_command entry_point_command = new Loader.entry_point_command();
+                Loader.entry_point_command entry_point_command = new Loader.entry_point_command(parent);
 
                 entry_point_command.setBeginAddress(pointer.clone());
-                entry_point_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                entry_point_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                entry_point_command.entryoff = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                entry_point_command.stacksize = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                entry_point_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                entry_point_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                entry_point_command.entryoff = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                entry_point_command.stacksize = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 entry_point_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(entry_point_command);
+                parent.getChildren().add(entry_point_command);
             }else if(command.equals(Loader.LC_DATA_IN_CODE)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_DATA_IN_CODE");
-                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
+                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command(parent);
 
                 linkedit_data_command.setBeginAddress(pointer.clone());
-                linkedit_data_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(linkedit_data_command);
+                parent.getChildren().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_SOURCE_VERSION)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SOURCE_VERSION");
-                Loader.source_version_command source_version_command = new Loader.source_version_command();
+                Loader.source_version_command source_version_command = new Loader.source_version_command(parent);
 
                 source_version_command.setBeginAddress(pointer.clone());
-                source_version_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                source_version_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                source_version_command.version = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                source_version_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                source_version_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                source_version_command.version = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 source_version_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(source_version_command);
+                parent.getChildren().add(source_version_command);
             }else if(command.equals(Loader.LC_DYLIB_CODE_SIGN_DRS)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_DYLIB_CODE_SIGN_DRS");
-                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
+                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command(parent);
 
                 linkedit_data_command.setBeginAddress(pointer.clone());
-                linkedit_data_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                linkedit_data_command.datasize =B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                linkedit_data_command.datasize =B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(linkedit_data_command);
+                parent.getChildren().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_VERSION_MIN_MACOSX)){
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_VERSION_MIN_MACOSX");
-                Loader.version_min_command version_min_command = new Loader.version_min_command();
+                Loader.version_min_command version_min_command = new Loader.version_min_command(parent);
 
                 version_min_command.setBeginAddress(pointer.clone());
-                version_min_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                version_min_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                version_min_command.version = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                version_min_command.sdk = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                version_min_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                version_min_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                version_min_command.version = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                version_min_command.sdk = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 version_min_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(version_min_command);
+                parent.getChildren().add(version_min_command);
             }else if (command.equals(Loader.LC_REQ_DYLD)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_REQ_DYLD");
-                Loader.load_command load_command = new Loader.load_command();
-                load_command.setBeginAddress(pointer.clone());
+                Loader.load_command load_command = new Loader.load_command(parent);
 
-                in.getCommands().add(load_command);
+                load_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                load_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(load_command);
             }else if(command.equals(Loader.LC_DYLD_INFO_ONLY)){
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_DYLD_INFO_ONLY");
-                Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command();
+                Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command(parent);
 
                 dyld_info_command.setBeginAddress(pointer.clone());
-                dyld_info_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.rebase_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.rebase_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.weak_bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.weak_bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.lazy_bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.lazy_bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.export_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command.export_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.rebase_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.rebase_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.bind_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.bind_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.weak_bind_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.weak_bind_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.lazy_bind_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.lazy_bind_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.export_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command.export_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dyld_info_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(dyld_info_command);
+                parent.getChildren().add(dyld_info_command);
             }else if(command.equals(Loader.LC_REEXPORT_DYLIB)){
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_REEXPORT_DYLIB");
-                Loader.dylinker_command dylinker_command = new Loader.dylinker_command();
-                dylinker_command.setBeginAddress(pointer.clone());
+                Loader.dylinker_command dylinker_command = new Loader.dylinker_command(parent);
 
-                in.getCommands().add(dylinker_command);
+                dylinker_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                dylinker_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(dylinker_command);
             }else if(command.equals(Loader.LC_RPATH)){
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_RPATH");
-                Loader.rpath_command rpath_command = new Loader.rpath_command();
-                rpath_command.setBeginAddress(pointer.clone());
+                Loader.rpath_command rpath_command = new Loader.rpath_command(parent);
 
-                in.getCommands().add(rpath_command);
+                rpath_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                rpath_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(rpath_command);
             }else if(command.equals(Loader.LC_LOAD_WEAK_DYLIB)){
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_LOAD_WEAK_DYLIB");
-                Loader.load_command load_command = new Loader.load_command();
-                load_command.setBeginAddress(pointer.clone());
+                Loader.load_command load_command = new Loader.load_command(parent);
 
-                in.getCommands().add(load_command);
+                load_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                load_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(load_command);
             }else if (command.equals(Loader.LC_SEGMENT)){
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SEGMENT");
-                Loader.segment_command segment_command = new Loader.segment_command();
-                segment_command.setBeginAddress(pointer.clone());
+                Loader.segment_command segment_command = new Loader.segment_command(parent);
 
-                in.getCommands().add(segment_command);
+                segment_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                segment_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(segment_command);
 
             }else if (command.equals(Loader.LC_SYMTAB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SYMTAB");
-                Loader.symtab_command symtab_command = new Loader.symtab_command();
+                Loader.symtab_command symtab_command = new Loader.symtab_command(parent);
 
                 symtab_command.setBeginAddress(pointer.clone());
-                symtab_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                symtab_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                symtab_command.symoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                symtab_command.nsyms = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                symtab_command.stroff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                symtab_command.strsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.symoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.nsyms = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.stroff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                symtab_command.strsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 symtab_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(symtab_command);
+                parent.getChildren().add(symtab_command);
             } else if (command.equals(Loader.LC_SYMSEG)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SYMSEG");
-                Loader.symseg_command symseg_command = new Loader.symseg_command();
-                symseg_command.setBeginAddress(pointer.clone());
+                Loader.symseg_command symseg_command = new Loader.symseg_command(parent);
 
-                in.getCommands().add(symseg_command);
+                symseg_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                symseg_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(symseg_command);
                 
             } else if (command.equals(Loader.LC_THREAD)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_THREAD");
-                Loader.thread_command thread_command = new Loader.thread_command();
-                thread_command.setBeginAddress(pointer.clone());
+                Loader.thread_command thread_command = new Loader.thread_command(parent);
 
-                in.getCommands().add(thread_command);
+                thread_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                thread_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(thread_command);
                 
             } else if (command.equals(Loader.LC_UNIXTHREAD)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_UNIXTHREAD");
-                Loader.thread_command unix_thread_command = new Loader.thread_command();
-                unix_thread_command.setBeginAddress(pointer.clone());
+                Loader.thread_command unix_thread_command = new Loader.thread_command(parent);
 
-                in.getCommands().add(unix_thread_command);
+                unix_thread_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                unix_thread_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(unix_thread_command);
                 
             } else if (command.equals(Loader.LC_LOADFVMLIB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_LOADFVMLIB");
-                Loader.fvmlib_command fvmlib_command = new Loader.fvmlib_command();
-                fvmlib_command.setBeginAddress(pointer.clone());
+                Loader.fvmlib_command fvmlib_command = new Loader.fvmlib_command(parent);
 
-                in.getCommands().add(fvmlib_command);
+                fvmlib_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                fvmlib_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(fvmlib_command);
                 
             } else if (command.equals(Loader.LC_IDFVMLIB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_IDFVMLIB");
-                Loader.fvmlib_command fvmlib_command1 = new Loader.fvmlib_command();
-                fvmlib_command1.setBeginAddress(pointer.clone());
+                Loader.fvmlib_command fvmlib_command1 = new Loader.fvmlib_command(parent);
 
-                in.getCommands().add(fvmlib_command1);
+                fvmlib_command1.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                fvmlib_command1.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(fvmlib_command1);
                 
             } else if (command.equals(Loader.LC_IDENT)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_IDENT");
-                Loader.ident_command ident_command = new Loader.ident_command();
-                ident_command.setBeginAddress(pointer.clone());
+                Loader.ident_command ident_command = new Loader.ident_command(parent);
 
-                in.getCommands().add(ident_command);
+                ident_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                ident_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(ident_command);
                 
             } else if (command.equals(Loader.LC_FVMFILE)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_FVMFILE");
-                Loader.fvmfile_command fvmfile_command = new Loader.fvmfile_command();
-                fvmfile_command.setBeginAddress(pointer.clone());
+                Loader.fvmfile_command fvmfile_command = new Loader.fvmfile_command(parent);
 
-                in.getCommands().add(fvmfile_command);
+                fvmfile_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                fvmfile_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(fvmfile_command);
                 
             } else if (command.equals(Loader.LC_PREPAGE)) {
                 parsedSomething = true;
@@ -275,87 +332,91 @@ public class ParseCommand64 {
             } else if (command.equals(Loader.LC_DYSYMTAB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_DYSYMTAB");
-                Loader.dysymtab_command dysymtab_command = new Loader.dysymtab_command();
+                Loader.dysymtab_command dysymtab_command = new Loader.dysymtab_command(parent);
 
                 dysymtab_command.setBeginAddress(pointer.clone());
-                dysymtab_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.ilocalsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nlocalsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.iextdefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nextdefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.iundefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nundefsym = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.tocoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.ntoc = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.modtaboff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nmodtab = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.extrefsymoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nextrefsyms = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.indirectsymoff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nindirectsyms = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.extreloff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nextrel = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.locreloff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dysymtab_command.nlocrel = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.ilocalsym = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nlocalsym = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.iextdefsym = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nextdefsym = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.iundefsym = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nundefsym = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.tocoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.ntoc = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.modtaboff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nmodtab = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.extrefsymoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nextrefsyms = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.indirectsymoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nindirectsyms = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.extreloff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nextrel = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.locreloff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dysymtab_command.nlocrel = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dysymtab_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(dysymtab_command);
+                parent.getChildren().add(dysymtab_command);
             } else if (command.equals(Loader.LC_LOAD_DYLIB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_LOAD_DYLIB");
-                Loader.dylib_command dylib_command = new Loader.dylib_command();
+                Loader.dylib_command dylib_command = new Loader.dylib_command(parent);
 
                 dylib_command.setBeginAddress(pointer.clone());
-                dylib_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dylib_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylib_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylib_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
                 Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
                 end.add(dylib_command.cmdsize);
 
-                dylib_command.dylib = getDylib(in, pointer, dylib_command);
+                dylib_command.dylib = getDylib(parent, pointer, dylib_command,dylib_command);
+                dylib_command.getChildren().add(dylib_command.dylib);
                 dylib_command.setEndAddress(end.clone());
                 pointer = end;
 
-                in.getCommands().add(dylib_command);
+                parent.getChildren().add(dylib_command);
             } else if (command.equals(Loader.LC_ID_DYLIB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_ID_DYLIB");
-                Loader.dylib_command dylib_command = new Loader.dylib_command();
+                Loader.dylib_command dylib_command = new Loader.dylib_command(parent);
 
                 dylib_command.setBeginAddress(pointer.clone());
-                dylib_command.cmd=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dylib_command.cmdsize=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylib_command.cmd=B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylib_command.cmdsize=B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
                 Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
                 end.add(dylib_command.cmdsize);
 
-                dylib_command.dylib = getDylib(in, pointer, dylib_command);
+                dylib_command.dylib = getDylib(parent, pointer, dylib_command,dylib_command);
+                dylib_command.getChildren().add(dylib_command.dylib);
                 dylib_command.setEndAddress(end.clone());
                 pointer = end;
 
-                in.getCommands().add(dylib_command);
+                parent.getChildren().add(dylib_command);
             } else if (command.equals(Loader.LC_LOAD_DYLINKER)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parseing LC_LOAD_DYLINKER");
-                Loader.dylinker_command dylinker_command = new Loader.dylinker_command();
+                Loader.dylinker_command dylinker_command = new Loader.dylinker_command(parent);
 
                 dylinker_command.setBeginAddress(pointer.clone());
-                dylinker_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dylinker_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylinker_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dylinker_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
                 final Address a = dylinker_command.getBeginAddress().clone();
                 a.add(dylinker_command.cmdsize);
                 dylinker_command.setEndAddress(a);
 
-                Loader.lc_str lc_str = new Loader.lc_str();
-                lc_str.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                lc_str.ptr = new DataRange(B.getRangeAtAddress(in.getRaw(), pointer, dylinker_command.getEndAddress()),ByteOrder.LITTLE_ENDIAN);
+                Loader.lc_str lc_str = new Loader.lc_str(dylinker_command);
+                lc_str.offset = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                lc_str.ptr = new DataRange(B.getRangeAtAddress(parent.getRaw(), pointer, dylinker_command.getEndAddress()),pointer.clone(), dylinker_command.getEndAddress().clone(),ByteOrder.LITTLE_ENDIAN);
 
                 dylinker_command.name=lc_str;
+                dylinker_command.getChildren().add(dylinker_command.name);
 
                 pointer = (Address32) dylinker_command.getEndAddress();
-                in.getCommands().add(dylinker_command);
+
+                parent.getChildren().add(dylinker_command);
                 
             } else if (command.equals(Loader.LC_ID_DYLINKER)) {
                 parsedSomething = true;
@@ -364,168 +425,211 @@ public class ParseCommand64 {
             } else if (command.equals(Loader.LC_PREBOUND_DYLIB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_PREBOUND_DYLIB");
-                Loader.prebound_dylib_command prebound_dylib_command = new Loader.prebound_dylib_command();
-                prebound_dylib_command.setBeginAddress(pointer.clone());
+                Loader.prebound_dylib_command prebound_dylib_command = new Loader.prebound_dylib_command(parent);
 
-                in.getCommands().add(prebound_dylib_command);
+                prebound_dylib_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                prebound_dylib_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(prebound_dylib_command);
                 
             } else if (command.equals(Loader.LC_ROUTINES)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_ROUTINES");
-                Loader.routines_command routines_command = new Loader.routines_command();
-                routines_command.setBeginAddress(pointer.clone());
+                Loader.routines_command routines_command = new Loader.routines_command(parent);
 
-                in.getCommands().add(routines_command);
+                routines_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                routines_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(routines_command);
                 
             } else if (command.equals(Loader.LC_SUB_FRAMEWORK)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SUB_FRAMEWORK");
-                Loader.sub_framework_command sub_framework_command = new Loader.sub_framework_command();
-                sub_framework_command.setBeginAddress(pointer.clone());
+                Loader.sub_framework_command sub_framework_command = new Loader.sub_framework_command(parent);
 
-                in.getCommands().add(sub_framework_command);
+                sub_framework_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                sub_framework_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(sub_framework_command);
                 
             } else if (command.equals(Loader.LC_SUB_UMBRELLA)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SUB_UMBRELLA");
-                Loader.sub_umbrella_command sub_umbrella_command = new Loader.sub_umbrella_command();
-                sub_umbrella_command.setBeginAddress(pointer.clone());
+                Loader.sub_umbrella_command sub_umbrella_command = new Loader.sub_umbrella_command(parent);
 
-                in.getCommands().add(sub_umbrella_command);
+                sub_umbrella_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                sub_umbrella_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(sub_umbrella_command);
                 
             } else if (command.equals(Loader.LC_SUB_CLIENT)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SUB_CLIENT");
-                Loader.sub_client_command sub_client_command = new Loader.sub_client_command();
-                sub_client_command.setBeginAddress(pointer.clone());
+                Loader.sub_client_command sub_client_command = new Loader.sub_client_command(parent);
 
-                in.getCommands().add(sub_client_command);
+                sub_client_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                sub_client_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(sub_client_command);
                 
             } else if (command.equals(Loader.LC_SUB_LIBRARY)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SUB_LIBRARY");
-                Loader.sub_library_command sub_library_command = new Loader.sub_library_command();
-                sub_library_command.setBeginAddress(pointer.clone());
+                Loader.sub_library_command sub_library_command = new Loader.sub_library_command(parent);
 
-                in.getCommands().add(sub_library_command);
+                sub_library_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                sub_library_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(sub_library_command);
                 
             } else if (command.equals(Loader.LC_TWOLEVEL_HINTS)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_TWOLEVEL_HINTS");
-                Loader.twolevel_hints_command twolevel_hints_command = new Loader.twolevel_hints_command();
-                twolevel_hints_command.setBeginAddress(pointer.clone());
+                Loader.twolevel_hints_command twolevel_hints_command = new Loader.twolevel_hints_command(parent);
 
-                in.getCommands().add(twolevel_hints_command);
+                twolevel_hints_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                twolevel_hints_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(twolevel_hints_command);
                 
             } else if (command.equals(Loader.LC_PREBIND_CKSUM)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_PREBIND_CKSUM");
-                Loader.prebind_cksum_command prebind_cksum_command = new Loader.prebind_cksum_command();
-                prebind_cksum_command.setBeginAddress(pointer.clone());
+                Loader.prebind_cksum_command prebind_cksum_command = new Loader.prebind_cksum_command(parent);
 
-                in.getCommands().add(prebind_cksum_command);
+                prebind_cksum_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                prebind_cksum_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(prebind_cksum_command);
                 
             } else if (command.equals(Loader.LC_SEGMENT_64)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SEGMENT_64");
-                Loader.segment_command_64 segment_command_641 = new Loader.segment_command_64();
+                Loader.segment_command_64 segment_command_641 = new Loader.segment_command_64(parent);
 
                 segment_command_641.setBeginAddress(pointer.clone());
-                segment_command_641.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                final byte[] container = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-                final byte[] container2 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-                segment_command_641.segname = new Loader.char16(B.mergeBytes(container, container2));
-                segment_command_641.vmaddr = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.vmsize = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.fileoff = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.filesize = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.maxprot = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.initprot = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.nsects = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                segment_command_641.flags = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                Address begin = pointer.clone();
+                final byte[] container = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                final byte[] container2 = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                segment_command_641.segname = new Loader.char16(B.mergeBytes(container, container2),begin,pointer.clone());
+                segment_command_641.vmaddr = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.vmsize = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.fileoff = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.filesize = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.maxprot = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.initprot = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.nsects = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                segment_command_641.flags = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
                 final int sections = segment_command_641.nsects.getIntValue();
                 for (int i = 0; i < sections; i++) {
                     LOGGER.log(Level.INFO,"Parsing section {0} for segment {1}",new Object[]{i,segment_command_641.segname.value});
-                    segment_command_641.getSections().add(ParseSection64.parse(in,pointer,segment_command_641));
+                    segment_command_641.getChildren().add(ParseSection64.parse(parent,pointer,segment_command_641));
                 }
                 segment_command_641.setEndAddress(pointer.clone());
 
-                in.getCommands().add(segment_command_641);
+                parent.getChildren().add(segment_command_641);
                 
             } else if (command.equals(Loader.LC_ROUTINES_64)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_ROUTINES_64");
-                Loader.routines_command_64 routines_command_64 = new Loader.routines_command_64();
-                routines_command_64.setBeginAddress(pointer.clone());
+                Loader.routines_command_64 routines_command_64 = new Loader.routines_command_64(parent);
 
-                in.getCommands().add(routines_command_64);
+                routines_command_64.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                routines_command_64.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(routines_command_64);
                 
             } else if (command.equals(Loader.LC_UUID)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_UUID");
-                Loader.uuid_command uuid_command = new Loader.uuid_command();
+                Loader.uuid_command uuid_command = new Loader.uuid_command(parent);
 
                 uuid_command.setBeginAddress(pointer.clone());
-                uuid_command.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);;
-                uuid_command.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                byte[] tmp1 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-                byte[] tmp2 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-                uuid_command.uuid = new Loader.char16(B.mergeBytes(tmp1,tmp2));
+                uuid_command.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);;
+                uuid_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                Address begin = pointer.clone();
+                byte[] tmp1 = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                byte[] tmp2 = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+                uuid_command.uuid = new Loader.char16(B.mergeBytes(tmp1,tmp2),begin,pointer.clone());
                 uuid_command.setEndAddress(pointer.clone());
 
-                in.getCommands().add(uuid_command);
+                parent.getChildren().add(uuid_command);
                 
             } else if (command.equals(Loader.LC_CODE_SIGNATURE)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_CODE_SIGNATURE");
-                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command();
-                
+                Loader.linkedit_data_command linkedit_data_command = new Loader.linkedit_data_command(parent);
+
+                linkedit_data_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                linkedit_data_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(linkedit_data_command);
             } else if (command.equals(Loader.LC_SEGMENT_SPLIT_INFO)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_SEGMENT_SPLIT_INFO");
-                Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command();
-                dyld_info_command.setBeginAddress(pointer.clone());
+                Loader.dyld_info_command dyld_info_command = new Loader.dyld_info_command(parent);
 
-                in.getCommands().add(dyld_info_command);
+                dyld_info_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                dyld_info_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(dyld_info_command);
                 
             } else if (command.equals(Loader.LC_LAZY_LOAD_DYLIB)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_LAZY_LOAD_DYLIB");
-                Loader.load_command load_command = new Loader.load_command();
-                load_command.setBeginAddress(pointer.clone());
+                Loader.load_command load_command = new Loader.load_command(parent);
 
-                in.getCommands().add(load_command);
+                load_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                load_command.setEndAddress(pointer.clone());
+
+                parent.getChildren().add(load_command);
                 
             } else if (command.equals(Loader.LC_ENCRYPTION_INFO)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_ENCRYPTION_INFO");
-                Loader.encryption_info_command encryption_info_command = new Loader.encryption_info_command();
-                encryption_info_command.setBeginAddress(pointer.clone());
+                Loader.encryption_info_command encryption_info_command = new Loader.encryption_info_command(parent);
 
-                in.getCommands();
+                encryption_info_command.setBeginAddress(pointer.clone());
+                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                encryption_info_command.setEndAddress(pointer.clone());
+
+                parent.getChildren();
             } else if (command.equals(Loader.LC_DYLD_INFO)) {
                 parsedSomething = true;
                 LOGGER.log(Level.INFO,"Parsing LC_DYLD_INFO");
-                Loader.dyld_info_command dyld_info_command1 = new Loader.dyld_info_command();
+                Loader.dyld_info_command dyld_info_command1 = new Loader.dyld_info_command(parent);
 
                 dyld_info_command1.setBeginAddress(pointer.clone());
-                dyld_info_command1.cmd = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.cmdsize = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.rebase_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.rebase_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.weak_bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.weak_bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.lazy_bind_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.lazy_bind_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.export_off = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-                dyld_info_command1.export_size = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.cmd = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.rebase_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.rebase_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.bind_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.bind_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.weak_bind_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.weak_bind_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.lazy_bind_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.lazy_bind_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.export_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+                dyld_info_command1.export_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dyld_info_command1.setEndAddress(pointer.clone());
 
-                in.getCommands().add(dyld_info_command1);
+                parent.getChildren().add(dyld_info_command1);
             }
 
             if(parsedSomething == false){
@@ -535,8 +639,10 @@ public class ParseCommand64 {
         }
     }
 
-    private static Loader.dylib getDylib(MachO64 in, Address32 pointer, Loader.dylib_command dylib_command) {
-        Loader.lc_str lcstr = new Loader.lc_str();
+    private static Loader.dylib getDylib(MachO64 in, Address32 pointer, Loader.dylib_command dylib_command,DataStructure parent) {
+        Loader.dylib l = new Loader.dylib(parent);
+        Loader.lc_str lcstr = new Loader.lc_str(l);
+
         lcstr.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
 
         Address32 begin = (Address32)dylib_command.getBeginAddress().clone();
@@ -545,13 +651,13 @@ public class ParseCommand64 {
         Address32 end =  (Address32)dylib_command.getBeginAddress().clone();
         end.add(dylib_command.cmdsize);
 
-        lcstr.ptr = new DataRange(B.getRangeAtAddress(in.getRaw(), begin, end),ByteOrder.LITTLE_ENDIAN);
+        lcstr.ptr = new DataRange(B.getRangeAtAddress(in.getRaw(), begin, end),begin,end,ByteOrder.LITTLE_ENDIAN);
 
-        Loader.dylib l = new Loader.dylib();
         l.timestamp = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
         l.current_version = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
         l.compatibility_version = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
         l.name = lcstr;
+        l.getChildren().add(lcstr);
         return l;
     }
 

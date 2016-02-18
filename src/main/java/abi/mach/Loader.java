@@ -1,12 +1,15 @@
 package abi.mach;
 
-import abi.generic.abi.*;
-import abi.generic.memory.Addressable;
-import abi.generic.memory.Container;
-import abi.generic.memory.address.Address;
-import abi.generic.memory.data.*;
+import abi.memory.DataStructure;
+import abi.memory.Addressable;
+import abi.memory.Container;
+import abi.memory.address.Address;
+import abi.memory.address.Address32;
+import abi.memory.data.*;
 
 import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public interface Loader {
 
@@ -64,14 +67,19 @@ public interface Loader {
         public byte[] value;
     }
 
-    public class char16 extends Data{
-        public char16(byte[] in,Address begin, Address end) {
-            super(in.length,begin,end,ByteOrder.LITTLE_ENDIAN);
-            for(int i=0;i<in.length;i++){
-                container[i]=in[i];
+    public class char16 extends Data {
+        public char16() {
+            super(0, Address32.NULL, Address32.NULL, ByteOrder.BIG_ENDIAN);
+        }
+
+        public char16(byte[] in, Address begin, Address end) {
+            super(in.length, begin, end, ByteOrder.LITTLE_ENDIAN);
+            for (int i = 0; i < in.length; i++) {
+                container[i] = in[i];
             }
             this.value = new String(in);
         }
+
         public String value;
 
         @Override
@@ -105,11 +113,20 @@ public interface Loader {
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
 
+        public mach_header(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[] {magic.setComment(magicComment),cputype.setComment(cputypeComment),
-                    cpusubtype.setComment(cpusubtypeComment),filetype.setComment(filetypeComment),
-                    ncmds.setComment(ncmdsComment),sizeofcmds.setComment(sizeofcmdsComment),flags.setComment(flagsComment)};
+        public LinkedList<Data> getStructureData() {
+            magic.setComment(magicComment);
+            cputype.setComment(cputypeComment);
+            cpusubtype.setComment(cpusubtypeComment);
+            filetype.setComment(filetypeComment);
+            ncmds.setComment(ncmdsComment);
+            sizeofcmds.setComment(sizeofcmdsComment);
+            flags.setComment(flagsComment);
+            return new LinkedList<Data>(Arrays.asList(magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags));
         }
     }
 
@@ -141,12 +158,21 @@ public interface Loader {
         public DWord reserved = new DWord();
         public final static String reservedComment = "/* reserved */";
 
+        public mach_header_64(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[] {magic.setComment(magicComment),cputype.setComment(cputypeComment),
-                    cpusubtype.setComment(cpusubtypeComment),filetype.setComment(filetypeComment),
-                    ncmds.setComment(ncmdsComment),sizeofcmds.setComment(sizeofcmdsComment),
-                    flags.setComment(flagsComment),reserved.setComment(reservedComment)};
+        public LinkedList<Data> getStructureData() {
+            magic.setComment(magicComment);
+            cputype.setComment(cputypeComment);
+            cpusubtype.setComment(cpusubtypeComment);
+            filetype.setComment(filetypeComment);
+            ncmds.setComment(ncmdsComment);
+            sizeofcmds.setComment(sizeofcmdsComment);
+            flags.setComment(flagsComment);
+            reserved.setComment(reservedComment);
+            return new LinkedList<>(Arrays.asList(magic,cputype,cpusubtype,filetype,ncmds,sizeofcmds,flags,reserved));
         }
     }
 
@@ -293,9 +319,17 @@ public interface Loader {
         public DWord cmdsize = new DWord();
         public static final String cmdsizeComment = "/* total size of command in bytes */";
 
+        public load_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[] {cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment)};
+        public LinkedList<Data> getStructureData() {
+            {
+                cmd.setComment(cmdComment);
+                cmdsize.setComment(cmdsizeComment);
+                return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            }
         }
     }
 
@@ -391,13 +425,18 @@ public interface Loader {
      * Once again any padded bytes to bring the cmdsize field to a multiple
      * of 4 bytes must be zero.
      */
-    public class lc_str extends DataStructure{
+    public class lc_str extends DataStructure {
         public DWord offset = new DWord();
         public DataRange ptr = new DataRange();
 
+        public lc_str(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            return new Data[]{offset,ptr};
+        public LinkedList<Data> getStructureData() {
+
+            return new LinkedList<>(Arrays.asList(offset, ptr));
         }
     }
 
@@ -418,7 +457,7 @@ public interface Loader {
         public final static String cmdComment = "/* LC_SEGMENT */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sizeof section public classs */";
-        public char16 segname = new char16(new byte[0]);
+        public char16 segname = new char16();
         public final static String segnameComment = "/* segment name */";
         public DWord vmaddr = new DWord();
         public final static String vmaddrComment = "/* memory address of this segment */";
@@ -437,14 +476,24 @@ public interface Loader {
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
 
+        public segment_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[] {cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    segname.setComment(segnameComment),vmaddr.setComment(vmaddrComment),
-                    vmsize.setComment(vmsizeComment),fileoff.setComment(fileoffComment),
-                    filesize.setComment(filesizeComment),maxprot.setComment(maxprotComment),
-                    initprot.setComment(initprotComment),
-                    nsects.setComment(nsectsComment),flags.setComment(flagsComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            segname.setComment(segnameComment);
+            vmaddr.setComment(vmaddrComment);
+            vmsize.setComment(vmsizeComment);
+            fileoff.setComment(fileoffComment);
+            filesize.setComment(filesizeComment);
+            maxprot.setComment(maxprotComment);
+            initprot.setComment(initprotComment);
+            nsects.setComment(nsectsComment);
+            flags.setComment(flagsComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, segname, vmaddr, vmsize, fileoff, filesize, maxprot, initprot, nsects, flags));
         }
     }
 
@@ -461,7 +510,7 @@ public interface Loader {
         public final static String cmdComment = "/* LC_SEGMENT_64 */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sizeof section_64 public classs */";
-        public char16 segname = new char16(new byte[0]);
+        public char16 segname = new char16();
         public final static String segnameComment = "/* segment name */";
         public QWord vmaddr = new QWord();
         public final static String vmaddrComment = "/* memory address of this segment */";
@@ -480,14 +529,24 @@ public interface Loader {
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
 
+        public segment_command_64(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    segname.setComment(segnameComment),vmaddr.setComment(vmaddrComment),
-                    vmsize.setComment(vmsizeComment),fileoff.setComment(fileoffComment),
-                    filesize.setComment(filesizeComment),maxprot.setComment(maxprotComment),
-                    initprot.setComment(initprotComment),nsects.setComment(nsectsComment),
-                    flags.setComment(flagsComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            segname.setComment(segnameComment);
+            vmaddr.setComment(vmaddrComment);
+            vmsize.setComment(vmsizeComment);
+            fileoff.setComment(fileoffComment);
+            filesize.setComment(filesizeComment);
+            maxprot.setComment(maxprotComment);
+            initprot.setComment(initprotComment);
+            nsects.setComment(nsectsComment);
+            flags.setComment(flagsComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, segname, vmaddr, vmsize, maxprot, initprot, nsects, flags));
         }
     }
 
@@ -538,9 +597,9 @@ public interface Loader {
      */
     public class section extends DataStructure { /* for 32-bit architectures */
         //public section(Segment parent){}
-        public char16 sectname = new char16(new byte[0]);
+        public char16 sectname = new char16();
         public final static String sectnameComment = "/* name of this section */";
-        public char16 segname = new char16(new byte[0]);
+        public char16 segname = new char16();
         public final static String segnameComment = "/* segment this section goes in */";
         public DWord addr = new DWord();
         public final static String addrComment = "/* memory address of this section */";
@@ -561,24 +620,34 @@ public interface Loader {
         public DWord reserved2 = new DWord();
         public final static String reserved2Comment = "/* reserved (for count or sizeof) */";
 
+        public section(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{sectname.setComment(sectnameComment),segname.setComment(segnameComment),
-                    addr.setComment(addrComment),size.setComment(sizeComment),
-                    offset.setComment(offsetComment),align.setComment(alignComment),
-                    reloff.setComment(reloffComment),nreloc.setComment(nrelocComment),
-                    flags.setComment(flagsComment),reserved1.setComment(reserved1Comment),
-                    reserved2.setComment(reserved2Comment)};
+        public LinkedList<Data> getStructureData() {
+            sectname.setComment(sectnameComment);
+            segname.setComment(segnameComment);
+            addr.setComment(addrComment);
+            size.setComment(sizeComment);
+            offset.setComment(offsetComment);
+            align.setComment(alignComment);
+            reloff.setComment(reloffComment);
+            nreloc.setComment(nrelocComment);
+            flags.setComment(flagsComment);
+            reserved1.setComment(reserved1Comment);
+            reserved2.setComment(reserved2Comment);
+            return new LinkedList<>(Arrays.asList(sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2));
         }
     }
 
     ;
 
     public class section_64 extends DataStructure { /* for 64-bit architectures */
-        //public section_64(Segment parent){}
-        public char16 sectname = new char16(new byte[0]);
+
+        public char16 sectname = new char16();
         public final static String sectnameComment = "/* name of this section */";
-        public char16 segname = new char16(new byte[0]);
+        public char16 segname = new char16();
         public final static String segnameComment = "/* segment this section goes in */";
         public QWord addr = new QWord();
         public final static String addrComment = "/* memory address of this section */";
@@ -601,14 +670,29 @@ public interface Loader {
         public DWord reserved3 = new DWord();
         public final static String reserved3Comment = "/* reserved */";
 
+        public section_64(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{sectname.setComment(sectnameComment),segname.setComment(segnameComment),
-                    addr.setComment(addrComment),size.setComment(sizeComment),
-                    offset.setComment(offsetComment),reloff.setComment(reloffComment),
-                    nreloc.setComment(nrelocComment),flags.setComment(flagsComment),
-                    reserved1.setComment(reserved1Comment),reserved2.setComment(reserved2Comment),
-                    reserved3.setComment(reserved3Comment)};
+        public LinkedList<Data> getStructureData() {
+            sectname.setComment(sectnameComment);
+            segname.setComment(segnameComment);
+
+            addr.setComment(addrComment);
+            size.setComment(sizeComment);
+
+            offset.setComment(offsetComment);
+            reloff.setComment(reloffComment);
+
+            nreloc.setComment(nrelocComment);
+            flags.setComment(flagsComment);
+
+            reserved1.setComment(reserved1Comment);
+            reserved2.setComment(reserved2Comment);
+
+            reserved3.setComment(reserved3Comment);
+            return new LinkedList<>(Arrays.asList(sectname, segname, addr, size, offset, reloff, nreloc, flags, reserved1, reserved2, reserved3));
         }
     }
 
@@ -789,24 +873,25 @@ public interface Loader {
      * minor version number.  The address of where the headers are loaded is in
      * header_addr. (THIS IS OBSOLETE and no longer supported).
      */
-    public class fvmlib extends DataStructure{
-        public lc_str name = new lc_str();
+    public class fvmlib extends DataStructure {
+        public lc_str name = new lc_str(this);
         public final static String nameComment = "/* library's target pathname */";
         public DWord minor_version = new DWord();
         public final static String minor_versionComment = "/* library's minor version number */";
         public DWord header_addr = new DWord();
         public final static String header_addrComment = "/* library's header address */";
 
+        public fvmlib(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            final int retSize =name.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<name.getData().length;i++){
-                ret[i]=name.getData()[i];
-            }
-            ret[name.getData().length]=minor_version.setComment(minor_versionComment);
-            ret[name.getData().length+1]=header_addr.setComment(header_addrComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            name.setComment(nameComment);
+            minor_version.setComment(minor_versionComment);
+            header_addr.setComment(header_addrComment);
+
+            return new LinkedList<>(Arrays.asList(minor_version, header_addr));
         }
     }
 
@@ -824,19 +909,20 @@ public interface Loader {
         public final static String cmdComment = "/* LC_IDFVMLIB or LC_LOADFVMLIB */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public fvmlib fvmlib = new fvmlib();
+        public fvmlib fvmlib = new fvmlib(this);
         public final static String fvmlibComment = "/* the library identification */";
 
+        public fvmlib_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =fvmlib.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<fvmlib.getData().length;i++){
-                ret[i]=fvmlib.getData()[i];
-            }
-            ret[fvmlib.getData().length]=cmd.setComment(cmdComment);
-            ret[fvmlib.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            fvmlib.setComment(fvmlibComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -851,8 +937,8 @@ public interface Loader {
      * built and copied into user so it can be use to determined if the library used
      * at runtime is exactly the same as used to built the program.
      */
-    public class dylib extends DataStructure{
-        public lc_str name = new lc_str();
+    public class dylib extends DataStructure {
+        public lc_str name = new lc_str(this);
         public final static String nameComment = "/* library's path name */";
         public DWord timestamp = new DWord();
         public final static String timestampComment = "/* library's build time stamp */";
@@ -861,17 +947,18 @@ public interface Loader {
         public DWord compatibility_version = new DWord();
         public final static String compatibility_versionComment = "/* library's compatibility vers number*/";
 
+        public dylib(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            final int retSize =name.getData().length+3;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<name.getData().length;i++){
-                ret[i]=name.getData()[i];
-            }
-            ret[name.getData().length]=timestamp.setComment(timestampComment);
-            ret[name.getData().length+1]=current_version.setComment(current_versionComment);
-            ret[name.getData().length+2]=compatibility_version.setComment(compatibility_versionComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            name.setComment(nameComment);
+            timestamp.setComment(timestampComment);
+            current_version.setComment(current_versionComment);
+            compatibility_version.setComment(compatibility_versionComment);
+
+            return new LinkedList<>(Arrays.asList(timestamp, current_version, compatibility_version));
         }
     }
 
@@ -889,18 +976,20 @@ public interface Loader {
         public final static String cmdComment = "/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB, LC_REEXPORT_DYLIB */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public dylib dylib = new dylib();
+        public dylib dylib = new dylib(this);
         public final static String dylibComment = "/* the library identification */";
+
+        public dylib_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =dylib.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<dylib.getData().length;i++){
-                ret[i]=dylib.getData()[i];
-            }
-            ret[dylib.getData().length]=cmd.setComment(cmdComment);
-            ret[dylib.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            dylib.setComment(dylibComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -921,18 +1010,20 @@ public interface Loader {
         public final static String cmdComment = "/* LC_SUB_FRAMEWORK */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes umbrella string */";
-        public lc_str umbrella = new lc_str();
+        public lc_str umbrella = new lc_str(this);
         public final static String umbrellaComment = "/* the umbrella framework name */";
+
+        public sub_framework_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =umbrella.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<umbrella.getData().length;i++){
-                ret[i]=umbrella.getData()[i];
-            }
-            ret[umbrella.getData().length]=cmd.setComment(cmdComment);
-            ret[umbrella.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            umbrella.setComment(umbrellaComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -948,22 +1039,24 @@ public interface Loader {
      * where the bundle is built with "-client_name client_name".
      */
     public class sub_client_command extends DataStructure {
-        public DWord cmd  = new DWord();
+        public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_CLIENT */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes client string */";
-        public lc_str client = new lc_str();
+        public lc_str client = new lc_str(this);
         public final static String clientComment = "/* the client name */";
+
+        public sub_client_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =client.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<client.getData().length;i++){
-                ret[i]=client.getData()[i];
-            }
-            ret[client.getData().length]=cmd.setComment(cmdComment);
-            ret[client.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            client.setComment(clientComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -987,18 +1080,20 @@ public interface Loader {
         public final static String cmdComment = "/* LC_SUB_UMBRELLA */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sub_umbrella string */";
-        public lc_str sub_umbrella = new lc_str();
+        public lc_str sub_umbrella = new lc_str(this);
         public final static String sub_umbrellaComment = "/* the sub_umbrella framework name */";
+
+        public sub_umbrella_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =sub_umbrella.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<sub_umbrella.getData().length;i++){
-                ret[i]=sub_umbrella.getData()[i];
-            }
-            ret[sub_umbrella.getData().length]=cmd.setComment(cmdComment);
-            ret[sub_umbrella.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            sub_umbrella.setComment(sub_umbrellaComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1024,18 +1119,20 @@ public interface Loader {
         public final static String cmdComment = "/* LC_SUB_LIBRARY */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sub_library string */";
-        public lc_str sub_library = new lc_str();
+        public lc_str sub_library = new lc_str(this);
         public final static String sub_libraryComment = "/* the sub_library name */";
+
+        public sub_library_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =sub_library.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<sub_library.getData().length;i++){
-                ret[i]=sub_library.getData()[i];
-            }
-            ret[sub_library.getData().length]=cmd.setComment(cmdComment);
-            ret[sub_library.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            sub_library.setComment(sub_libraryComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1055,26 +1152,26 @@ public interface Loader {
         public final static String cmdComment = "/* LC_PREBOUND_DYLIB */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes strings */";
-        public lc_str name = new lc_str();
+        public lc_str name = new lc_str(this);
         public final static String nameComment = "/* library's path name */";
         public DWord nmodules = new DWord();
         public final static String nmodulesComment = "/* number of modules in library */";
-        public lc_str linked_modules = new lc_str();
+        public lc_str linked_modules = new lc_str(this);
         public final static String linked_modulesComment = "/* bit vector of linked modules */";
+
+        public prebound_dylib_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize = name.getData().length+linked_modules.getData().length+3;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<name.getData().length;i++){
-                ret[i]=name.getData()[i];
-            }
-            for(int i=0;i<linked_modules.getData().length;i++){
-                ret[i]=linked_modules.getData()[i];
-            }
-            ret[retSize]=cmd.setComment(cmdComment);
-            ret[retSize+1]=cmdsize.setComment(cmdsizeComment);
-            ret[retSize+2]=nmodules.setComment(nmodulesComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            nmodules.setComment(nmodulesComment);
+            name.setComment(nameComment);
+            linked_modules.setComment(linked_modulesComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1091,18 +1188,20 @@ public interface Loader {
         public final static String cmdComment = "/* LC_ID_DYLINKER or LC_LOAD_DYLINKER */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public lc_str name = new lc_str();
+        public lc_str name = new lc_str(this);
         public final static String nameComment = "/* dynamic linker's path name */";
+
+        public dylinker_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =name.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<name.getData().length;i++){
-                ret[i]=name.getData()[i];
-            }
-            ret[name.getData().length]=cmd.setComment(cmdComment);
-            ret[name.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            name.setComment(nameComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1135,9 +1234,16 @@ public interface Loader {
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* total size of this command */";
 
+        public thread_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
 	/* public DWord flavor		   flavor of thread state */
 	/* public DWord count		   count of longs in thread state */
@@ -1177,13 +1283,23 @@ public interface Loader {
         public DWord reserved6 = new DWord();
         public final static String reserved6Comment = "/* reserved 6 */";
 
+        public routines_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    init_address.setComment(init_addressComment),init_module.setComment(init_moduleComment),
-                    reserved1.setComment(reserved1Comment),reserved2.setComment(reserved2Comment),
-                    reserved3.setComment(reserved3Comment),reserved4.setComment(reserved4Comment),
-                    reserved5.setComment(reserved5Comment),reserved6.setComment(reserved6Comment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            init_address.setComment(init_addressComment);
+            init_module.setComment(init_moduleComment);
+            reserved1.setComment(reserved1Comment);
+            reserved2.setComment(reserved2Comment);
+            reserved3.setComment(reserved3Comment);
+            reserved4.setComment(reserved4Comment);
+            reserved5.setComment(reserved5Comment);
+            reserved6.setComment(reserved6Comment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
         }
     }
 
@@ -1214,13 +1330,23 @@ public interface Loader {
         public QWord reserved6 = new QWord();
         public final static String reserved6Comment = "/* reserved 6 */";
 
+        public routines_command_64(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    init_address.setComment(init_addressComment),init_module.setComment(init_moduleComment),
-                    reserved1.setComment(reserved1Comment),reserved2.setComment(reserved2Comment),
-                    reserved3.setComment(reserved3Comment),reserved4.setComment(reserved4Comment),
-                    reserved5.setComment(reserved5Comment),reserved6.setComment(reserved6Comment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            init_address.setComment(init_addressComment);
+            init_module.setComment(init_moduleComment);
+            reserved1.setComment(reserved1Comment);
+            reserved2.setComment(reserved2Comment);
+            reserved3.setComment(reserved3Comment);
+            reserved4.setComment(reserved4Comment);
+            reserved5.setComment(reserved5Comment);
+            reserved6.setComment(reserved6Comment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
         }
     }
 
@@ -1245,11 +1371,19 @@ public interface Loader {
         public DWord strsize = new DWord();
         public final static String strsizeComment = "/* string table size in bytes */";
 
+        public symtab_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    symoff.setComment(symoffComment),nsyms.setComment(nsymsComment),
-                    stroff.setComment(stroffComment),strsize.setComment(strsizeComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            symoff.setComment(symoffComment);
+            nsyms.setComment(nsymsComment);
+            stroff.setComment(stroffComment);
+            strsize.setComment(strsizeComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, symoff, nsyms, stroff, strsize));
         }
     }
 
@@ -1429,18 +1563,33 @@ public interface Loader {
         public DWord nlocrel = new DWord();
         public final static String nlocrelComment = "/* number of local relocation entries */";
 
+        public dysymtab_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {//TODO - dups
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    ilocalsym.setComment(ilocalsymComment),nlocalsym.setComment(nlocalsymComment),
-                    iextdefsym.setComment(iextdefsymComment),nextrefsyms.setComment(nextrefsymsComment),
-                    iundefsym.setComment(iundefsymComment),nundefsym.setComment(nundefsymComment),
-                    tocoff.setComment(tocoffComment),ntoc.setComment(ntocComment),
-                    modtaboff.setComment(modtaboffComment),nmodtab.setComment(nmodtabComment),
-                    extrefsymoff.setComment(extrefsymoffComment),nextrefsyms.setComment(nextrefsymsComment),
-                    indirectsymoff.setComment(indirectsymoffComment),nindirectsyms.setComment(nindirectsymsComment),
-                    extreloff.setComment(extreloffComment),nextrel.setComment(nextrelComment),
-                    locreloff.setComment(locreloffComment),nlocrel.setComment(nlocrelComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            ilocalsym.setComment(ilocalsymComment);
+            nlocalsym.setComment(nlocalsymComment);
+            iextdefsym.setComment(iextdefsymComment);
+            nextrefsyms.setComment(nextrefsymsComment);
+            iundefsym.setComment(iundefsymComment);
+            nundefsym.setComment(nundefsymComment);
+            tocoff.setComment(tocoffComment);
+            ntoc.setComment(ntocComment);
+            modtaboff.setComment(modtaboffComment);
+            nmodtab.setComment(nmodtabComment);
+            extrefsymoff.setComment(extrefsymoffComment);
+            nextdefsym.setComment(nextdefsymComment);
+            indirectsymoff.setComment(indirectsymoffComment);
+            nindirectsyms.setComment(nindirectsymsComment);
+            extreloff.setComment(extreloffComment);
+            nextrel.setComment(nextrelComment);
+            locreloff.setComment(locreloffComment);
+            nlocrel.setComment(nlocrelComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, ilocalsym, nlocalsym, iextdefsym, nextrefsyms, iundefsym, nundefsym, tocoff, ntoc, modtaboff, nmodtab, extrefsymoff, nextdefsym, indirectsymoff, nindirectsyms, extreloff, nextrel, locreloff, nlocrel));
         }
     }
 
@@ -1458,22 +1607,28 @@ public interface Loader {
 
 
     /* a table of contents entry */
-    public class dylib_table_of_contents extends DataStructure{
+    public class dylib_table_of_contents extends DataStructure {
         public DWord symbol_index = new DWord();
         public final static String symbol_indexComment = "/* the defined external symbol (index into the symbol table) */";
         public DWord module_index = new DWord();
         public final static String module_indexComment = "/* index into the module table this symbol is defined in */";
 
+        public dylib_table_of_contents(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            return new Data[]{symbol_index.setComment(symbol_indexComment),module_index.setComment(module_indexComment)};
+        public LinkedList<Data> getStructureData() {
+            symbol_index.setComment(symbol_indexComment);
+            module_index.setComment(module_indexComment);
+            return new LinkedList<>(Arrays.asList(symbol_index, module_index));
         }
     }
 
     ;
 
     /* a module table entry */
-    public class dylib_module extends DataStructure{
+    public class dylib_module extends DataStructure {
         public DWord module_name = new DWord();
         public final static String module_nameComment = "/* the module name (index into string table) */";
 
@@ -1504,22 +1659,33 @@ public interface Loader {
         public DWord objc_module_info_size = new DWord();
         public final static String objc_module_info_sizeComment = "/* for this module size of the (__OBJC,__module_info) section */";
 
+        public dylib_module(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            return new Data[]{module_name.setComment(module_nameComment),iextdefsym.setComment(iextdefsymComment),
-                    nextdefsym.setComment(nextdefsymComment),irefsym.setComment(irefsymComment),
-                    ilocalsym.setComment(ilocalsymComment),nlocalsym.setComment(nlocalsymComment),
-                    iextrel.setComment(iextrelComment),nextrel.setComment(nextrelComment),
-                    iinit_iterm.setComment(iinit_itermComment),ninit_nterm.setComment(ninit_ntermComment),
-                    objc_module_info_addr.setComment(objc_module_info_addrComment),
-                    objc_module_info_size.setComment(objc_module_info_sizeComment),nrefsym.setComment(nrefsymComment)};
+        public LinkedList<Data> getStructureData() {
+            module_name.setComment(module_nameComment);
+            iextdefsym.setComment(iextdefsymComment);
+            nextdefsym.setComment(nextdefsymComment);
+            irefsym.setComment(irefsymComment);
+            ilocalsym.setComment(ilocalsymComment);
+            nlocalsym.setComment(nlocalsymComment);
+            iextrel.setComment(iextrelComment);
+            nextrel.setComment(nextrelComment);
+            iinit_iterm.setComment(iinit_itermComment);
+            ninit_nterm.setComment(ninit_ntermComment);
+            objc_module_info_addr.setComment(objc_module_info_addrComment);
+            objc_module_info_size.setComment(objc_module_info_sizeComment);
+            nrefsym.setComment(nrefsymComment);
+            return new LinkedList<>(Arrays.asList(module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
         }
     }
 
     ;
 
     /* a 64-bit module table entry */
-    public class dylib_module_64 extends DataStructure{
+    public class dylib_module_64 extends DataStructure {
         public DWord module_name = new DWord();
         public final static String module_nameComment = "/* the module name (index into string table) */";
         public DWord iextdefsym = new DWord();
@@ -1547,15 +1713,26 @@ public interface Loader {
         public QWord objc_module_info_addr = new QWord();
         public final static String objc_module_info_addrComment = "/* for this module address of the start of the (__OBJC,__module_info) section */";
 
+        public dylib_module_64(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            return new Data[]{module_name.setComment(module_nameComment),iextdefsym.setComment(iextdefsymComment),
-                    nextdefsym.setComment(nextdefsymComment),irefsym.setComment(irefsymComment),
-                    ilocalsym.setComment(ilocalsymComment),nlocalsym.setComment(nlocalsymComment),
-                    iextrel.setComment(iextrelComment),nextrel.setComment(nextrelComment),
-                    iinit_iterm.setComment(iinit_itermComment),ninit_nterm.setComment(ninit_ntermComment),
-                    objc_module_info_addr.setComment(objc_module_info_addrComment),
-                    objc_module_info_size.setComment(objc_module_info_sizeComment),nrefsym.setComment(nrefsymComment)};
+        public LinkedList<Data> getStructureData() {
+            module_name.setComment(module_nameComment);
+            iextdefsym.setComment(iextdefsymComment);
+            nextdefsym.setComment(nextdefsymComment);
+            irefsym.setComment(irefsymComment);
+            ilocalsym.setComment(ilocalsymComment);
+            nlocalsym.setComment(nlocalsymComment);
+            iextrel.setComment(iextrelComment);
+            nextrel.setComment(nextrelComment);
+            iinit_iterm.setComment(iinit_itermComment);
+            ninit_nterm.setComment(ninit_ntermComment);
+            objc_module_info_addr.setComment(objc_module_info_addrComment);
+            objc_module_info_size.setComment(objc_module_info_sizeComment);
+            nrefsym.setComment(nrefsymComment);
+            return new LinkedList<>(Arrays.asList(module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
         }
     }
 
@@ -1569,15 +1746,21 @@ public interface Loader {
      * reference that is being made.  The constants for the flags are defined in
      * <mach-o/nlist.h> as they are also used for symbol table entries.
      */
-    public class dylib_reference extends DataStructure{
+    public class dylib_reference extends DataStructure {
         public DWord isym = new DWord();
         public final static String isymComment = "/* index into the symbol table */";
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags to indicate the type of reference */";
 
+        public dylib_reference(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            return new Data[]{isym.setComment(isymComment),flags.setComment(flagsComment)};
+        public LinkedList<Data> getStructureData() {
+            isym.setComment(isymComment);
+            flags.setComment(flagsComment);
+            return new LinkedList<>(Arrays.asList(isym, flags));
         }
     }
 
@@ -1597,10 +1780,17 @@ public interface Loader {
         public DWord nhints = new DWord();
         public final static String nhintsComment = "/* number of hints in the hint table */";
 
+        public twolevel_hints_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    offset.setComment(offsetComment),nhints.setComment(nhintsComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            offset.setComment(offsetComment);
+            nhints.setComment(nhintsComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, offset, nhints));
         }
     }
 
@@ -1628,9 +1818,15 @@ public interface Loader {
         public DWord itoc = new DWord();
         public final static String itocComment = "/* index into the table of contents */";
 
+        public twolevel_hint(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{isub_image.setComment(isub_imageComment),itoc.setComment(itocComment)};
+        public LinkedList<Data> getStructureData() {
+            isub_image.setComment(isub_imageComment);
+            itoc.setComment(itocComment);
+            return new LinkedList<>(Arrays.asList(isub_image, itoc));
         }
     }
 
@@ -1654,10 +1850,16 @@ public interface Loader {
         public DWord cksum = new DWord();
         public final static String cksumComment = "/* the check sum or zero */";
 
+        public prebind_cksum_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    cksum.setComment(cksumComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            cksum.setComment(cksumComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, cksum));
         }
     }
 
@@ -1672,13 +1874,19 @@ public interface Loader {
         public final static String cmdComment = "/* LC_UUID */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* sizeof(public class uuid_command) */";
-        public char16 uuid = new char16(new byte[0]);
+        public char16 uuid = new char16();
         public final static String uuidComment = "/* the 128-bit uuid */";
 
+        public uuid_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    uuid.setComment(uuidComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            uuid.setComment(uuidComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, uuid));
         }
     }
 
@@ -1693,18 +1901,20 @@ public interface Loader {
         public final static String cmdComment = "/* LC_RPATH */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes string */";
-        public lc_str path = new lc_str();
+        public lc_str path = new lc_str(this);
         public final static String pathComment = "/* path to add to run path */";
 
-        public Data[] getData() {
-            final int retSize = path.getData().length+2;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<path.getData().length;i++){
-                ret[i]=path.getData()[i];
-            }
-            ret[retSize]=cmd.setComment(cmdComment);
-            ret[retSize+1]=cmdsize.setComment(cmdsizeComment);
-            return ret;
+        public rpath_command(Addressable parent) {
+            super(parent);
+        }
+
+        @Override
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            path.setComment(pathComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1724,10 +1934,17 @@ public interface Loader {
         public DWord sdk = new DWord();
         public final static String sdkComment = "/* X.Y.Z is encoded in nibbles xxxx.yy.zz */";
 
+        public version_min_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    version.setComment(versionComment),sdk.setComment(sdkComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            version.setComment(versionComment);
+            sdk.setComment(sdkComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, version, sdk));
         }
     }
 
@@ -1748,10 +1965,17 @@ public interface Loader {
         public DWord datasize = new DWord();
         public final static String datasizeComment = "/* file size of data in __LINKEDIT segment  */";
 
+        public linkedit_data_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    dataoff.setComment(dataoffComment),datasize.setComment(datasizeComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            dataoff.setComment(dataoffComment);
+            datasize.setComment(datasizeComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, dataoff, datasize));
         }
     }
 
@@ -1773,11 +1997,18 @@ public interface Loader {
         public DWord cryptid = new DWord();
         public final static String cryptidComment = "/* which enryption system, 0 means not-encrypted yet */";
 
+        public encryption_info_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    cryptoff.setComment(cryptoffComment),cryptsize.setComment(cryptsizeComment),
-                    cryptid.setComment(cryptidComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            cryptoff.setComment(cryptoffComment);
+            cryptsize.setComment(cryptsizeComment);
+            cryptid.setComment(cryptidComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, cryptoff, cryptsize, cryptid));
         }
     }
 
@@ -1897,14 +2128,25 @@ public interface Loader {
         public DWord export_size = new DWord();
         public final static String export_sizeComment = "/* size of lazy binding infs */";
 
+        public dyld_info_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    rebase_off.setComment(rebase_offComment),rebase_size.setComment(rebase_sizeComment),
-                    bind_off.setComment(bind_offComment),bind_size.setComment(bind_sizeComment),
-                    weak_bind_off.setComment(weak_bind_offComment),weak_bind_size.setComment(weak_bind_sizeComment),
-                    lazy_bind_off.setComment(lazy_bind_offComment),lazy_bind_size.setComment(lazy_bind_sizeComment),
-                    export_off.setComment(export_offComment),export_size.setComment(export_sizeComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            rebase_off.setComment(rebase_offComment);
+            rebase_size.setComment(rebase_sizeComment);
+            bind_off.setComment(bind_offComment);
+            bind_size.setComment(bind_sizeComment);
+            weak_bind_off.setComment(weak_bind_offComment);
+            weak_bind_size.setComment(weak_bind_sizeComment);
+            lazy_bind_off.setComment(lazy_bind_offComment);
+            lazy_bind_size.setComment(lazy_bind_sizeComment);
+            export_off.setComment(export_offComment);
+            export_size.setComment(export_sizeComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, rebase_off, rebase_size, bind_off, bind_size, weak_bind_off, weak_bind_size, lazy_bind_off, lazy_bind_size, export_off, export_size));
         }
     }
 
@@ -1995,10 +2237,17 @@ public interface Loader {
         public DWord size = new DWord();
         public final static String sizeComment = "/* symbol segment size in bytes */";
 
+        public symseg_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    offset.setComment(offsetComment),size.setComment(sizeComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            offset.setComment(offsetComment);
+            size.setComment(sizeComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, offset, size));
         }
     }
 
@@ -2016,9 +2265,15 @@ public interface Loader {
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* strings that follow this command */";
 
+        public ident_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -2035,22 +2290,23 @@ public interface Loader {
         public final static String cmdComment = "/* LC_FVMFILE */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public lc_str name = new lc_str();
+        public lc_str name = new lc_str(this);
         public final static String nameComment = "/* files pathname */";
         public DWord header_addr = new DWord();
         public final static String header_addrComment = "/* files virtual address */";
 
+        public fvmfile_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            final int retSize =name.getData().length+3;
-            Data[] ret = new Data[retSize];
-            for(int i=0;i<name.getData().length;i++){
-                ret[i]=name.getData()[i];
-            }
-            ret[name.getData().length]=cmd.setComment(cmdComment);
-            ret[name.getData().length+1]=cmdsize.setComment(cmdsizeComment);
-            ret[name.getData().length+2]=header_addr.setComment(header_addrComment);
-            return ret;
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            name.setComment(nameComment);
+            header_addr.setComment(header_addrComment);
+
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, header_addr));
         }
     }
 
@@ -2073,10 +2329,17 @@ public interface Loader {
         public QWord stacksize = new QWord();
         public final static String stacksizeComment = "/* if not zero, initial stack size */";
 
+        public entry_point_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    entryoff.setComment(entryoffComment),stacksize.setComment(stacksizeComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            entryoff.setComment(entryoffComment);
+            stacksize.setComment(stacksizeComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, entryoff, stacksize));
         }
     }
 
@@ -2095,10 +2358,16 @@ public interface Loader {
         public QWord version = new QWord();
         public final static String versionComment = "/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */";
 
+        public source_version_command(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getData() {
-            return new Data[]{cmd.setComment(cmdComment),cmdsize.setComment(cmdsizeComment),
-                    version.setComment(versionComment)};
+        public LinkedList<Data> getStructureData() {
+            cmd.setComment(cmdComment);
+            cmdsize.setComment(cmdsizeComment);
+            version.setComment(versionComment);
+            return new LinkedList<>(Arrays.asList(cmd, cmdsize, version));
         }
     }
 
@@ -2111,7 +2380,7 @@ public interface Loader {
      * describes a range of data in a code section.  This load command
      * is only used in final linked images.
      */
-    public class data_in_code_entry extends DataStructure{
+    public class data_in_code_entry extends DataStructure {
         public DWord offset = new DWord();
         public final static String offsetComment = "/* from mach_header to start of data range*/";
         public Word length = new Word();
@@ -2119,10 +2388,16 @@ public interface Loader {
         public Word kind = new Word();
         public final static String kindComment = " /* a DICE_KIND_* value  */";
 
+        public data_in_code_entry(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            return new Data[]{offset.setComment(offsetComment),length.setComment(lengthComment),
-                    kind.setComment(kindComment)};
+        public LinkedList<Data> getStructureData() {
+            offset.setComment(offsetComment);
+            length.setComment(lengthComment);
+            kind.setComment(kindComment);
+            return new LinkedList<>(Arrays.asList(offset, length, kind));
         }
     }
 
@@ -2138,7 +2413,7 @@ public interface Loader {
      * Sections of type S_THREAD_LOCAL_VARIABLES contain an array
      * of tlv_descriptor structures.
      */
-    public class tlv_descriptor extends DataStructure{
+    public class tlv_descriptor extends DataStructure {
         byte[] tlv_descriptor;
         public final static String tlv_descriptorComment = "/*tlv_descriptor/*";
         public QWord key = new QWord();
@@ -2146,13 +2421,20 @@ public interface Loader {
         public QWord offset = new QWord();
         public final static String offsetComment = "/*offset*/";
 
+        public tlv_descriptor(Addressable parent) {
+            super(parent);
+        }
+
         @Override
-        public Data[] getProcessedData() {
-            return new Data[]{key.setComment(keyComment),offset.setComment(offsetComment)};
+        public LinkedList<Data> getStructureData() {
+            key.setComment(keyComment);
+            offset.setComment(offsetComment);
+            return new LinkedList<>(Arrays.asList(key, offset));
         }
     }
 
     ;
+
 }
 
 //#endif /* _MACHO_LOADER_H_ */

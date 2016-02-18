@@ -1,9 +1,6 @@
 package abi.mach;
 
-import abi.generic.abi.*;
-import abi.generic.memory.data.Data;
-
-import java.util.ArrayList;
+import abi.generic.ABIType;
 
 /**
  * Created by jamesrichardson on 2/10/16.

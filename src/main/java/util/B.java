@@ -1,10 +1,12 @@
 package util;
 
-import abi.generic.memory.*;
-import abi.generic.memory.address.Address;
-import abi.generic.memory.data.DWord;
-import abi.generic.memory.data.QWord;
-import abi.generic.memory.data.Word;
+import abi.generic.ABI;
+import abi.mach.MachO64;
+import abi.memory.*;
+import abi.memory.address.Address;
+import abi.memory.address.Address32;
+import abi.memory.address.Address64;
+import abi.memory.data.*;
 
 import javax.xml.bind.DatatypeConverter;
 import java.nio.ByteBuffer;
@@ -88,11 +90,11 @@ public final class B {
         byte[] tmp = new byte[Long.BYTES];
         Arrays.fill(tmp, (byte)0x0);
         if(order == ByteOrder.BIG_ENDIAN) {
-            for (int i = tmp.length-1; i >= 0; i--) {
+            for (int i = in.length-1; i >= 0; i--) {
                 tmp[i] = in[i];
             }
         }else{
-            for (int i = 0; i <tmp.length; i++) {
+            for (int i = 0; i <in.length; i++) {
                 tmp[i] = in[i];
             }
         }
@@ -137,6 +139,51 @@ public final class B {
             }
         }
         return true;
+    }
+
+    public static void addCompiledText32ToABI(ABI in,DWord begin,DWord end,DataStructure container){
+        final CompiledText dataRange = new CompiledText(in.getRaw(), B.dWordToAddr32(begin), B.dWordToAddr32(end), ByteOrder.LITTLE_ENDIAN);
+        dataRange.setContainingDataStructure(container);
+        in.getCompiledCodeBlocks().add(dataRange);
+    }
+
+    public static void addCompiledText64ToABI(ABI in, QWord begin, QWord end, DataStructure container){
+        //TODO - bin offset
+        final Address64 begin64 = B.qWordToAddr64(begin);
+        final Address64 end64 = B.qWordToAddr64(end);
+        begin64.subtract(new Address64("0x0000000100000000"));
+        end64.subtract(new Address64("0x0000000100000000"));
+        final CompiledText dataRange = new CompiledText(in.getRaw(),begin64,end64, ByteOrder.LITTLE_ENDIAN);
+        dataRange.setContainingDataStructure(container);
+        in.getCompiledCodeBlocks().add(dataRange);
+    }
+
+    public static void addCompiledText32ToABI(ABI in,DWord begin,DWord end){
+        in.getCompiledCodeBlocks().add(new CompiledText(in.getRaw(),B.dWordToAddr32(begin),B.dWordToAddr32(end),ByteOrder.LITTLE_ENDIAN));
+    }
+
+    public static void addCompiledText64ToABI(ABI in,QWord begin,QWord end){
+        in.getCompiledCodeBlocks().add(new CompiledText(in.getRaw(),B.qWordToAddr64(begin),B.qWordToAddr64(end),ByteOrder.LITTLE_ENDIAN));
+    }
+
+    public static Address32 dWordToAddr32(DWord begin){
+        byte[] tmpBegin;
+        if(begin.BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            tmpBegin = begin.flipByteOrder().getContainer();
+        }else{
+            tmpBegin = begin.getContainer();
+        }
+        return new Address32(tmpBegin);
+    }
+
+    public static Address64 qWordToAddr64(QWord begin){
+        byte[] tmpBegin;
+        if(begin.BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+            tmpBegin = begin.flipByteOrder().getContainer();
+        }else{
+            tmpBegin = begin.getContainer();
+        }
+        return new Address64(tmpBegin);
     }
 
     public static Word getWordAtAddress(final byte[] raw, final Address address, ByteOrder resultOrder){

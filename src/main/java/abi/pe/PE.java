@@ -1,4 +1,4 @@
-package abi.mach;
+package abi.pe;
 
 
 import abi.generic.ABI;
@@ -15,11 +15,11 @@ import java.util.LinkedList;
 /**
  * Created by jamesrichardson on 2/10/16.
  */
-public abstract class Mach implements ABI {
-    public static final DWord MACH_ID_32 = new DWord("0xfeedface", ByteOrder.BIG_ENDIAN);
-    public static final DWord MACH_DI_32 = new DWord("0xcefaedfe", ByteOrder.BIG_ENDIAN);
-    public static final DWord MACH_ID_64 = new DWord("0xfeedfacf", ByteOrder.BIG_ENDIAN);
-    public static final DWord MACH_DI_64 = new DWord("0xcffaedfe", ByteOrder.BIG_ENDIAN);
+public abstract class PE implements ABI {
+    public static final DWord PE_ID_32 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
+    public static final DWord PE_DI_32 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
+    public static final DWord PE_ID_64 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
+    public static final DWord PE_DI_64 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
 
     protected final byte[] raw;
     protected final LinkedList<DataStructure> dataStructures = new LinkedList<>();
@@ -28,18 +28,18 @@ public abstract class Mach implements ABI {
     protected Address endAddress;
     protected String comment;
 
-    public Mach(byte[] binary) {
+    public PE(byte[] binary) {
         this.raw=binary;
-    }
-
-    @Override
-    public LinkedList<DataStructure> getChildren() {
-        return dataStructures;
     }
 
     @Override
     public LinkedList<CompiledText> getCompiledCodeBlocks() {
         return compiledCodeBlocks;
+    }
+
+    @Override
+    public LinkedList<DataStructure> getChildren() {
+        return dataStructures;
     }
 
     @Override

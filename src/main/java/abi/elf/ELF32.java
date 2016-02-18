@@ -1,16 +1,16 @@
-package abi.mach;
+package abi.elf;
 
 import abi.generic.ABIType;
 
 /**
  * Created by jamesrichardson on 2/10/16.
  */
-public class MachO64 extends Mach{
+public class ELF32 extends ELF {
 
-    private static final ABIType ABI_TYPE = ABIType.MACH_64;
+    private static final ABIType ABI_TYPE = ABIType.ELF_32;
 
-    public MachO64(byte[] binary) {
-        super(binary);
+    public ELF32(byte[] in){
+        super(in);
     }
 
     @Override
@@ -22,5 +22,4 @@ public class MachO64 extends Mach{
     public byte[] getRaw() {
         return raw;
     }
-
 }

@@ -1,15 +1,15 @@
-package abi.mach;
+package abi.pe;
 
 import abi.generic.ABIType;
 
 /**
  * Created by jamesrichardson on 2/10/16.
  */
-public class MachO64 extends Mach{
+public class PE64 extends PE {
 
-    private static final ABIType ABI_TYPE = ABIType.MACH_64;
+    private static final ABIType ABI_TYPE = ABIType.PE_64;
 
-    public MachO64(byte[] binary) {
+    public PE64(byte[] binary) {
         super(binary);
     }
 
