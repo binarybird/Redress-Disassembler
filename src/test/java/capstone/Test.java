@@ -1,8 +1,6 @@
 package capstone;/* Capstone Disassembler Engine */
 /* By Nguyen Anh Quynh <aquynh@gmail.com>, 2013> */
 
-import capstone.Capstone;
-
 public class Test {
   public static class platform {
     public int arch;
