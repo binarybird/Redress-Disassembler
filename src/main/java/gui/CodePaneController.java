@@ -57,6 +57,4 @@ public class CodePaneController extends TableView<DisplaySet> {
         final ObservableList<DisplaySet> wrapped = FXCollections.<DisplaySet>observableList(tmp);
         this.setItems(wrapped);
     }
-
-
 }

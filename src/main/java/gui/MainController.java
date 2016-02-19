@@ -113,7 +113,7 @@ public class MainController extends AnchorPane {
         this.loadedProperty.set(true);
     }
 
-    public LinkedList<Data> getAllData(ABI abi){
+    private LinkedList<Data> getAllData(ABI abi){
         final LinkedList<Data> ret = new LinkedList<>();
         for(DataStructure s : abi.getChildren()){
             ret.add(getSeperator(s));

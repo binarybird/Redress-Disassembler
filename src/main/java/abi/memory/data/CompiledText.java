@@ -75,16 +75,24 @@ public class CompiledText extends DataRange{
 
         Capstone cs = null;
         if(fileType == ABIType.MACH_64 || fileType == ABIType.PE_64 || fileType == ABIType.ELF_64){
-            if(abiArch == ABIArch.X86)
-                cs = new Capstone(Capstone.CS_ARCH_X86,Capstone.CS_MODE_64);
+            if(abiArch == ABIArch.X86) {
+                cs = new Capstone(Capstone.CS_ARCH_X86, Capstone.CS_MODE_64);
+            }
         }else if(fileType == ABIType.MACH_32 || fileType == ABIType.PE_32 || fileType == ABIType.ELF_32){
-            if(abiArch == ABIArch.X86)
-                cs = new Capstone(Capstone.CS_ARCH_X86,Capstone.CS_MODE_32);
+            if(abiArch == ABIArch.X86) {
+                cs = new Capstone(Capstone.CS_ARCH_X86, Capstone.CS_MODE_32);
+            }
         }
-        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, beginAddress.toString(),endAddress.toString(),B.bytesToString(new byte[]{container[0]})});
+
+        byte[] tmp;
+        if(this.BYTEORDER == ByteOrder.BIG_ENDIAN)
+            tmp = B.flipByteOrder(container);
+        else
+            tmp=container;
+        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, beginAddress.toString(),endAddress.toString(),B.bytesToString(new byte[]{tmp[0]})});
 
         try {
-            final Capstone.CsInsn[] disasm = cs.disasm(container, 0, length);
+            final Capstone.CsInsn[] disasm = cs.disasm(tmp, beginAddress.getIntValue());
             for (Capstone.CsInsn csin : disasm) {
                 ret.add(print_ins_detail(csin, cs));
             }
@@ -102,7 +110,7 @@ public class CompiledText extends DataRange{
         final StringBuilder code = new StringBuilder();
         final StringBuilder comment = new StringBuilder();
 
-        final Address addr = new Address32(B.intToBytes(B.longToInt(ins.address) + beginAddress.getIntValue(),ByteOrder.BIG_ENDIAN));
+        final Address addr = new Address32(B.intToBytes(B.longToInt(ins.address),ByteOrder.BIG_ENDIAN));
 
         code.append(ins.mnemonic);
         code.append(" ");

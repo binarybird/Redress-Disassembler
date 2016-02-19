@@ -152,7 +152,10 @@ public final class B {
         final Address64 end64 = B.qWordToAddr64(end);
         begin64.subtract(new Address64("0x0000000100000000"));
         end64.subtract(new Address64("0x0000000100000000"));
-        final CompiledText dataRange = new CompiledText(in.getRaw(),begin64,end64, ByteOrder.LITTLE_ENDIAN);
+
+        byte[] range = B.getRangeAtAddress(in.getRaw(),begin64,end64);
+
+        final CompiledText dataRange = new CompiledText(range,begin64,end64, ByteOrder.LITTLE_ENDIAN);
         dataRange.setContainingDataStructure(container);
         in.getCompiledTextBlocks().add(dataRange);
     }
