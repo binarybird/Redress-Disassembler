@@ -78,21 +78,16 @@ public class CompiledText extends DataRange{
             if(abiArch == ABIArch.X86) {
                 cs = new Capstone(Capstone.CS_ARCH_X86, Capstone.CS_MODE_64);
             }
-        }else if(fileType == ABIType.MACH_32 || fileType == ABIType.PE_32 || fileType == ABIType.ELF_32){
-            if(abiArch == ABIArch.X86) {
+        }else if(fileType == ABIType.MACH_32 || fileType == ABIType.PE_32 || fileType == ABIType.ELF_32) {
+            if (abiArch == ABIArch.X86) {
                 cs = new Capstone(Capstone.CS_ARCH_X86, Capstone.CS_MODE_32);
             }
         }
 
-        byte[] tmp;
-        if(this.BYTEORDER == ByteOrder.BIG_ENDIAN)
-            tmp = B.flipByteOrder(container);
-        else
-            tmp=container;
-        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, beginAddress.toString(),endAddress.toString(),B.bytesToString(new byte[]{tmp[0]})});
+        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, beginAddress.toString(),endAddress.toString(),B.bytesToString(new byte[]{container[0]})});
 
         try {
-            final Capstone.CsInsn[] disasm = cs.disasm(tmp, beginAddress.getIntValue());
+            final Capstone.CsInsn[] disasm = cs.disasm(container, beginAddress.getIntValue());
             for (Capstone.CsInsn csin : disasm) {
                 ret.add(print_ins_detail(csin, cs));
             }

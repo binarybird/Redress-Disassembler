@@ -71,7 +71,7 @@ public class MenuBarController {
 
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             File toOpen = fileChooser.showOpenDialog(MainController.getSharedMainController().getPrimaryStage());
-            toOpen = new File("/Users/jamesrichardson/Desktop/ReverseEngineering/a.out");
+
             if(toOpen == null)
                 return;
 
