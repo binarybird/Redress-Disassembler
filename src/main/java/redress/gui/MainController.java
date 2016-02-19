@@ -32,6 +32,8 @@ public class MainController extends AnchorPane {
     private static final Image dockImage = new Image(DockFX.class.getResource("docknode.png").toExternalForm());
     private final SimpleBooleanProperty loadedProperty = new SimpleBooleanProperty(false);
 
+    private RightPane rp;
+    private LeftPane lp;
     private ABI abi;
     private CodePaneController codePaneController;
     private MenuBarController menuBarController;
@@ -61,8 +63,7 @@ public class MainController extends AnchorPane {
             throw new RuntimeException(exception);
         }
     }
-    RightPane rp;
-    LeftPane lp;
+
     @FXML
     public void initialize() {
         DockPane dockPane = new DockPane();
@@ -145,6 +146,7 @@ public class MainController extends AnchorPane {
     }
 
     public CodePaneController getCodePaneController(){return codePaneController;}
+
     public MenuBarController getMenuBarController(){return menuBarController;}
 
     public class AddrComparator implements Comparator<Data>{
@@ -157,5 +159,4 @@ public class MainController extends AnchorPane {
             return o1.getBeginAddress().compareTo(o2.getBeginAddress());
         }
     }
-
 }
