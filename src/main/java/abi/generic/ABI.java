@@ -12,8 +12,9 @@ import java.util.LinkedList;
  * Created by jamesrichardson on 2/10/16.
  */
 public interface ABI extends Addressable{
-    public ABIType getArch();
+    public ABIType getType();
+    public ABIArch getArch();
     public LinkedList<DataStructure> getChildren();
-    public LinkedList<CompiledText> getCompiledCodeBlocks();
+    public LinkedList<CompiledText> getCompiledTextBlocks();
     public byte[] getRaw();
 }

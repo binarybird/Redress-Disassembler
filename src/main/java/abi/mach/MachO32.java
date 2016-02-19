@@ -14,7 +14,7 @@ public class MachO32 extends Mach {
     }
 
     @Override
-    public ABIType getArch() {
+    public ABIType getType() {
         return ABI_TYPE;
     }
 

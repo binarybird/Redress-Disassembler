@@ -1,12 +1,10 @@
 package gui;
 
-import abi.memory.data.CompiledText;
 import abi.memory.data.Data;
-import abi.memory.data.DataRange;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -16,11 +14,11 @@ import java.util.logging.Logger;
 /**
  * Created by jamesrichardson on 2/16/16.
  */
-public class CodePaneController extends TableView<CodeSet> {
+public class CodePaneController extends TableView<DisplaySet> {
     private final static Logger LOGGER = Logger.getLogger(CodePaneController.class.getName());
-    private final TableColumn<CodeSet,String> addressColumn = new TableColumn<>("Address");
-    private final TableColumn<CodeSet,String> codeColumn = new TableColumn<>("Code");
-    private final TableColumn<CodeSet,String> commentColumn = new TableColumn<>("Comment");
+    private final TableColumn<DisplaySet,String> addressColumn = new TableColumn<>("Address");
+    private final TableColumn<DisplaySet,String> codeColumn = new TableColumn<>("Code");
+    private final TableColumn<DisplaySet,String> commentColumn = new TableColumn<>("Comment");
 
     public CodePaneController(){
         this.widthProperty().addListener(c->{
@@ -29,29 +27,36 @@ public class CodePaneController extends TableView<CodeSet> {
             codeColumn.setPrefWidth(this.getWidth() / 2);
             commentColumn.setPrefWidth(w / 4);
         });
-        addressColumn.setCellValueFactory(new PropertyValueFactory<CodeSet,String>("address"));
-        codeColumn.setCellValueFactory(new PropertyValueFactory<CodeSet,String>("code"));
-        commentColumn.setCellValueFactory(new PropertyValueFactory<CodeSet,String>("comment"));
+        addressColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("address"));
+        codeColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("text"));
+        commentColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet,String>("comment"));
 
-        this.getColumns().addAll(addressColumn,codeColumn,commentColumn);
+        this.setRowFactory(tableView -> {
+            TableRow<DisplaySet> row = new TableRow<>();
+            row.itemProperty().addListener((obs, prev, cur) -> {
+                if (cur != null && Data.Type.valueOf(cur.getInformationType()) == Data.Type.COMMENT_STRING) {
+                    row.setStyle("-fx-background-color: green;");
+                    return;
+                }
+                if (cur != null && Data.Type.valueOf(cur.getInformationType()) == Data.Type.COMMENT_SEPERATOR) {
+                    row.setStyle("-fx-background-color: yellowgreen;");
+                    return;
+                }
+                row.setStyle("");
+            });
+            return row;
+        });
+
+
+        this.getColumns().addAll(addressColumn, codeColumn, commentColumn);
     }
 
-    public void set(TreeSet<Data> in,LinkedList<CompiledText> in2){
-
-        List<CodeSet> tmp = new LinkedList<>();
-        in.forEach(e-> tmp.add(new CodeSet(e)));
-
-        in2.forEach(e->{tmp.addAll(e.deCompileText());});
-
-        final ObservableList<CodeSet> wrapped = FXCollections.<CodeSet>observableList(tmp);
-
+    public void set(LinkedList<Data> in){
+        final List<DisplaySet> tmp = new LinkedList<>();
+        in.forEach(e-> tmp.add(new DisplaySet(e)));
+        final ObservableList<DisplaySet> wrapped = FXCollections.<DisplaySet>observableList(tmp);
         this.setItems(wrapped);
     }
-
-    public CodeSet initCodeSet(String address,String code,String comment,DataRange in){
-        return new CodeSet(address,code,comment,in);
-    }
-
 
 
 }

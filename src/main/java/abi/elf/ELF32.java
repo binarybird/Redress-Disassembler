@@ -1,5 +1,6 @@
 package abi.elf;
 
+import abi.generic.ABIArch;
 import abi.generic.ABIType;
 
 /**
@@ -14,7 +15,7 @@ public class ELF32 extends ELF {
     }
 
     @Override
-    public ABIType getArch() {
+    public ABIType getType() {
         return ABI_TYPE;
     }
 

@@ -17,7 +17,7 @@ public class PE32 extends PE {
     }
 
     @Override
-    public ABIType getArch() {
+    public ABIType getType() {
         return ABI_TYPE;
     }
 

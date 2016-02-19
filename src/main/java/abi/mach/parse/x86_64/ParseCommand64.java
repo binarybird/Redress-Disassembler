@@ -60,6 +60,7 @@ public class ParseCommand64 {
                 load_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 load_command.setEndAddress(pointer.clone());
+                load_command.setComment("LC_LOAD_UPWARD_DYLIB");
 
                 parent.getChildren().add(load_command);
             }else if(command.equals(Loader.LC_VERSION_MIN_IPHONEOS)) {
@@ -70,6 +71,7 @@ public class ParseCommand64 {
                 version_min_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 version_min_command.setEndAddress(pointer.clone());
+                version_min_command.setComment("LC_VERSION_MIN_IPHONEOS");
 
                 parent.getChildren().add(version_min_command);
             }else if(command.equals(Loader.LC_FUNCTION_STARTS)) {
@@ -83,8 +85,7 @@ public class ParseCommand64 {
                 linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.setEndAddress(pointer.clone());
-
-//                addCodeRange32ToABI(parent,)
+                linkedit_data_command.setComment("LC_FUNCTION_STARTS");
 
                 parent.getChildren().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_DYLD_ENVIRONMENT)) {
@@ -95,6 +96,7 @@ public class ParseCommand64 {
                 dyld_info_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 dyld_info_command.setEndAddress(pointer.clone());
+                dyld_info_command.setComment("LC_DYLD_ENVIRONMENT");
 
                 parent.getChildren().add(dyld_info_command);
             }else if(command.equals(Loader.LC_MAIN)) {
@@ -108,6 +110,7 @@ public class ParseCommand64 {
                 entry_point_command.entryoff = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 entry_point_command.stacksize = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 entry_point_command.setEndAddress(pointer.clone());
+                entry_point_command.setComment("LC_MAIN");
 
                 parent.getChildren().add(entry_point_command);
             }else if(command.equals(Loader.LC_DATA_IN_CODE)) {
@@ -121,6 +124,7 @@ public class ParseCommand64 {
                 linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.datasize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.setEndAddress(pointer.clone());
+                linkedit_data_command.setComment("LC_DATA_IN_CODE");
 
                 parent.getChildren().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_SOURCE_VERSION)) {
@@ -133,6 +137,7 @@ public class ParseCommand64 {
                 source_version_command.cmdsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 source_version_command.version = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 source_version_command.setEndAddress(pointer.clone());
+                source_version_command.setComment("LC_SOURCE_VERSION");
 
                 parent.getChildren().add(source_version_command);
             }else if(command.equals(Loader.LC_DYLIB_CODE_SIGN_DRS)) {
@@ -146,6 +151,7 @@ public class ParseCommand64 {
                 linkedit_data_command.dataoff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.datasize =B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 linkedit_data_command.setEndAddress(pointer.clone());
+                linkedit_data_command.setComment("LC_DYLIB_CODE_SIGN_DRS");
 
                 parent.getChildren().add(linkedit_data_command);
             }else if(command.equals(Loader.LC_VERSION_MIN_MACOSX)){
@@ -159,6 +165,7 @@ public class ParseCommand64 {
                 version_min_command.version = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 version_min_command.sdk = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 version_min_command.setEndAddress(pointer.clone());
+                version_min_command.setComment("LC_VERSION_MIN_MACOSX");
 
                 parent.getChildren().add(version_min_command);
             }else if (command.equals(Loader.LC_REQ_DYLD)) {
@@ -169,6 +176,7 @@ public class ParseCommand64 {
                 load_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 load_command.setEndAddress(pointer.clone());
+                load_command.setComment("LC_REQ_DYLD");
 
                 parent.getChildren().add(load_command);
             }else if(command.equals(Loader.LC_DYLD_INFO_ONLY)){
@@ -190,6 +198,7 @@ public class ParseCommand64 {
                 dyld_info_command.export_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dyld_info_command.export_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dyld_info_command.setEndAddress(pointer.clone());
+                dyld_info_command.setComment("LC_DYLD_INFO_ONLY");
 
                 parent.getChildren().add(dyld_info_command);
             }else if(command.equals(Loader.LC_REEXPORT_DYLIB)){
@@ -200,6 +209,7 @@ public class ParseCommand64 {
                 dylinker_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 dylinker_command.setEndAddress(pointer.clone());
+                dylinker_command.setComment("LC_REEXPORT_DYLIB");
 
                 parent.getChildren().add(dylinker_command);
             }else if(command.equals(Loader.LC_RPATH)){
@@ -210,6 +220,7 @@ public class ParseCommand64 {
                 rpath_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 rpath_command.setEndAddress(pointer.clone());
+                rpath_command.setComment("LC_RPATH");
 
                 parent.getChildren().add(rpath_command);
             }else if(command.equals(Loader.LC_LOAD_WEAK_DYLIB)){
@@ -220,6 +231,7 @@ public class ParseCommand64 {
                 load_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 load_command.setEndAddress(pointer.clone());
+                load_command.setComment("LC_LOAD_WEAK_DYLIB");
 
                 parent.getChildren().add(load_command);
             }else if (command.equals(Loader.LC_SEGMENT)){
@@ -230,6 +242,7 @@ public class ParseCommand64 {
                 segment_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 segment_command.setEndAddress(pointer.clone());
+                segment_command.setComment("LC_SEGMENT");
 
                 parent.getChildren().add(segment_command);
 
@@ -246,6 +259,7 @@ public class ParseCommand64 {
                 symtab_command.stroff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 symtab_command.strsize = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 symtab_command.setEndAddress(pointer.clone());
+                symtab_command.setComment("LC_SYMTAB");
 
                 parent.getChildren().add(symtab_command);
             } else if (command.equals(Loader.LC_SYMSEG)) {
@@ -256,6 +270,7 @@ public class ParseCommand64 {
                 symseg_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 symseg_command.setEndAddress(pointer.clone());
+                symseg_command.setComment("LC_SYMSEG");
 
                 parent.getChildren().add(symseg_command);
                 
@@ -267,6 +282,7 @@ public class ParseCommand64 {
                 thread_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 thread_command.setEndAddress(pointer.clone());
+                thread_command.setComment("LC_THREAD");
 
                 parent.getChildren().add(thread_command);
                 
@@ -278,6 +294,7 @@ public class ParseCommand64 {
                 unix_thread_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 unix_thread_command.setEndAddress(pointer.clone());
+                unix_thread_command.setComment("LC_UNIXTHREAD");
 
                 parent.getChildren().add(unix_thread_command);
                 
@@ -289,6 +306,7 @@ public class ParseCommand64 {
                 fvmlib_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 fvmlib_command.setEndAddress(pointer.clone());
+                fvmlib_command.setComment("LC_LOADFVMLIB");
 
                 parent.getChildren().add(fvmlib_command);
                 
@@ -300,6 +318,7 @@ public class ParseCommand64 {
                 fvmlib_command1.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 fvmlib_command1.setEndAddress(pointer.clone());
+                fvmlib_command1.setComment("LC_IDFVMLIB");
 
                 parent.getChildren().add(fvmlib_command1);
                 
@@ -311,6 +330,7 @@ public class ParseCommand64 {
                 ident_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 ident_command.setEndAddress(pointer.clone());
+                ident_command.setComment("LC_IDENT");
 
                 parent.getChildren().add(ident_command);
                 
@@ -322,6 +342,7 @@ public class ParseCommand64 {
                 fvmfile_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 fvmfile_command.setEndAddress(pointer.clone());
+                fvmfile_command.setComment("LC_FVMFILE");
 
                 parent.getChildren().add(fvmfile_command);
                 
@@ -356,6 +377,7 @@ public class ParseCommand64 {
                 dysymtab_command.locreloff = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dysymtab_command.nlocrel = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dysymtab_command.setEndAddress(pointer.clone());
+                dysymtab_command.setComment("LC_DYSYMTAB");
 
                 parent.getChildren().add(dysymtab_command);
             } else if (command.equals(Loader.LC_LOAD_DYLIB)) {
@@ -373,6 +395,7 @@ public class ParseCommand64 {
                 dylib_command.dylib = getDylib(parent, pointer, dylib_command,dylib_command);
                 dylib_command.getChildren().add(dylib_command.dylib);
                 dylib_command.setEndAddress(end.clone());
+                dylib_command.setComment("LC_LOAD_DYLIB");
                 pointer = end;
 
                 parent.getChildren().add(dylib_command);
@@ -391,6 +414,7 @@ public class ParseCommand64 {
                 dylib_command.dylib = getDylib(parent, pointer, dylib_command,dylib_command);
                 dylib_command.getChildren().add(dylib_command.dylib);
                 dylib_command.setEndAddress(end.clone());
+                dylib_command.setComment("LC_ID_DYLIB");
                 pointer = end;
 
                 parent.getChildren().add(dylib_command);
@@ -413,6 +437,7 @@ public class ParseCommand64 {
 
                 dylinker_command.name=lc_str;
                 dylinker_command.getChildren().add(dylinker_command.name);
+                dylinker_command.setComment("LC_LOAD_DYLINKER");
 
                 pointer = (Address32) dylinker_command.getEndAddress();
 
@@ -430,6 +455,7 @@ public class ParseCommand64 {
                 prebound_dylib_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 prebound_dylib_command.setEndAddress(pointer.clone());
+                prebound_dylib_command.setComment("LC_PREBOUND_DYLIB");
 
                 parent.getChildren().add(prebound_dylib_command);
                 
@@ -441,6 +467,7 @@ public class ParseCommand64 {
                 routines_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 routines_command.setEndAddress(pointer.clone());
+                routines_command.setComment("LC_ROUTINES");
 
                 parent.getChildren().add(routines_command);
                 
@@ -452,6 +479,7 @@ public class ParseCommand64 {
                 sub_framework_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 sub_framework_command.setEndAddress(pointer.clone());
+                sub_framework_command.setComment("LC_SUB_FRAMEWORK");
 
                 parent.getChildren().add(sub_framework_command);
                 
@@ -463,6 +491,7 @@ public class ParseCommand64 {
                 sub_umbrella_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 sub_umbrella_command.setEndAddress(pointer.clone());
+                sub_umbrella_command.setComment("LC_SUB_UMBRELLA");
 
                 parent.getChildren().add(sub_umbrella_command);
                 
@@ -474,6 +503,7 @@ public class ParseCommand64 {
                 sub_client_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 sub_client_command.setEndAddress(pointer.clone());
+                sub_client_command.setComment("LC_SUB_CLIENT");
 
                 parent.getChildren().add(sub_client_command);
                 
@@ -485,6 +515,7 @@ public class ParseCommand64 {
                 sub_library_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 sub_library_command.setEndAddress(pointer.clone());
+                sub_library_command.setComment("LC_SUB_LIBRARY");
 
                 parent.getChildren().add(sub_library_command);
                 
@@ -496,6 +527,7 @@ public class ParseCommand64 {
                 twolevel_hints_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 twolevel_hints_command.setEndAddress(pointer.clone());
+                twolevel_hints_command.setComment("LC_TWOLEVEL_HINTS");
 
                 parent.getChildren().add(twolevel_hints_command);
                 
@@ -507,6 +539,7 @@ public class ParseCommand64 {
                 prebind_cksum_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 prebind_cksum_command.setEndAddress(pointer.clone());
+                prebind_cksum_command.setComment("LC_PREBIND_CKSUM");
 
                 parent.getChildren().add(prebind_cksum_command);
                 
@@ -537,6 +570,7 @@ public class ParseCommand64 {
                     segment_command_641.getChildren().add(ParseSection64.parse(parent,pointer,segment_command_641));
                 }
                 segment_command_641.setEndAddress(pointer.clone());
+                segment_command_641.setComment("LC_SEGMENT_64");
 
                 parent.getChildren().add(segment_command_641);
                 
@@ -548,6 +582,7 @@ public class ParseCommand64 {
                 routines_command_64.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 routines_command_64.setEndAddress(pointer.clone());
+                routines_command_64.setComment("LC_ROUTINES_64");
 
                 parent.getChildren().add(routines_command_64);
                 
@@ -564,6 +599,7 @@ public class ParseCommand64 {
                 byte[] tmp2 = B.getQWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
                 uuid_command.uuid = new Loader.char16(B.mergeBytes(tmp1,tmp2),begin,pointer.clone());
                 uuid_command.setEndAddress(pointer.clone());
+                uuid_command.setComment("LC_UUID");
 
                 parent.getChildren().add(uuid_command);
                 
@@ -575,6 +611,7 @@ public class ParseCommand64 {
                 linkedit_data_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 linkedit_data_command.setEndAddress(pointer.clone());
+                linkedit_data_command.setComment("LC_CODE_SIGNATURE");
 
                 parent.getChildren().add(linkedit_data_command);
             } else if (command.equals(Loader.LC_SEGMENT_SPLIT_INFO)) {
@@ -585,6 +622,7 @@ public class ParseCommand64 {
                 dyld_info_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 dyld_info_command.setEndAddress(pointer.clone());
+                dyld_info_command.setComment("LC_SEGMENT_SPLIT_INFO");
 
                 parent.getChildren().add(dyld_info_command);
                 
@@ -596,6 +634,7 @@ public class ParseCommand64 {
                 load_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 load_command.setEndAddress(pointer.clone());
+                load_command.setComment("LC_LAZY_LOAD_DYLIB");
 
                 parent.getChildren().add(load_command);
                 
@@ -607,6 +646,7 @@ public class ParseCommand64 {
                 encryption_info_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
                 encryption_info_command.setEndAddress(pointer.clone());
+                encryption_info_command.setComment("LC_ENCRYPTION_INFO");
 
                 parent.getChildren();
             } else if (command.equals(Loader.LC_DYLD_INFO)) {
@@ -628,6 +668,7 @@ public class ParseCommand64 {
                 dyld_info_command1.export_off = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dyld_info_command1.export_size = B.getDWordAtAddressAndIncrement(parent.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
                 dyld_info_command1.setEndAddress(pointer.clone());
+                dyld_info_command1.setComment("LC_DYLD_INFO");
 
                 parent.getChildren().add(dyld_info_command1);
             }

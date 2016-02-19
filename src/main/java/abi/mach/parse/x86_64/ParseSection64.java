@@ -39,6 +39,16 @@ public class ParseSection64{
         section_64.reserved3=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
         section_64.setEndAddress(pointer.clone());
 
+        String oldComment = section_64.getComment();
+        if(oldComment == null){
+            oldComment = "";
+        }
+        if(!oldComment.equals("")){
+            oldComment+="\n";
+        }
+        oldComment+="Section Name: "+section_64.sectname.value+" Segment Name: "+section_64.segname.value;
+        section_64.setComment(oldComment);
+
         QWord begin = section_64.addr;
         QWord end = section_64.size;
         end.add(begin);

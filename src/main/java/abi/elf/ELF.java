@@ -2,6 +2,7 @@ package abi.elf;
 
 
 import abi.generic.ABI;
+import abi.generic.ABIArch;
 import abi.memory.DataStructure;
 import abi.memory.address.Address;
 import abi.memory.data.CompiledText;
@@ -33,12 +34,17 @@ public abstract class ELF implements ABI {
     }
 
     @Override
+    public ABIArch getArch() {
+        return ABIArch.X86;//todo
+    }
+
+    @Override
     public LinkedList<DataStructure> getChildren() {
         return dataStructures;
     }
 
     @Override
-    public LinkedList<CompiledText> getCompiledCodeBlocks() {
+    public LinkedList<CompiledText> getCompiledTextBlocks() {
         return compiledCodeBlocks;
     }
 

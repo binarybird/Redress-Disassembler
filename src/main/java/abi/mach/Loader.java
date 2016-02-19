@@ -88,6 +88,11 @@ public interface Loader {
         }
 
         @Override
+        public Type getDataType() {
+            return Type.DATA;
+        }
+
+        @Override
         public Data clone() {
             return null;
         }

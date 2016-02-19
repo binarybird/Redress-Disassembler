@@ -12,9 +12,19 @@ import java.nio.ByteOrder;
  */
 public abstract class Data extends Container implements Addressable{
 
+    public enum Type{
+        DATA,
+        ADDRESS,
+        COMPILED_TEXT,
+        DECOMPILED_TEXT,
+        COMMENT_STRING,
+        COMMENT_SEPERATOR
+    }
+
     final Address beginAddress;
     final Address endAddress;
 
+    protected Type type = Type.DATA;
     protected DataStructure parent;
     protected String comment;
 
@@ -23,6 +33,8 @@ public abstract class Data extends Container implements Addressable{
         this.beginAddress = beginAddr;
         this.endAddress = endAddress;
     }
+
+    public abstract Type getDataType();
 
     public void setContainingDataStructure(DataStructure in){
         this.parent = in;

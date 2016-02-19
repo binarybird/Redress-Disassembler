@@ -3,6 +3,7 @@ package gui;
 import abi.generic.ABI;
 import abi.memory.DataStructure;
 import abi.memory.data.Data;
+import abi.memory.data.Word;
 import javafx.application.Application;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -103,20 +104,19 @@ public class MainController extends AnchorPane {
     public ABI getABI(){return abi;}
     public void setABI(ABI abi){
         this.abi = abi;
-        final LinkedList<Data> processedData = getAllData(abi);
+        final LinkedList<Data> tableData = new LinkedList<>();
 
-        final TreeSet<Data> sortedData = new TreeSet<Data>(new AddrComparator());
-        processedData.forEach(sortedData::add);
+        getAllData(abi).forEach(tableData::add);
+        abi.getCompiledTextBlocks().forEach(e->{tableData.addAll(e.deCompileText(abi.getType(),abi.getArch()));});
 
-        this.codePaneController.set(sortedData,abi.getCompiledCodeBlocks());
+        this.codePaneController.set(tableData);
         this.loadedProperty.set(true);
-
-
     }
 
     public LinkedList<Data> getAllData(ABI abi){
         final LinkedList<Data> ret = new LinkedList<>();
         for(DataStructure s : abi.getChildren()){
+            ret.add(getSeperator(s));
             ret.addAll(getAllData(s));
         }
         return ret;
@@ -130,10 +130,18 @@ public class MainController extends AnchorPane {
 
         ret.addAll(dataStructure.getStructureData());
         for(DataStructure child : dataStructure.getChildren()){
+            ret.add(getSeperator(child));
             ret.addAll(getAllData(child));
         }
 
         return ret;
+    }
+
+    private Data getSeperator(DataStructure ds){
+        final Word seperator = new Word();
+        seperator.setComment(ds.getComment());
+        seperator.setDataType(Data.Type.COMMENT_SEPERATOR);
+        return seperator;
     }
 
     public CodePaneController getCodePaneController(){return codePaneController;}

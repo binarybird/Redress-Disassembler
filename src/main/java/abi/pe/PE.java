@@ -2,6 +2,7 @@ package abi.pe;
 
 
 import abi.generic.ABI;
+import abi.generic.ABIArch;
 import abi.memory.DataStructure;
 import abi.memory.address.Address;
 import abi.memory.data.CompiledText;
@@ -33,7 +34,12 @@ public abstract class PE implements ABI {
     }
 
     @Override
-    public LinkedList<CompiledText> getCompiledCodeBlocks() {
+    public ABIArch getArch() {
+        return ABIArch.X86;//todo
+    }
+
+    @Override
+    public LinkedList<CompiledText> getCompiledTextBlocks() {
         return compiledCodeBlocks;
     }
 

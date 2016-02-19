@@ -14,7 +14,7 @@ public class ELF64 extends ELF {
     }
 
     @Override
-    public ABIType getArch() {
+    public ABIType getType() {
         return ABI_TYPE;
     }
 

@@ -32,6 +32,7 @@ public class ParseHeader64 {
             mach_header_64.sizeofcmds = B.getDWordAtAddress(model.getRaw(), new Address32("0x00000014"),ByteOrder.LITTLE_ENDIAN);
             mach_header_64.flags = B.getDWordAtAddress(model.getRaw(), new Address32("0x00000018"),ByteOrder.LITTLE_ENDIAN);
             mach_header_64.reserved = B.getDWordAtAddress(model.getRaw(), new Address32("0x0000001C"),ByteOrder.LITTLE_ENDIAN);
+            mach_header_64.setComment("MACH_HEADER_64");
 
             model.getChildren().add(mach_header_64);
 

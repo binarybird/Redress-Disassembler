@@ -28,6 +28,15 @@ public class DataRange extends Data{
         return new DataRange(B.flipByteOrder(container),this.beginAddress,this.endAddress,this.BYTEORDER);
     }
 
+    public void setDataType(Type in){
+        this.type=in;
+    }
+
+    @Override
+    public Type getDataType() {
+        return type;
+    }
+
     @Override
     public Data clone() {
         return new DataRange(container,this.beginAddress,this.endAddress,this.BYTEORDER);

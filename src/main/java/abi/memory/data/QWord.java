@@ -67,6 +67,15 @@ public class QWord extends Data{
         }
     }
 
+    public void setDataType(Type in){
+        this.type=in;
+    }
+
+    @Override
+    public Type getDataType() {
+        return type;
+    }
+
     @Override
     public QWord flipByteOrder() {
         byte[] flip = new byte[BYTES];
