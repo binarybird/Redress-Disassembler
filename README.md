@@ -7,6 +7,6 @@ This project is still under heavy development, it does not even have an official
 
 Heres a screenshot of the working prototype. It is able to read and decompile basic Mach-O 64bit binaries
 
-![alt text](GUI_PROTO.png "Logo Title Text 1")
+![alt text](GUI_PROTO.png "gui prototype")
 
 
