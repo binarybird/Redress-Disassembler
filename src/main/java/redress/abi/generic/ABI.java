@@ -13,6 +13,6 @@ public interface ABI extends Addressable{
     public ABIType getType();
     public ABIArch getArch();
     public LinkedList<DataStructure> getChildren();
-    public LinkedList<CompiledText> getCompiledTextBlocks();
+    public LinkedList<CompiledText> getCompiledTextBlocks();//TODO - get rid of this - build binary method instead?
     public byte[] getRaw();
 }

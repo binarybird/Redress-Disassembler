@@ -28,32 +28,25 @@ public class CompiledText extends DataRange{
     }
 
     public class DeCompiledTextSet extends Data{
-
         private final Type type;
-
         private String instruction;
-
         public DeCompiledTextSet(Address address, String inst, Type type) {
             super(0, address, Address64.NULL, ByteOrder.BIG_ENDIAN);
             this.type = type;
             this.instruction = inst;
         }
-
         @Override
         public Container flipByteOrder() {
             return null;
         }
-
         @Override
         public Type getDataType() {
             return type;
         }
-
         @Override
         public Data clone() {
             return null;
         }
-
         @Override
         public String toString(){
             return instruction;
@@ -68,7 +61,7 @@ public class CompiledText extends DataRange{
         final LinkedList<DeCompiledTextSet> ret = new LinkedList<>();
         final int length = this.endAddress.getIntValue()-this.beginAddress.getIntValue();
 
-        final DeCompiledTextSet deCompiledTextSet = new DeCompiledTextSet(Address64.NULL, getContainingDataStructure().getComment(), Type.COMMENT_STRING);
+        final DeCompiledTextSet deCompiledTextSet = new DeCompiledTextSet(Address64.NULL, getContainingDataStructure().getComment(), Type.COMMENT);
         deCompiledTextSet.comment="Procedure Start, Length: "+length+" bytes";
         ret.add(deCompiledTextSet);
 
@@ -85,7 +78,7 @@ public class CompiledText extends DataRange{
             e.printStackTrace();
         }
 
-        final DeCompiledTextSet deCompiledTextSetEnd = new DeCompiledTextSet(Address64.NULL, getContainingDataStructure().getComment(), Type.COMMENT_STRING);
+        final DeCompiledTextSet deCompiledTextSetEnd = new DeCompiledTextSet(Address64.NULL, getContainingDataStructure().getComment(), Type.COMMENT);
         deCompiledTextSetEnd.comment="Procedure End, Length: "+length+" bytes";
         ret.add(deCompiledTextSetEnd);
 

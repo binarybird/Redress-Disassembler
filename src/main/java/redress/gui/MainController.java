@@ -141,7 +141,7 @@ public class MainController extends AnchorPane {
     private Data getSeperator(DataStructure ds){
         final Word seperator = new Word();
         seperator.setComment(ds.getComment());
-        seperator.setDataType(Data.Type.COMMENT_SEPERATOR);
+        seperator.setDataType(Data.Type.COMMENT);
         return seperator;
     }
 

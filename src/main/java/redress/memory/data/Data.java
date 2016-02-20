@@ -13,18 +13,19 @@ import java.nio.ByteOrder;
 public abstract class Data extends Container implements Addressable{
 
     public enum Type{
-        DATA,
-        ADDRESS,
+        DATA_NULL,
+        DATA_STRING,
+        DATA_NUMBER,
+        DATA_HEX,
         COMPILED_TEXT,
         DECOMPILED_TEXT,
-        COMMENT_STRING,
-        COMMENT_SEPERATOR
+        COMMENT
     }
 
     final Address beginAddress;
     final Address endAddress;
 
-    protected Type type = Type.DATA;
+    protected Type type = Type.DATA_NULL;
     protected DataStructure parent;
     protected String comment;
 
@@ -56,6 +57,7 @@ public abstract class Data extends Container implements Addressable{
     public void setComment(String comment){
         this.comment = comment;
     }
+
     @Override
     public String getComment(){
         return comment;

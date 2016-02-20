@@ -35,11 +35,7 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         this.setRowFactory(tableView -> {
             TableRow<DisplaySet> row = new TableRow<>();
             row.itemProperty().addListener((obs, prev, cur) -> {
-                if (cur != null && Data.Type.valueOf(cur.getInformationType()) == Data.Type.COMMENT_STRING) {
-                    row.setStyle("-fx-background-color: green;");
-                    return;
-                }
-                if (cur != null && Data.Type.valueOf(cur.getInformationType()) == Data.Type.COMMENT_SEPERATOR) {
+                if (cur != null && Data.Type.valueOf(cur.getInformationType()) == Data.Type.COMMENT) {
                     row.setStyle("-fx-background-color: yellowgreen;");
                     return;
                 }
@@ -67,14 +63,10 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         private final Data data;
 
         public DisplaySet(Data in){
-            if(in.getDataType() == Data.Type.COMMENT_STRING) {
-                this.address = new SimpleStringProperty(in.getComment());
-                this.text = new SimpleStringProperty(in.toString());
-                this.comment = new SimpleStringProperty("");
-            }else if(in.getDataType() == Data.Type.COMMENT_SEPERATOR) {
+            if(in.getDataType() == Data.Type.COMMENT) {
                 this.address = new SimpleStringProperty("");
-                this.text = new SimpleStringProperty(in.getComment());
-                this.comment = new SimpleStringProperty("");
+                this.text = new SimpleStringProperty(in.toString());
+                this.comment = new SimpleStringProperty(in.getComment());
             }else{
                 this.address = new SimpleStringProperty(in.getBeginAddress().toString());
                 this.text = new SimpleStringProperty(in.toString());
@@ -106,7 +98,7 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
             if(o == null || o.getBeginAddress() == null)
                 return 0;
 
-            if(o.getDataType() == Data.Type.COMMENT_STRING)
+            if(o.getDataType() == Data.Type.COMMENT)
                 return 0;
 
             return this.getData().getBeginAddress().compareTo(o.getBeginAddress());

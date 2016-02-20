@@ -89,7 +89,7 @@ public interface Loader {
 
         @Override
         public Type getDataType() {
-            return Type.DATA;
+            return Type.DATA_STRING;
         }
 
         @Override

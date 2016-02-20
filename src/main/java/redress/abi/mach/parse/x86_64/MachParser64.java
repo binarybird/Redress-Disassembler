@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 public class MachParser64{
     private final static Logger LOGGER = Logger.getLogger(MachParser64.class.getName());
 
-
     private MachParser64(){
     }
 
