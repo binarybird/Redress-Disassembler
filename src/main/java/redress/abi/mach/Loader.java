@@ -89,7 +89,7 @@ public interface Loader {
 
         @Override
         public Type getDataType() {
-            return Type.DATA_STRING;
+            return Type.DATA_CHAR;
         }
 
         @Override
@@ -138,8 +138,8 @@ public interface Loader {
     ;
 
     /* Constant for the magic field of the mach_header (32-bit architectures) */
-    public static final DWord MH_MAGIC = new DWord("0xfeedface", ByteOrder.BIG_ENDIAN);	/* the mach magic number */
-    public static final DWord MH_CIGAM = new DWord("0xcefaedfe", ByteOrder.BIG_ENDIAN);	/* NXSwapInt(MH_MAGIC) */
+    public static final DWord MH_MAGIC = new DWord("0xfeedface", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);	/* the mach magic number */
+    public static final DWord MH_CIGAM = new DWord("0xcefaedfe", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);	/* NXSwapInt(MH_MAGIC) */
 
     /*
      * The 64-bit mach header appears at the very beginning of object files for
@@ -184,8 +184,8 @@ public interface Loader {
     ;
 
     /* Constant for the magic field of the mach_header_64 (64-bit architectures) */
-    public static final DWord MH_MAGIC_64 = new DWord("0xfeedfacf", ByteOrder.BIG_ENDIAN); /* the 64-bit mach magic number */
-    public static final DWord MH_CIGAM_64 = new DWord("0xcffaedfe", ByteOrder.BIG_ENDIAN); /* NXSwapInt(MH_MAGIC_64) */
+    public static final DWord MH_MAGIC_64 = new DWord("0xfeedfacf", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN); /* the 64-bit mach magic number */
+    public static final DWord MH_CIGAM_64 = new DWord("0xcffaedfe", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN); /* NXSwapInt(MH_MAGIC_64) */
 
     /*
      * The layout of the file depends on the filetype.  For all but the MH_OBJECT
@@ -210,93 +210,93 @@ public interface Loader {
      *
      * Constants for the filetype field of the mach_header
      */
-    public static final DWord MH_OBJECT = new DWord("0x00000001", ByteOrder.BIG_ENDIAN);		/* relocatable object file */
-    public static final DWord MH_EXECUTE = new DWord("0x00000002", ByteOrder.BIG_ENDIAN);		/* demand paged executable file */
-    public static final DWord MH_FVMLIB = new DWord("0x00000003", ByteOrder.BIG_ENDIAN);		/* fixed VM shared library file */
-    public static final DWord MH_CORE = new DWord("0x00000004", ByteOrder.BIG_ENDIAN);		/* core file */
-    public static final DWord MH_PRELOAD = new DWord("0x00000005", ByteOrder.BIG_ENDIAN);		/* preloaded executable file */
-    public static final DWord MH_DYLIB = new DWord("0x00000006", ByteOrder.BIG_ENDIAN);		/* dynamically bound shared library */
-    public static final DWord MH_DYLINKER = new DWord("0x00000007", ByteOrder.BIG_ENDIAN);		/* dynamic link editor */
-    public static final DWord MH_BUNDLE = new DWord("0x00000008", ByteOrder.BIG_ENDIAN);		/* dynamically bound bundle file */
-    public static final DWord MH_DYLIB_STUB = new DWord("0x00000009", ByteOrder.BIG_ENDIAN);		/* shared library stub for static */
+    public static final DWord MH_OBJECT = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* relocatable object file */
+    public static final DWord MH_EXECUTE = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* demand paged executable file */
+    public static final DWord MH_FVMLIB = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* fixed VM shared library file */
+    public static final DWord MH_CORE = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* core file */
+    public static final DWord MH_PRELOAD = new DWord("0x00000005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* preloaded executable file */
+    public static final DWord MH_DYLIB = new DWord("0x00000006", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamically bound shared library */
+    public static final DWord MH_DYLINKER = new DWord("0x00000007", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamic link editor */
+    public static final DWord MH_BUNDLE = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamically bound bundle file */
+    public static final DWord MH_DYLIB_STUB = new DWord("0x00000009", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* shared library stub for static */
     /*  linking only, no section contents */
-    public static final DWord MH_DSYM = new DWord("0x0000000a", ByteOrder.BIG_ENDIAN);		/* companion file with only debug */
+    public static final DWord MH_DSYM = new DWord("0x0000000a", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* companion file with only debug */
     /*  sections */
-    public static final DWord MH_KEXT_BUNDLE = new DWord("0x0000000b", ByteOrder.BIG_ENDIAN);		/* x86_64 kexts */
+    public static final DWord MH_KEXT_BUNDLE = new DWord("0x0000000b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* x86_64 kexts */
 
     /* Constants for the flags field of the mach_header */
-    public static final DWord MH_NOUNDEFS = new DWord("0x00000001", ByteOrder.BIG_ENDIAN);		/* the object file has no undefined
+    public static final DWord MH_NOUNDEFS = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file has no undefined
                        references */
-    public static final DWord MH_INCRLINK = new DWord("0x00000002", ByteOrder.BIG_ENDIAN);		/* the object file is the output of an
+    public static final DWord MH_INCRLINK = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file is the output of an
 					   incremental link against a base file
 					   and can't be link edited again */
-    public static final DWord MH_DYLDLINK = new DWord("0x00000004", ByteOrder.BIG_ENDIAN);		/* the object file is input for the
+    public static final DWord MH_DYLDLINK = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file is input for the
 					   dynamic linker and can't be staticly
 					   link edited again */
-    public static final DWord MH_BINDATLOAD = new DWord("0x00000008", ByteOrder.BIG_ENDIAN);		/* the object file's undefined
+    public static final DWord MH_BINDATLOAD = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file's undefined
 					   references are bound by the dynamic
 					   linker when loaded. */
-    public static final DWord MH_PREBOUND = new DWord("0x00000010", ByteOrder.BIG_ENDIAN);		/* the file has its dynamic undefined
+    public static final DWord MH_PREBOUND = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the file has its dynamic undefined
 					   references prebound. */
-    public static final DWord MH_SPLIT_SEGS = new DWord("0x00000020", ByteOrder.BIG_ENDIAN);		/* the file has its read-only and
+    public static final DWord MH_SPLIT_SEGS = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the file has its read-only and
 					   read-write segments split */
-    public static final DWord MH_LAZY_INIT = new DWord("0x00000040", ByteOrder.BIG_ENDIAN);		/* the shared library init routine is
+    public static final DWord MH_LAZY_INIT = new DWord("0x00000040", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the shared library init routine is
 					   to be run lazily via catching memory
 					   faults to its writeable segments
 					   (obsolete) */
-    public static final DWord MH_TWOLEVEL = new DWord("0x00000080", ByteOrder.BIG_ENDIAN);		/* the image is using two-level name
+    public static final DWord MH_TWOLEVEL = new DWord("0x00000080", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the image is using two-level name
 					   space bindings */
-    public static final DWord MH_FORCE_FLAT = new DWord("0x00000100", ByteOrder.BIG_ENDIAN);		/* the executable is forcing all images
+    public static final DWord MH_FORCE_FLAT = new DWord("0x00000100", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the executable is forcing all images
 					   to use flat name space bindings */
-    public static final DWord MH_NOMULTIDEFS = new DWord("0x00000200", ByteOrder.BIG_ENDIAN);		/* this umbrella guarantees no multiple
+    public static final DWord MH_NOMULTIDEFS = new DWord("0x00000200", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* this umbrella guarantees no multiple
 					   defintions of symbols in its
 					   sub-images so the two-level namespace
 					   hints can always be used. */
-    public static final DWord MH_NOFIXPREBINDING = new DWord("0x00000400", ByteOrder.BIG_ENDIAN);	/* do not have dyld notify the
+    public static final DWord MH_NOFIXPREBINDING = new DWord("0x00000400", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* do not have dyld notify the
 					   prebinding agent about this
 					   executable */
-    public static final DWord MH_PREBINDABLE = new DWord("0x00000800", ByteOrder.BIG_ENDIAN);           /* the binary is not prebound but can
+    public static final DWord MH_PREBINDABLE = new DWord("0x00000800", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);           /* the binary is not prebound but can
 					   have its prebinding redone. only used
                                            when MH_PREBOUND is not set. */
-    public static final DWord MH_ALLMODSBOUND = new DWord("0x00001000", ByteOrder.BIG_ENDIAN);		/* indicates that this binary binds to
+    public static final DWord MH_ALLMODSBOUND = new DWord("0x00001000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* indicates that this binary binds to
                                            all two-level namespace modules of
 					   its dependent libraries. only used
 					   when MH_PREBINDABLE and MH_TWOLEVEL
 					   are both set. */
-    public static final DWord MH_SUBSECTIONS_VIA_SYMBOLS = new DWord("0x00002000", ByteOrder.BIG_ENDIAN);/* safe to divide up the sections into
+    public static final DWord MH_SUBSECTIONS_VIA_SYMBOLS = new DWord("0x00002000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);/* safe to divide up the sections into
 					    sub-sections via symbols for dead
 					    code stripping */
-    public static final DWord MH_CANONICAL = new DWord("0x00004000", ByteOrder.BIG_ENDIAN);		/* the binary has been canonicalized
+    public static final DWord MH_CANONICAL = new DWord("0x00004000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the binary has been canonicalized
 					   via the unprebind operation */
-    public static final DWord MH_WEAK_DEFINES = new DWord("0x00008000", ByteOrder.BIG_ENDIAN);		/* the final linked image contains
+    public static final DWord MH_WEAK_DEFINES = new DWord("0x00008000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the final linked image contains
 					   external weak symbols */
-    public static final DWord MH_BINDS_TO_WEAK = new DWord("0x00010000", ByteOrder.BIG_ENDIAN);	/* the final linked image uses
+    public static final DWord MH_BINDS_TO_WEAK = new DWord("0x00010000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the final linked image uses
 					   weak symbols */
 
-    public static final DWord MH_ALLOW_STACK_EXECUTION = new DWord("0x00020000", ByteOrder.BIG_ENDIAN);/* When this bit is set, all stacks
+    public static final DWord MH_ALLOW_STACK_EXECUTION = new DWord("0x00020000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);/* When this bit is set, all stacks
 					   in the task will be given stack
 					   execution privilege.  Only used in
 					   MH_EXECUTE filetypes. */
-    public static final DWord MH_DEAD_STRIPPABLE_DYLIB = new DWord("0x00400000", ByteOrder.BIG_ENDIAN); /* Only for use on dylibs.  When
+    public static final DWord MH_DEAD_STRIPPABLE_DYLIB = new DWord("0x00400000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Only for use on dylibs.  When
 					     linking against a dylib that
 					     has this bit set, the static linker
 					     will automatically not create a
 					     LC_LOAD_DYLIB load command to the
 					     dylib if no symbols are being
 					     referenced from the dylib. */
-    public static final DWord MH_ROOT_SAFE = new DWord("0x00040000", ByteOrder.BIG_ENDIAN);           /* When this bit is set, the binary
+    public static final DWord MH_ROOT_SAFE = new DWord("0x00040000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);           /* When this bit is set, the binary
 					  declares it is safe for use in
 					  processes with uid zero */
 
-    public static final DWord MH_SETUID_SAFE = new DWord("0x00080000", ByteOrder.BIG_ENDIAN);         /* When this bit is set, the binary
+    public static final DWord MH_SETUID_SAFE = new DWord("0x00080000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);         /* When this bit is set, the binary
 					  declares it is safe for use in
 					  processes when issetugid() is true */
 
-    public static final DWord MH_NO_REEXPORTED_DYLIBS = new DWord("0x00100000", ByteOrder.BIG_ENDIAN); /* When this bit is set on a dylib,
+    public static final DWord MH_NO_REEXPORTED_DYLIBS = new DWord("0x00100000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* When this bit is set on a dylib,
 					  the static linker does not need to
 					  examine dependent dylibs to see
 					  if any are re-exported */
-    public static final DWord MH_PIE = new DWord("0x00200000", ByteOrder.BIG_ENDIAN);			/* When this bit is set, the OS will
+    public static final DWord MH_PIE = new DWord("0x00200000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);			/* When this bit is set, the OS will
 					   load the main executable at a
 					   random address.  Only used in
 					   MH_EXECUTE filetypes. */
@@ -349,50 +349,50 @@ public interface Loader {
      * image.  Other load commands without this bit that are not understood will
      * simply be ignored.
      */
-    public static final DWord LC_REQ_DYLD = new DWord("0x80000000", ByteOrder.BIG_ENDIAN);
+    public static final DWord LC_REQ_DYLD = new DWord("0x80000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
     /* Constants for the cmd field of all load commands, the type */
-    public static final DWord LC_SEGMENT = new DWord("0x00000001", ByteOrder.BIG_ENDIAN);	/* segment of this file to be mapped */
-    public static final DWord LC_SYMTAB = new DWord("0x00000002", ByteOrder.BIG_ENDIAN);	/* link-edit stab symbol table info */
-    public static final DWord LC_SYMSEG = new DWord("0x00000003", ByteOrder.BIG_ENDIAN);	/* link-edit gdb symbol table info (obsolete) */
-    public static final DWord LC_THREAD = new DWord("0x00000004", ByteOrder.BIG_ENDIAN);	/* thread */
-    public static final DWord LC_UNIXTHREAD = new DWord("0x00000005", ByteOrder.BIG_ENDIAN);	/* unix thread (includes a stack) */
-    public static final DWord LC_LOADFVMLIB = new DWord("0x00000006", ByteOrder.BIG_ENDIAN);	/* load a specified fixed VM shared library */
-    public static final DWord LC_IDFVMLIB = new DWord("0x00000007", ByteOrder.BIG_ENDIAN);	/* fixed VM shared library identification */
-    public static final DWord LC_IDENT = new DWord("0x00000008", ByteOrder.BIG_ENDIAN);	/* object identification info (obsolete) */
-    public static final DWord LC_FVMFILE = new DWord("0x00000009", ByteOrder.BIG_ENDIAN);	/* fixed VM file inclusion (internal use) */
-    public static final DWord LC_PREPAGE = new DWord("0x0000000a", ByteOrder.BIG_ENDIAN);     /* prepage command (internal use) */
-    public static final DWord LC_DYSYMTAB = new DWord("0x0000000b", ByteOrder.BIG_ENDIAN);	/* dynamic link-edit symbol table info */
-    public static final DWord LC_LOAD_DYLIB = new DWord("0x0000000c", ByteOrder.BIG_ENDIAN);	/* load a dynamically linked shared library */
-    public static final DWord LC_ID_DYLIB = new DWord("0x0000000d", ByteOrder.BIG_ENDIAN);	/* dynamically linked shared lib ident */
-    public static final DWord LC_LOAD_DYLINKER = new DWord("0x0000000e", ByteOrder.BIG_ENDIAN);	/* load a dynamic linker */
-    public static final DWord LC_ID_DYLINKER = new DWord("0x0000000f", ByteOrder.BIG_ENDIAN);	/* dynamic linker identification */
-    public static final DWord LC_PREBOUND_DYLIB = new DWord("0x00000010", ByteOrder.BIG_ENDIAN);	/* modules prebound for a dynamically */
+    public static final DWord LC_SEGMENT = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* segment of this file to be mapped */
+    public static final DWord LC_SYMTAB = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* link-edit stab symbol table info */
+    public static final DWord LC_SYMSEG = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* link-edit gdb symbol table info (obsolete) */
+    public static final DWord LC_THREAD = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* thread */
+    public static final DWord LC_UNIXTHREAD = new DWord("0x00000005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* unix thread (includes a stack) */
+    public static final DWord LC_LOADFVMLIB = new DWord("0x00000006", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a specified fixed VM shared library */
+    public static final DWord LC_IDFVMLIB = new DWord("0x00000007", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* fixed VM shared library identification */
+    public static final DWord LC_IDENT = new DWord("0x00000008",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* object identification info (obsolete) */
+    public static final DWord LC_FVMFILE = new DWord("0x00000009", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* fixed VM file inclusion (internal use) */
+    public static final DWord LC_PREPAGE = new DWord("0x0000000a", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);     /* prepage command (internal use) */
+    public static final DWord LC_DYSYMTAB = new DWord("0x0000000b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamic link-edit symbol table info */
+    public static final DWord LC_LOAD_DYLIB = new DWord("0x0000000c", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a dynamically linked shared library */
+    public static final DWord LC_ID_DYLIB = new DWord("0x0000000d", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamically linked shared lib ident */
+    public static final DWord LC_LOAD_DYLINKER = new DWord("0x0000000e", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a dynamic linker */
+    public static final DWord LC_ID_DYLINKER = new DWord("0x0000000f", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamic linker identification */
+    public static final DWord LC_PREBOUND_DYLIB = new DWord("0x00000010",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* modules prebound for a dynamically */
     /*  linked shared library */
-    public static final DWord LC_ROUTINES = new DWord("0x00000011", ByteOrder.BIG_ENDIAN);	/* image routines */
-    public static final DWord LC_SUB_FRAMEWORK = new DWord("0x00000012", ByteOrder.BIG_ENDIAN);	/* sub framework */
-    public static final DWord LC_SUB_UMBRELLA = new DWord("0x00000013", ByteOrder.BIG_ENDIAN);	/* sub umbrella */
-    public static final DWord LC_SUB_CLIENT = new DWord("0x00000014", ByteOrder.BIG_ENDIAN);	/* sub client */
-    public static final DWord LC_SUB_LIBRARY = new DWord("0x00000015", ByteOrder.BIG_ENDIAN);	/* sub library */
-    public static final DWord LC_TWOLEVEL_HINTS = new DWord("0x00000016", ByteOrder.BIG_ENDIAN);	/* two-level namespace lookup hints */
-    public static final DWord LC_PREBIND_CKSUM = new DWord("0x00000017", ByteOrder.BIG_ENDIAN);	/* prebind checksum */
+    public static final DWord LC_ROUTINES = new DWord("0x00000011", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* image routines */
+    public static final DWord LC_SUB_FRAMEWORK = new DWord("0x00000012", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub framework */
+    public static final DWord LC_SUB_UMBRELLA = new DWord("0x00000013",Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub umbrella */
+    public static final DWord LC_SUB_CLIENT = new DWord("0x00000014", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub client */
+    public static final DWord LC_SUB_LIBRARY = new DWord("0x00000015", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub library */
+    public static final DWord LC_TWOLEVEL_HINTS = new DWord("0x00000016", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* two-level namespace lookup hints */
+    public static final DWord LC_PREBIND_CKSUM = new DWord("0x00000017",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* prebind checksum */
 
     /*
      * load a dynamically linked shared library that is allowed to be missing
      * (all symbols are weak imported).
      */
-    public static final DWord LC_LOAD_WEAK_DYLIB = new DWord("0x80000018", ByteOrder.BIG_ENDIAN);
-    public static final DWord LC_SEGMENT_64 = new DWord("0x00000019", ByteOrder.BIG_ENDIAN);	/* 64-bit segment of this file to be mapped */
-    public static final DWord LC_ROUTINES_64 = new DWord("0x0000001a", ByteOrder.BIG_ENDIAN);	/* 64-bit image routines */
-    public static final DWord LC_UUID = new DWord("0x0000001b", ByteOrder.BIG_ENDIAN);	/* the uuid */
-    public static final DWord LC_RPATH = new DWord("0x8000001c", ByteOrder.BIG_ENDIAN);    /* runpath additions */
-    public static final DWord LC_CODE_SIGNATURE = new DWord("0x0000001d", ByteOrder.BIG_ENDIAN);	/* local of code signature */
-    public static final DWord LC_SEGMENT_SPLIT_INFO = new DWord("0x0000001e", ByteOrder.BIG_ENDIAN); /* local of info to split segments */
-    public static final DWord LC_REEXPORT_DYLIB = new DWord("0x8000001f", ByteOrder.BIG_ENDIAN); /* load and re-export dylib */
-    public static final DWord LC_LAZY_LOAD_DYLIB = new DWord("0x00000020", ByteOrder.BIG_ENDIAN);	/* delay load of dylib until first use */
-    public static final DWord LC_ENCRYPTION_INFO = new DWord("0x00000021", ByteOrder.BIG_ENDIAN);	/* encrypted segment information */
-    public static final DWord LC_DYLD_INFO = new DWord("0x00000022", ByteOrder.BIG_ENDIAN);	/* compressed dyld information */
-    public static final DWord LC_DYLD_INFO_ONLY = new DWord("0x80000022", ByteOrder.BIG_ENDIAN);	/* compressed dyld information only */
+    public static final DWord LC_LOAD_WEAK_DYLIB = new DWord("0x80000018", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord LC_SEGMENT_64 = new DWord("0x00000019", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* 64-bit segment of this file to be mapped */
+    public static final DWord LC_ROUTINES_64 = new DWord("0x0000001a",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* 64-bit image routines */
+    public static final DWord LC_UUID = new DWord("0x0000001b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the uuid */
+    public static final DWord LC_RPATH = new DWord("0x8000001c", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);    /* runpath additions */
+    public static final DWord LC_CODE_SIGNATURE = new DWord("0x0000001d", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* local of code signature */
+    public static final DWord LC_SEGMENT_SPLIT_INFO = new DWord("0x0000001e", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* local of info to split segments */
+    public static final DWord LC_REEXPORT_DYLIB = new DWord("0x8000001f",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN); /* load and re-export dylib */
+    public static final DWord LC_LAZY_LOAD_DYLIB = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* delay load of dylib until first use */
+    public static final DWord LC_ENCRYPTION_INFO = new DWord("0x00000021",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* encrypted segment information */
+    public static final DWord LC_DYLD_INFO = new DWord("0x00000022",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* compressed dyld information */
+    public static final DWord LC_DYLD_INFO_ONLY = new DWord("0x80000022", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* compressed dyld information only */
 
     // public static final DWord	MH_DEAD_STRIPPABLE_DYLIB = new DWord("0x00400000",ByteOrder.LITTLE_ENDIAN);
     /* Only for use on dylibs.  When
@@ -402,25 +402,25 @@ public interface Loader {
 					     LC_LOAD_DYLIB load command to the
 					     dylib if no symbols are being
 					     referenced from the dylib. */
-    public static final DWord MH_HAS_TLV_DESCRIPTORS = new DWord("0x00800000", ByteOrder.BIG_ENDIAN); /* Contains a section of type
+    public static final DWord MH_HAS_TLV_DESCRIPTORS = new DWord("0x00800000",Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Contains a section of type
 					    S_THREAD_LOCAL_VARIABLES */
 
-    public static final DWord MH_NO_HEAP_EXECUTION = new DWord("0x01000000", ByteOrder.BIG_ENDIAN);	/* When this bit is set, the OS will
+    public static final DWord MH_NO_HEAP_EXECUTION = new DWord("0x01000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* When this bit is set, the OS will
 					   run the main executable with
 					   a non-executable heap even on
 					   platforms (e.g. i386) that don't
 					   require it. Only used in MH_EXECUTE
 					   filetypes. */
-    public static final DWord LC_LOAD_UPWARD_DYLIB = new DWord("0x80000023", ByteOrder.BIG_ENDIAN);// | LC_REQ_DYLD) /* load upward dylib */
-    public static final DWord LC_VERSION_MIN_MACOSX = new DWord("0x00000024", ByteOrder.BIG_ENDIAN);   /* build for MacOSX min OS version */
-    public static final DWord LC_VERSION_MIN_IPHONEOS = new DWord("0x00000025", ByteOrder.BIG_ENDIAN); /* build for iPhoneOS min OS version */
-    public static final DWord LC_FUNCTION_STARTS = new DWord("0x00000026", ByteOrder.BIG_ENDIAN); /* compressed table of function start addresses */
-    public static final DWord LC_DYLD_ENVIRONMENT = new DWord("0x00000027", ByteOrder.BIG_ENDIAN); /* string for dyld to treat
+    public static final DWord LC_LOAD_UPWARD_DYLIB = new DWord("0x80000023", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);// | LC_REQ_DYLD) /* load upward dylib */
+    public static final DWord LC_VERSION_MIN_MACOSX = new DWord("0x00000024", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);   /* build for MacOSX min OS version */
+    public static final DWord LC_VERSION_MIN_IPHONEOS = new DWord("0x00000025", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* build for iPhoneOS min OS version */
+    public static final DWord LC_FUNCTION_STARTS = new DWord("0x00000026", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* compressed table of function start addresses */
+    public static final DWord LC_DYLD_ENVIRONMENT = new DWord("0x00000027", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* string for dyld to treat
 				    like environment variable */
-    public static final DWord LC_MAIN = new DWord("0x80000028", ByteOrder.BIG_ENDIAN);//|LC_REQ_DYLD) /* replacement for LC_UNIXTHREAD */
-    public static final DWord LC_DATA_IN_CODE = new DWord("0x00000029", ByteOrder.BIG_ENDIAN); /* table of non-instructions in __text */
-    public static final DWord LC_SOURCE_VERSION = new DWord("0x0000002A", ByteOrder.BIG_ENDIAN); /* source version used to build binary */
-    public static final DWord LC_DYLIB_CODE_SIGN_DRS = new DWord("0x0000002B", ByteOrder.BIG_ENDIAN); /* Code signing DRs copied from linked dylibs */
+    public static final DWord LC_MAIN = new DWord("0x80000028", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);//|LC_REQ_DYLD) /* replacement for LC_UNIXTHREAD */
+    public static final DWord LC_DATA_IN_CODE = new DWord("0x00000029", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* table of non-instructions in __text */
+    public static final DWord LC_SOURCE_VERSION = new DWord("0x0000002A", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* source version used to build binary */
+    public static final DWord LC_DYLIB_CODE_SIGN_DRS = new DWord("0x0000002B", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Code signing DRs copied from linked dylibs */
 
     /*
      * A variable length string in a load command is represented by an lc_str
@@ -432,7 +432,7 @@ public interface Loader {
      */
     public class lc_str extends DataStructure {
         public DWord offset = new DWord();
-        public DataRange ptr = new DataRange();
+        public Range ptr = new Range();
 
         public lc_str(Addressable parent) {
             super(parent);
@@ -558,16 +558,16 @@ public interface Loader {
     ;
 
     /* Constants for the flags field of the segment_command */
-    public static final DWord SG_HIGHVM = new DWord("0x00000001", ByteOrder.BIG_ENDIAN);	/* the file contents for this segment is for
+    public static final DWord SG_HIGHVM = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the file contents for this segment is for
 				   the high part of the VM space, the low part
 				   is zero filled (for stacks in core files) */
-    public static final DWord SG_FVMLIB = new DWord("0x00000002", ByteOrder.BIG_ENDIAN);	/* this segment is the VM that is allocated by
+    public static final DWord SG_FVMLIB = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* this segment is the VM that is allocated by
 				   a fixed VM library, for overlap checking in
 				   the link editor */
-    public static final DWord SG_NORELOC = new DWord("0x00000004", ByteOrder.BIG_ENDIAN);	/* this segment has nothing that was relocated
+    public static final DWord SG_NORELOC = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* this segment has nothing that was relocated
 				   in it and nothing relocated to it, that is
 				   it maybe safely replaced without relocation*/
-    public static final DWord SG_PROTECTED_VERSION_1 = new DWord("0x00000008", ByteOrder.BIG_ENDIAN); /* This segment is protected.  If the
+    public static final DWord SG_PROTECTED_VERSION_1 = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* This segment is protected.  If the
 				       segment starts at file offset 0, the
 				       first page of the segment is not
 				       protected.  All other pages of the
@@ -709,16 +709,16 @@ public interface Loader {
      * can only have one type) but the section attributes are not (it may have more
      * than one attribute).
      */
-    public static final DWord SECTION_TYPE = new DWord("0x000000ff", ByteOrder.BIG_ENDIAN);	/* 256 section types */
-    public static final DWord SECTION_ATTRIBUTES = new DWord("0xffffff00", ByteOrder.BIG_ENDIAN);	/*  24 section attributes */
+    public static final DWord SECTION_TYPE = new DWord("0x000000ff", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* 256 section types */
+    public static final DWord SECTION_ATTRIBUTES = new DWord("0xffffff00", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/*  24 section attributes */
 
     /* Constants for the type of a section */
-    public static final DWord S_REGULAR = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);	/* regular section */
-    public static final DWord S_ZEROFILL = new DWord("0x00000001", ByteOrder.BIG_ENDIAN);	/* zero fill on demand section */
-    public static final DWord S_CSTRING_LITERALS = new DWord("0x00000002", ByteOrder.BIG_ENDIAN);	/* section with only literal C strings*/
-    public static final DWord S_4BYTE_LITERALS = new DWord("0x00000003", ByteOrder.BIG_ENDIAN);	/* section with only 4 byte literals */
-    public static final DWord S_8BYTE_LITERALS = new DWord("0x00000004", ByteOrder.BIG_ENDIAN);	/* section with only 8 byte literals */
-    public static final DWord S_LITERAL_POINTERS = new DWord("0x00000005", ByteOrder.BIG_ENDIAN);	/* section with only pointers to */
+    public static final DWord S_REGULAR = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* regular section */
+    public static final DWord S_ZEROFILL = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* zero fill on demand section */
+    public static final DWord S_CSTRING_LITERALS = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only literal C strings*/
+    public static final DWord S_4BYTE_LITERALS = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 4 byte literals */
+    public static final DWord S_8BYTE_LITERALS = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 8 byte literals */
+    public static final DWord S_LITERAL_POINTERS = new DWord("0x00000005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only pointers to */
     /*  literals */
     /*
      * For the two types of symbol pointers sections and the symbol stubs section
@@ -732,63 +732,63 @@ public interface Loader {
      * in the section is 4 bytes and for symbol stubs sections the byte size of the
      * stubs is stored in the reserved2 field of the section public classure.
      */
-    public static final DWord S_NON_LAZY_SYMBOL_POINTERS = new DWord("0x00000006", ByteOrder.BIG_ENDIAN);	/* section with only non-lazy
+    public static final DWord S_NON_LAZY_SYMBOL_POINTERS = new DWord("0x00000006", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only non-lazy
 						   symbol pointers */
-    public static final DWord S_LAZY_SYMBOL_POINTERS = new DWord("0x00000007", ByteOrder.BIG_ENDIAN);	/* section with only lazy symbol
+    public static final DWord S_LAZY_SYMBOL_POINTERS = new DWord("0x00000007", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only lazy symbol
 						   pointers */
-    public static final DWord S_SYMBOL_STUBS = new DWord("0x00000008", ByteOrder.BIG_ENDIAN);	/* section with only symbol
+    public static final DWord S_SYMBOL_STUBS = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only symbol
 						   stubs, byte size of stub in
 						   the reserved2 field */
-    public static final DWord S_MOD_INIT_FUNC_POINTERS = new DWord("0x00000009", ByteOrder.BIG_ENDIAN);	/* section with only function
+    public static final DWord S_MOD_INIT_FUNC_POINTERS = new DWord("0x00000009", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only function
 						   pointers for initialization*/
-    public static final DWord S_MOD_TERM_FUNC_POINTERS = new DWord("0x0000000a", ByteOrder.BIG_ENDIAN);	/* section with only function
+    public static final DWord S_MOD_TERM_FUNC_POINTERS = new DWord("0x0000000a", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only function
 						   pointers for termination */
-    public static final DWord S_COALESCED = new DWord("0x0000000b", ByteOrder.BIG_ENDIAN);	/* section contains symbols that
+    public static final DWord S_COALESCED = new DWord("0x0000000b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains symbols that
 						   are to be coalesced */
-    public static final DWord S_GB_ZEROFILL = new DWord("0x0000000c", ByteOrder.BIG_ENDIAN);	/* zero fill on demand section
+    public static final DWord S_GB_ZEROFILL = new DWord("0x0000000c", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* zero fill on demand section
 						   (that can be larger than 4
 						   gigabytes) */
-    public static final DWord S_INTERPOSING = new DWord("0x0000000d", ByteOrder.BIG_ENDIAN);	/* section with only pairs of
+    public static final DWord S_INTERPOSING = new DWord("0x0000000d", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only pairs of
 						   function pointers for
 						   interposing */
-    public static final DWord S_16BYTE_LITERALS = new DWord("0x0000000e", ByteOrder.BIG_ENDIAN);	/* section with only 16 byte
+    public static final DWord S_16BYTE_LITERALS = new DWord("0x0000000e", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 16 byte
 						   literals */
-    public static final DWord S_DTRACE_DOF = new DWord("0x0000000f", ByteOrder.BIG_ENDIAN);	/* section contains
+    public static final DWord S_DTRACE_DOF = new DWord("0x0000000f", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains
 						   DTrace Object Format */
-    public static final DWord S_LAZY_DYLIB_SYMBOL_POINTERS = new DWord("0x00000010", ByteOrder.BIG_ENDIAN);	/* section with only lazy
+    public static final DWord S_LAZY_DYLIB_SYMBOL_POINTERS = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only lazy
 						   symbol pointers to lazy
 						   loaded dylibs */
     /*
      * Constants for the section attributes part of the flags field of a section
      * public classure.
      */
-    public static final DWord SECTION_ATTRIBUTES_USR = new DWord("0xff000000", ByteOrder.BIG_ENDIAN);	/* User setable attributes */
-    public static final DWord S_ATTR_PURE_INSTRUCTIONS = new DWord("0x80000000", ByteOrder.BIG_ENDIAN);	/* section contains only true
+    public static final DWord SECTION_ATTRIBUTES_USR = new DWord("0xff000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* User setable attributes */
+    public static final DWord S_ATTR_PURE_INSTRUCTIONS = new DWord("0x80000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains only true
 						   machine instructions */
-    public static final DWord S_ATTR_NO_TOC = new DWord("0x40000000", ByteOrder.BIG_ENDIAN);	/* section contains coalesced
+    public static final DWord S_ATTR_NO_TOC = new DWord("0x40000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains coalesced
 						   symbols that are not to be
 						   in a ranlib table of
 						   contents */
-    public static final DWord S_ATTR_STRIP_STATIC_SYMS = new DWord("0x20000000", ByteOrder.BIG_ENDIAN);	/* ok to strip static symbols
+    public static final DWord S_ATTR_STRIP_STATIC_SYMS = new DWord("0x20000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* ok to strip static symbols
 						   in this section in files
 						   with the MH_DYLDLINK flag */
-    public static final DWord S_ATTR_NO_DEAD_STRIP = new DWord("0x10000000", ByteOrder.BIG_ENDIAN);	/* no dead stripping */
-    public static final DWord S_ATTR_LIVE_SUPPORT = new DWord("0x08000000", ByteOrder.BIG_ENDIAN);	/* blocks are live if they
+    public static final DWord S_ATTR_NO_DEAD_STRIP = new DWord("0x10000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* no dead stripping */
+    public static final DWord S_ATTR_LIVE_SUPPORT = new DWord("0x08000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* blocks are live if they
 						   reference live blocks */
-    public static final DWord S_ATTR_SELF_MODIFYING_CODE = new DWord("0x04000000", ByteOrder.BIG_ENDIAN);	/* Used with i386 code stubs
+    public static final DWord S_ATTR_SELF_MODIFYING_CODE = new DWord("0x04000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* Used with i386 code stubs
 						   written on by dyld */
 
     /*
      * Section types to support thread local variables
      */
-    public static final DWord S_THREAD_LOCAL_REGULAR = new DWord("0x00000011", ByteOrder.BIG_ENDIAN);  /* template of initial
+    public static final DWord S_THREAD_LOCAL_REGULAR = new DWord("0x00000011", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* template of initial
 							  values for TLVs */
-    public static final DWord S_THREAD_LOCAL_ZEROFILL = new DWord("0x00000012", ByteOrder.BIG_ENDIAN);  /* template of initial
+    public static final DWord S_THREAD_LOCAL_ZEROFILL = new DWord("0x00000012", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* template of initial
 							  values for TLVs */
-    public static final DWord S_THREAD_LOCAL_VARIABLES = new DWord("0x00000013", ByteOrder.BIG_ENDIAN);  /* TLV descriptors */
-    public static final DWord S_THREAD_LOCAL_VARIABLE_POINTERS = new DWord("0x00000014", ByteOrder.BIG_ENDIAN);  /* pointers to TLV
+    public static final DWord S_THREAD_LOCAL_VARIABLES = new DWord("0x00000013", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* TLV descriptors */
+    public static final DWord S_THREAD_LOCAL_VARIABLE_POINTERS = new DWord("0x00000014", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* pointers to TLV
                                                           descriptors */
-    public static final DWord S_THREAD_LOCAL_INIT_FUNCTION_POINTERS = new DWord("0x00000015", ByteOrder.BIG_ENDIAN);  /* functions to call
+    public static final DWord S_THREAD_LOCAL_INIT_FUNCTION_POINTERS = new DWord("0x00000015", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* functions to call
 							  to initialize TLV
 							  values */
 
@@ -802,13 +802,13 @@ public interface Loader {
  * from sections with this attribute into its output file.  These sections
  * generally contain DWARF debugging info.
  */
-    public static final DWord S_ATTR_DEBUG = new DWord("0x02000000", ByteOrder.BIG_ENDIAN);	/* a debug section */
-    public static final DWord SECTION_ATTRIBUTES_SYS = new DWord("0x00ffff00", ByteOrder.BIG_ENDIAN);	/* system setable attributes */
-    public static final DWord S_ATTR_SOME_INSTRUCTIONS = new DWord("0x00000400", ByteOrder.BIG_ENDIAN);	/* section contains some
+    public static final DWord S_ATTR_DEBUG = new DWord("0x02000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* a debug section */
+    public static final DWord SECTION_ATTRIBUTES_SYS = new DWord("0x00ffff00", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* system setable attributes */
+    public static final DWord S_ATTR_SOME_INSTRUCTIONS = new DWord("0x00000400", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains some
 						   machine instructions */
-    public static final DWord S_ATTR_EXT_RELOC = new DWord("0x00000200", ByteOrder.BIG_ENDIAN);	/* section has external
+    public static final DWord S_ATTR_EXT_RELOC = new DWord("0x00000200", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section has external
 						   relocation entries */
-    public static final DWord S_ATTR_LOC_RELOC = new DWord("0x00000100", ByteOrder.BIG_ENDIAN);	/* section has local
+    public static final DWord S_ATTR_LOC_RELOC = new DWord("0x00000100", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section has local
 						   relocation entries */
 
 
@@ -1607,8 +1607,8 @@ public interface Loader {
      * removed.  In which case it has the value INDIRECT_SYMBOL_LOCAL.  If the
      * symbol was also absolute INDIRECT_SYMBOL_ABS is or'ed with that.
      */
-    public static final DWord INDIRECT_SYMBOL_LOCAL = new DWord("0x80000000", ByteOrder.BIG_ENDIAN);
-    public static final DWord INDIRECT_SYMBOL_ABS = new DWord("0x40000000", ByteOrder.BIG_ENDIAN);
+    public static final DWord INDIRECT_SYMBOL_LOCAL = new DWord("0x80000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord INDIRECT_SYMBOL_ABS = new DWord("0x40000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
 
     /* a table of contents entry */
@@ -2164,17 +2164,17 @@ public interface Loader {
     public static final int REBASE_TYPE_TEXT_ABSOLUTE32 = 2;
     public static final int REBASE_TYPE_TEXT_PCREL32 = 3;
 
-    public static final DWord REBASE_OPCODE_MASK = new DWord("0x000000F0", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_IMMEDIATE_MASK = new DWord("0x0000000F", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DONE = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_SET_TYPE_IMM = new DWord("0x00000010", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000020", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000030", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_ADD_ADDR_IMM_SCALED = new DWord("0x00000040", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_IMM_TIMES = new DWord("0x00000050", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES = new DWord("0x00000060", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_ADD_ADDR_ULEB = new DWord("0x00000070", ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x00000080", ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_MASK = new DWord("0x000000F0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_IMMEDIATE_MASK = new DWord("0x0000000F", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DONE = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_SET_TYPE_IMM = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000030", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_ADD_ADDR_IMM_SCALED = new DWord("0x00000040", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_IMM_TIMES = new DWord("0x00000050", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES = new DWord("0x00000060", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_ADD_ADDR_ULEB = new DWord("0x00000070", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x00000080", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
 
     /*
@@ -2188,36 +2188,36 @@ public interface Loader {
     public static final int BIND_SPECIAL_DYLIB_MAIN_EXECUTABLE = -1;
     public static final int BIND_SPECIAL_DYLIB_FLAT_LOOKUP = -2;
 
-    public static final DWord BIND_SYMBOL_FLAGS_WEAK_IMPORT = new DWord("0x00000001", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_SYMBOL_FLAGS_NON_WEAK_DEFINITION = new DWord("0x00000008", ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_SYMBOL_FLAGS_WEAK_IMPORT = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_SYMBOL_FLAGS_NON_WEAK_DEFINITION = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
-    public static final DWord BIND_OPCODE_MASK = new DWord("0x000000F0", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_IMMEDIATE_MASK = new DWord("0x0000000F", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DONE = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_IMM = new DWord("0x00000010", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB = new DWord("0x00000020", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_DYLIB_SPECIAL_IMM = new DWord("0x00000030", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM = new DWord("0x00000040", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_TYPE_IMM = new DWord("0x00000050", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_ADDEND_SLEB = new DWord("0x00000060", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000070", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000080", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND = new DWord("0x00000090", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_ULEB = new DWord("0x000000A0", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED = new DWord("0x000000B0", ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x000000C0", ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_MASK = new DWord("0x000000F0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_IMMEDIATE_MASK = new DWord("0x0000000F", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DONE = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_IMM = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_DYLIB_SPECIAL_IMM = new DWord("0x00000030", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM = new DWord("0x00000040", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_TYPE_IMM = new DWord("0x00000050", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_ADDEND_SLEB = new DWord("0x00000060", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000070", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000080", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND = new DWord("0x00000090", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_ULEB = new DWord("0x000000A0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED = new DWord("0x000000B0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x000000C0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
 
     /*
      * The following are used on the flags byte of a terminal node
      * in the export information.
      */
-    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_MASK = new DWord("0x00000003", ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_REGULAR = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_THREAD_LOCAL = new DWord("0x00000001", ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_WEAK_DEFINITION = new DWord("0x00000004", ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_INDIRECT_DEFINITION = new DWord("0x00000008", ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_HAS_SPECIALIZATIONS = new DWord("0x00000010", ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_MASK = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_REGULAR = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_THREAD_LOCAL = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_WEAK_DEFINITION = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_INDIRECT_DEFINITION = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_HAS_SPECIALIZATIONS = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
     /* In Version 2010:
     #define EXPORT_SYMBOL_FLAGS_REEXPORT				0x08
 #define EXPORT_SYMBOL_FLAGS_STUB_AND_RESOLVER			0x10
@@ -2407,11 +2407,11 @@ public interface Loader {
     }
 
     ;
-    public static final Word DICE_KIND_DATA = new Word("0x0001", ByteOrder.BIG_ENDIAN);  /* L$start$data$...  label */
-    public static final Word DICE_KIND_JUMP_TABLE8 = new Word("0x0002", ByteOrder.BIG_ENDIAN);  /* L$start$jt8$...   label */
-    public static final Word DICE_KIND_JUMP_TABLE16 = new Word("0x0003", ByteOrder.BIG_ENDIAN);  /* L$start$jt16$...  label */
-    public static final Word DICE_KIND_JUMP_TABLE32 = new Word("0x0004", ByteOrder.BIG_ENDIAN);  /* L$start$jt32$...  label */
-    public static final Word DICE_KIND_ABS_JUMP_TABLE32 = new Word("0x0005", ByteOrder.BIG_ENDIAN);  /* L$start$jta32$... label */
+    public static final Word DICE_KIND_DATA = new Word("0x0001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$data$...  label */
+    public static final Word DICE_KIND_JUMP_TABLE8 = new Word("0x0002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt8$...   label */
+    public static final Word DICE_KIND_JUMP_TABLE16 = new Word("0x0003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt16$...  label */
+    public static final Word DICE_KIND_JUMP_TABLE32 = new Word("0x0004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt32$...  label */
+    public static final Word DICE_KIND_ABS_JUMP_TABLE32 = new Word("0x0005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jta32$... label */
 
 
     /*

@@ -1,6 +1,7 @@
 package redress.memory;
 
 import redress.memory.data.DWord;
+import redress.memory.data.Data;
 
 import java.nio.ByteOrder;
 
@@ -14,27 +15,27 @@ public class TestAddress32 {
     }
 
     private static void testIncrement(){
-        DWord testOne = new DWord("0x000000ff",ByteOrder.BIG_ENDIAN);
-        testOne.add(new DWord("0x000000ff", ByteOrder.BIG_ENDIAN));
-        if(!testOne.equals(new DWord("0x000001FE",ByteOrder.BIG_ENDIAN))){
+        DWord testOne = new DWord("0x000000ff", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
+        testOne.add(new DWord("0x000000ff", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN));
+        if(!testOne.equals(new DWord("0x000001FE",Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN))){
             System.out.println("ERROR");
         }
 
-        DWord testTwo = new DWord("0x000000ff",ByteOrder.BIG_ENDIAN);
-        testTwo.add(new DWord("0xff000000", ByteOrder.LITTLE_ENDIAN));
-        if(!testTwo.equals(new DWord("0x000001FE",ByteOrder.BIG_ENDIAN))){
+        DWord testTwo = new DWord("0x000000ff",Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
+        testTwo.add(new DWord("0xff000000",Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN));
+        if(!testTwo.equals(new DWord("0x000001FE",Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN))){
             System.out.println("ERROR");
         }
 
-        DWord testThree = new DWord("0xff000000",ByteOrder.LITTLE_ENDIAN);
-        testThree.add(new DWord("0x000000ff", ByteOrder.BIG_ENDIAN));
-        if(!testThree.equals(new DWord("0xFE010000",ByteOrder.LITTLE_ENDIAN))){
+        DWord testThree = new DWord("0xff000000",Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN);
+        testThree.add(new DWord("0x000000ff",Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN));
+        if(!testThree.equals(new DWord("0xFE010000",Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN))){
             System.out.println("ERROR");
         }
 
-        DWord testFour = new DWord("0xff000000",ByteOrder.LITTLE_ENDIAN);
-        testFour.add(new DWord("0xff000000", ByteOrder.LITTLE_ENDIAN));
-        if(!testFour.equals(new DWord("0xFE010000",ByteOrder.LITTLE_ENDIAN))){
+        DWord testFour = new DWord("0xff000000",Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN);
+        testFour.add(new DWord("0xff000000", Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN));
+        if(!testFour.equals(new DWord("0xFE010000",Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN))){
             System.out.println("ERROR");
         }
 

@@ -7,6 +7,7 @@ import redress.memory.DataStructure;
 import redress.memory.address.Address;
 import redress.memory.data.CompiledText;
 import redress.memory.data.DWord;
+import redress.memory.data.Data;
 
 import java.nio.ByteOrder;
 import java.util.LinkedList;
@@ -15,10 +16,10 @@ import java.util.LinkedList;
  * Created by jamesrichardson on 2/10/16.
  */
 public abstract class PE implements ABI {
-    public static final DWord PE_ID_32 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
-    public static final DWord PE_DI_32 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
-    public static final DWord PE_ID_64 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
-    public static final DWord PE_DI_64 = new DWord("0x00000000", ByteOrder.BIG_ENDIAN);
+    public static final DWord PE_ID_32 = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord PE_DI_32 = new DWord("0x00000000", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
+    public static final DWord PE_ID_64 = new DWord("0x00000000", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
+    public static final DWord PE_DI_64 = new DWord("0x00000000", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
 
     protected final byte[] raw;
     protected final LinkedList<DataStructure> dataStructures = new LinkedList<>();

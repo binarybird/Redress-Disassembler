@@ -14,28 +14,44 @@ public abstract class Data extends Container implements Addressable{
 
     public enum Type{
         DATA_NULL,
-        DATA_STRING,
-        DATA_NUMBER,
-        DATA_HEX,
-        COMPILED_TEXT,
-        DECOMPILED_TEXT,
+        DATA_BYTE,
+        DATA_CHAR,
+        DATA_U_INT,
+        DATA_INT,
+        DATA_FLOAT,
+        DATA_DOUBLE,
+        DATA_LONG,
+        DATA_BOOL,
+        TEXT_COMPILED,
+        TEXT_DECOMPILED,
         COMMENT
     }
 
-    final Address beginAddress;
-    final Address endAddress;
+    protected final Address beginAddress;
+    protected final Address endAddress;
 
     protected Type type = Type.DATA_NULL;
     protected DataStructure parent;
     protected String comment;
 
-    public Data(int bytes,Address beginAddr,Address endAddress, ByteOrder order){
+    public Data(int bytes,Address beginAddr,Address endAddress, Type type, ByteOrder order){
         super(bytes, order);
         this.beginAddress = beginAddr;
         this.endAddress = endAddress;
+        this.type = type;
     }
 
-    public abstract Type getDataType();
+    public Data(int bytes,Address beginAddr,Address endAddress, ByteOrder order){
+        this(bytes,beginAddr,endAddress,Type.DATA_NULL,order);
+    }
+
+    public Type getDataType(){
+        return this.type;
+    }
+
+    public void setDataType(Type type){
+        this.type = type;
+    }
 
     public void setContainingDataStructure(DataStructure in){
         this.parent = in;

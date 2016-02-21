@@ -4,6 +4,7 @@ import redress.memory.DataStructure;
 import redress.memory.address.Address32;
 import redress.abi.mach.Loader;
 import redress.abi.mach.MachO64;
+import redress.memory.data.Data;
 import redress.memory.data.QWord;
 import redress.util.B;
 
@@ -21,22 +22,22 @@ public class ParseSection64{
         Loader.section_64 section_64 = new Loader.section_64(parent);
 
         section_64.setBeginAddress(pointer.clone());
-        final byte[] container = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-        final byte[] container2 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+        final byte[] container = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN).getContainer();
+        final byte[] container2 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN).getContainer();
         section_64.sectname = new Loader.char16(B.mergeBytes(container, container2),section_64.getBeginAddress().clone(),pointer.clone());
-        final byte[] container3 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
-        final byte[] container4 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN).getContainer();
+        final byte[] container3 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN).getContainer();
+        final byte[] container4 = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN).getContainer();
         section_64.segname = new Loader.char16(B.mergeBytes(container3, container4),section_64.sectname.getBeginAddress().clone(),pointer.clone());
-        section_64.addr = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.size = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.align = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.reloff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.nreloc = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.flags = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.reserved1=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.reserved2=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
-        section_64.reserved3=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, ByteOrder.LITTLE_ENDIAN);
+        section_64.addr = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        section_64.size = B.getQWordAtAddressAndIncrement(in.getRaw(), pointer, Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN);
+        section_64.offset = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        section_64.align = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN);
+        section_64.reloff = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        section_64.nreloc = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        section_64.flags = B.getDWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        section_64.reserved1=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        section_64.reserved2=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        section_64.reserved3=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer,Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
         section_64.setEndAddress(pointer.clone());
 
         String oldComment = section_64.getComment();

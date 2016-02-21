@@ -9,14 +9,18 @@ import java.nio.ByteOrder;
 /**
  * Created by jamesrichardson on 2/16/16.
  */
-public class DataRange extends Data{
+public class Range extends Data{
 
-    public DataRange(){
+    public Range(){
         this(new byte[0],null,null,ByteOrder.BIG_ENDIAN);
     }
 
-    public DataRange(byte[] in, Address begin, Address end, ByteOrder order) {
-        super(in.length, begin,end, order);
+    public Range(byte[] in, Address begin, Address end, ByteOrder order) {
+       this(in,begin,end,Type.DATA_NULL,order);
+    }
+
+    public Range(byte[] in, Address begin, Address end, Type type, ByteOrder order) {
+        super(in.length, begin,end,type, order);
         for(int i=0;i<in.length;i++){
             container[i]=in[i];
         }
@@ -24,11 +28,7 @@ public class DataRange extends Data{
 
     @Override
     public Container flipByteOrder() {
-        return new DataRange(B.flipByteOrder(container),this.beginAddress,this.endAddress,this.BYTEORDER);
-    }
-
-    public void setDataType(Type in){
-        this.type=in;
+        return new Range(B.flipByteOrder(container),this.beginAddress,this.endAddress,this.BYTEORDER);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class DataRange extends Data{
 
     @Override
     public Data clone() {
-        return new DataRange(container,this.beginAddress,this.endAddress,this.BYTEORDER);
+        return new Range(container,this.beginAddress,this.endAddress,this.BYTEORDER);
     }
 }

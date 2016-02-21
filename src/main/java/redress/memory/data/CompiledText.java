@@ -18,13 +18,13 @@ import java.util.logging.Logger;
 /**
  * Created by jamesrichardson on 2/18/16.
  */
-public class CompiledText extends DataRange{
+public class CompiledText extends Range {
 
     private final static Logger LOGGER = Logger.getLogger(CompiledText.class.getName());
 
     @Override
     public Type getDataType() {
-        return Type.COMPILED_TEXT;
+        return Type.TEXT_COMPILED;
     }
 
     public class DeCompiledTextSet extends Data{
@@ -269,7 +269,7 @@ public class CompiledText extends DataRange{
                 }
             }
         }
-        final DeCompiledTextSet deCompiledTextSet = new DeCompiledTextSet(addr, code.toString(), Type.DECOMPILED_TEXT);
+        final DeCompiledTextSet deCompiledTextSet = new DeCompiledTextSet(addr, code.toString(), Type.TEXT_DECOMPILED);
         deCompiledTextSet.setComment(comment.toString());
         return deCompiledTextSet;
     }

@@ -192,42 +192,42 @@ public final class B {
         return new Address64(tmpBegin);
     }
 
-    public static Word getWordAtAddress(final byte[] raw, final Address address, ByteOrder resultOrder){
+    public static Word getWordAtAddress(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
         final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
 
-        return new Word(raw[addr],raw[addr+1],address.clone(),resultOrder);
+        return new Word(new byte[]{raw[addr],raw[addr+1]},address.clone(),type,resultOrder);
     }
 
-    public static Word getWordAtAddressAndIncrement(final byte[] raw, final Address address, ByteOrder resultOrder){
-        final Word ret = getWordAtAddress(raw,address,resultOrder);
+    public static Word getWordAtAddressAndIncrement(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
+        final Word ret = getWordAtAddress(raw,address,type,resultOrder);
 
         address.add(Word.SIZEOF_B);
 
         return ret;
     }
 
-    public static DWord getDWordAtAddress(final byte[] raw, final Address address, ByteOrder resultOrder){
+    public static DWord getDWordAtAddress(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
         final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
 
-        return new DWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],address.clone(),resultOrder);
+        return new DWord(new byte[]{raw[addr],raw[addr+1],raw[addr+2],raw[addr+3]},address.clone(),type,resultOrder);
     }
 
-    public static DWord getDWordAtAddressAndIncrement(final byte[] raw, final Address address, ByteOrder resultOrder){
-        final DWord ret = getDWordAtAddress(raw,address,resultOrder);
+    public static DWord getDWordAtAddressAndIncrement(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
+        final DWord ret = getDWordAtAddress(raw,address,type,resultOrder);
 
         address.add(DWord.SIZEOF_B);
 
         return ret;
     }
 
-    public static QWord getQWordAtAddress(final byte[] raw, final Address address, ByteOrder resultOrder){
+    public static QWord getQWordAtAddress(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
         final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
 
-        return new QWord(raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7],address.clone(),resultOrder);
+        return new QWord(new byte[]{raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7]},address.clone(),type,resultOrder);
     }
 
-    public static QWord getQWordAtAddressAndIncrement(final byte[] raw, final Address address, ByteOrder resultOrder){
-        final QWord ret = getQWordAtAddress(raw,address,resultOrder);
+    public static QWord getQWordAtAddressAndIncrement(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
+        final QWord ret = getQWordAtAddress(raw,address,type,resultOrder);
 
         address.add(QWord.SIZEOF_B);
 

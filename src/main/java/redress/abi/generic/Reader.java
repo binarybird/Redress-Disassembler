@@ -3,6 +3,7 @@ package redress.abi.generic;
 
 import redress.memory.data.DWord;
 import redress.abi.mach.Mach;
+import redress.memory.data.Data;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +22,7 @@ public final class Reader {
         final FileInputStream fis = new FileInputStream(in);
         final byte[] id = new byte[4];
         fis.read(id);
-        final DWord binID = new DWord(id,ByteOrder.LITTLE_ENDIAN);
+        final DWord binID = new DWord(id, Data.Type.DATA_BYTE,ByteOrder.LITTLE_ENDIAN);
 
         if(binID.equals(Mach.MACH_DI_32) || binID.equals(Mach.MACH_ID_32) ||
            binID.equals(Mach.MACH_DI_64) || binID.equals(Mach.MACH_ID_64)){
