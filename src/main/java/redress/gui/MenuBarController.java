@@ -68,11 +68,8 @@ public class MenuBarController {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Binary");
 
-
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            //File toOpen = fileChooser.showOpenDialog(MainController.getSharedMainController().getPrimaryStage());
-
-            File toOpen = new File("C:\\Users\\binar\\Desktop\\Disassemble\\src\\main\\resources\\mach_bin.out");
+            File toOpen = fileChooser.showOpenDialog(MainController.getSharedMainController().getPrimaryStage());
 
             if(toOpen == null)
                 return;
