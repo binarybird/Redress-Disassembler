@@ -62,6 +62,7 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         private final SimpleStringProperty informationType;
         private final Data data;
 
+        //TODO - add color ivar to Data
         public DisplaySet(Data in){
             if(in.getDataType() == Data.Type.COMMENT) {
                 this.address = new SimpleStringProperty("");

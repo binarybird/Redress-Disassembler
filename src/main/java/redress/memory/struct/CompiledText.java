@@ -15,11 +15,14 @@ import redress.util.B;
 
 import java.nio.ByteOrder;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by binar on 2/21/2016.
  */
 public class CompiledText extends DataStructure {
+    private final static Logger LOGGER = Logger.getLogger(CompiledText.class.getName());
 
     final byte[] compiledText;
     final ABI abi;
@@ -39,7 +42,7 @@ public class CompiledText extends DataStructure {
 
         ret.add(Data.generateCommentContainer("Procedure Start, Length: "+length+" bytes"));
 
-//        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, beginAddress.toString(),endAddress.toString(), B.bytesToString(new byte[]{container[0]})});
+        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, beginAddress.toString(),endAddress.toString(), B.bytesToString(new byte[]{compiledText[0]})});
 
         try {
             final Capstone.CsInsn[] disasm = cs.disasm(compiledText, beginAddress.getIntValue());
