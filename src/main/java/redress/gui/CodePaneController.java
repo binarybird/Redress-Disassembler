@@ -67,10 +67,15 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
                 this.address = new SimpleStringProperty("");
                 this.text = new SimpleStringProperty(in.toString());
                 this.comment = new SimpleStringProperty(in.getComment());
+            }else if(in.getDataType() == Data.Type.TEXT_DECOMPILED) {
+                this.address = new SimpleStringProperty(in.getBeginAddress().toString());
+                this.text = new SimpleStringProperty(in.getComment());
+                this.comment = new SimpleStringProperty(in.toString());
             }else{
                 this.address = new SimpleStringProperty(in.getBeginAddress().toString());
                 this.text = new SimpleStringProperty(in.toString());
                 this.comment = new SimpleStringProperty(in.getComment());
+
             }
             this.data=in;
             this.informationType = new SimpleStringProperty(in.getDataType().toString());

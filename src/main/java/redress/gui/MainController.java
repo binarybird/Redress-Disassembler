@@ -1,7 +1,7 @@
 package redress.gui;
 
 import redress.abi.generic.ABI;
-import redress.memory.DataStructure;
+import redress.memory.struct.DataStructure;
 import redress.memory.data.Data;
 import redress.memory.data.Word;
 import javafx.application.Application;
@@ -107,42 +107,11 @@ public class MainController extends AnchorPane {
         this.abi = abi;
         final LinkedList<Data> tableData = new LinkedList<>();
 
-        getAllData(abi).forEach(tableData::add);
-        abi.getCompiledTextBlocks().forEach(e->{tableData.addAll(e.deCompileText(abi.getType(),abi.getArch()));});
+        //getAllData(abi).forEach(tableData::add);
+        //abi.buildDecompile().forEach(e->{tableData.addAll(e.deCompileText(abi.getType(),abi.getArch()));});
 
-        this.codePaneController.set(tableData);
+        this.codePaneController.set(abi.buildDecompile());
         this.loadedProperty.set(true);
-    }
-
-    private LinkedList<Data> getAllData(ABI abi){
-        final LinkedList<Data> ret = new LinkedList<>();
-        for(DataStructure s : abi.getChildren()){
-            ret.add(getSeperator(s));
-            ret.addAll(getAllData(s));
-        }
-        return ret;
-    }
-
-    private LinkedList<Data> getAllData(DataStructure dataStructure){
-        final LinkedList<Data> ret = new LinkedList<>();
-
-        if(dataStructure == null)
-            return ret;
-
-        ret.addAll(dataStructure.getStructureData());
-        for(DataStructure child : dataStructure.getChildren()){
-            ret.add(getSeperator(child));
-            ret.addAll(getAllData(child));
-        }
-
-        return ret;
-    }
-
-    private Data getSeperator(DataStructure ds){
-        final Word seperator = new Word();
-        seperator.setComment(ds.getComment());
-        seperator.setDataType(Data.Type.COMMENT);
-        return seperator;
     }
 
     public CodePaneController getCodePaneController(){return codePaneController;}

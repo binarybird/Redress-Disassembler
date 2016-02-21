@@ -1,7 +1,7 @@
 package redress.abi.mach.parse.x86_64;
 
 
-import redress.memory.DataStructure;
+import redress.memory.struct.DataStructure;
 import redress.memory.address.Address;
 import redress.memory.address.Address32;
 import redress.memory.data.Data;

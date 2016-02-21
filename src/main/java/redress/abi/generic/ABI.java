@@ -1,8 +1,8 @@
 package redress.abi.generic;
 
 import redress.memory.Addressable;
-import redress.memory.DataStructure;
-import redress.memory.data.CompiledText;
+import redress.memory.struct.DataStructure;
+import redress.memory.data.Data;
 
 import java.util.LinkedList;
 
@@ -13,7 +13,7 @@ public interface ABI extends Addressable{
     public ABIType getType();
     public ABIArch getArch();
     public LinkedList<DataStructure> getChildren();
-    public LinkedList<CompiledText> getCompiledTextBlocks();//TODO - get rid of this - build binary method instead?
+    public LinkedList<Data> buildDecompile();
 
     public byte[] getRaw();
 }

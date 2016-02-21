@@ -112,7 +112,7 @@ public abstract class Container implements Comparable<Container>{
         return container[offset];
     }
 
-    public void add(Container in){
+    public Container add(Container in){
         //No unsigned values anywhere in java - we have to do it the hard way
         Container otherContainer;
         Container thisContainer;
@@ -168,9 +168,10 @@ public abstract class Container implements Comparable<Container>{
                 }
             }
         }
+        return this;
     }
 
-    public void subtract(Container in){
+    public Container subtract(Container in){
         //No unsigned values anywhere in java - we have to do it the hard way
         Container otherContainer;
         Container thisContainer;
@@ -226,6 +227,8 @@ public abstract class Container implements Comparable<Container>{
                 }
             }
         }
+
+        return this;
     }
 
     @Override

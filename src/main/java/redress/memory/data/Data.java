@@ -2,7 +2,7 @@ package redress.memory.data;
 
 import redress.memory.Addressable;
 import redress.memory.Container;
-import redress.memory.DataStructure;
+import redress.memory.struct.DataStructure;
 import redress.memory.address.Address;
 
 import java.nio.ByteOrder;
@@ -83,7 +83,12 @@ public abstract class Data extends Container implements Addressable{
 
     @Override
     public String toString(){
-        return "0x"+getStringValue()+" "+BYTEORDER;
+        return getStringValue()+" "+BYTEORDER;
     }
 
+    public static Data generateCommentContainer(String comment){
+        Word comm = new Word(new byte[0],Type.COMMENT, ByteOrder.BIG_ENDIAN);
+        comm.setComment(comment);
+        return comm;
+    }
 }

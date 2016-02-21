@@ -3,9 +3,8 @@ package redress.abi.pe;
 
 import redress.abi.generic.ABI;
 import redress.abi.generic.ABIArch;
-import redress.memory.DataStructure;
+import redress.memory.struct.DataStructure;
 import redress.memory.address.Address;
-import redress.memory.data.CompiledText;
 import redress.memory.data.DWord;
 import redress.memory.data.Data;
 
@@ -23,7 +22,6 @@ public abstract class PE implements ABI {
 
     protected final byte[] raw;
     protected final LinkedList<DataStructure> dataStructures = new LinkedList<>();
-    protected final LinkedList<CompiledText> compiledCodeBlocks = new LinkedList<>();
     protected Address beginAddress;
     protected Address endAddress;
     protected String comment;
@@ -35,11 +33,6 @@ public abstract class PE implements ABI {
     @Override
     public ABIArch getArch() {
         return ABIArch.X86;//todo
-    }
-
-    @Override
-    public LinkedList<CompiledText> getCompiledTextBlocks() {
-        return compiledCodeBlocks;
     }
 
     @Override

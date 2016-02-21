@@ -1,6 +1,6 @@
 package redress.abi.mach;
 
-import redress.memory.DataStructure;
+import redress.memory.struct.DataStructure;
 import redress.memory.Addressable;
 import redress.memory.Container;
 import redress.memory.address.Address;

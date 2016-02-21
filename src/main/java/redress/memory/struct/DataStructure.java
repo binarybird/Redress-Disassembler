@@ -1,5 +1,6 @@
-package redress.memory;
+package redress.memory.struct;
 
+import redress.memory.Addressable;
 import redress.memory.address.Address;
 import redress.memory.data.Data;
 

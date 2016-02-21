@@ -1,6 +1,9 @@
 package redress.abi.pe;
 
 import redress.abi.generic.ABIType;
+import redress.memory.data.Data;
+
+import java.util.LinkedList;
 
 /**
  * Created by jamesrichardson on 2/10/16.
@@ -16,6 +19,11 @@ public class PE32 extends PE {
     @Override
     public ABIType getType() {
         return ABI_TYPE;
+    }
+
+    @Override
+    public LinkedList<Data> buildDecompile() {
+        return null;
     }
 
     @Override
