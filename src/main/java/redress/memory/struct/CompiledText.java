@@ -78,14 +78,19 @@ public class CompiledText extends DataStructure {
     private Range print_ins_detail(Capstone.CsInsn ins,Capstone cs,ABI abi) {
         final StringBuilder comment = new StringBuilder();
 
-        final byte[] lengthOfInstruction = B.intToBytes(B.shortToInt(ins.size), ByteOrder.BIG_ENDIAN);
-        final Address begin = new Address32(B.intToBytes(B.longToInt(ins.address),ByteOrder.BIG_ENDIAN));
-        final Address end = (Address)begin.clone().add(new Address32(lengthOfInstruction));
-        final byte[] rawInst = B.getRangeAtAddress(abi.getRaw(),begin,end);
+
 
         //TODO - comment is instruction string
         //TODO - container is instruction raw
-        final Range range = new Range(rawInst,begin,end,Data.Type.TEXT_DECOMPILED, ByteOrder.BIG_ENDIAN);
+        //TODO - get raw inst from abi raw
+//        final byte[] lengthOfInstruction = B.intToBytes(B.shortToInt(ins.size), ByteOrder.BIG_ENDIAN);
+//        final Address begin = new Address32(B.intToBytes(B.longToInt(ins.address),ByteOrder.BIG_ENDIAN));
+//        final Address end = (Address)begin.clone().add(new Address32(lengthOfInstruction));
+//        final byte[] rawInst = B.getRangeAtAddress(abi.getRaw(),begin,end);
+        //final Range range = new Range(rawInst,begin,end,Data.Type.TEXT_DECOMPILED, ByteOrder.BIG_ENDIAN);
+
+        final Address32 begin = new Address32(B.intToBytes(B.longToInt(ins.address),ByteOrder.BIG_ENDIAN));
+        final Range range = new Range(new byte[0],begin,Address32.NULL,Data.Type.TEXT_DECOMPILED, ByteOrder.BIG_ENDIAN);
 
         comment.append(ins.mnemonic);
         comment.append(" ");
