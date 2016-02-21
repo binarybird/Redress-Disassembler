@@ -9,6 +9,11 @@ import java.util.LinkedList;
 
 /**
  * Created by jamesrichardson on 2/10/16.
+ *
+ * This is a super class for all data structures in ABIs
+ * eg. Segments, Sections, Versions, Load Commands, etc..
+ * See redress.abi.mach.Loader
+ *
  */
 public abstract class DataStructure implements Addressable {
 

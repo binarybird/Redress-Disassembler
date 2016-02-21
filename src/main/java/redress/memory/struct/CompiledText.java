@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 
 /**
  * Created by binar on 2/21/2016.
+ *
+ * This is a super class for all compiled text.
+ *
  */
 public class CompiledText extends DataStructure {
     private final static Logger LOGGER = Logger.getLogger(CompiledText.class.getName());
