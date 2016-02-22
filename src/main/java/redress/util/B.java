@@ -144,39 +144,6 @@ public final class B {
         return true;
     }
 
-    public static void addCompiledText32ToABI(ABI in,DWord begin,DWord end,DataStructure container){
-        final CompiledText dataRange = new CompiledText(in.getRaw(), B.dWordToAddr32(begin), B.dWordToAddr32(end), ByteOrder.LITTLE_ENDIAN);
-        dataRange.setContainingDataStructure(container);
-        in.buildDecompile().add(dataRange);
-    }
-
-//    public static void addCompiledText64ToABI(ABI in, QWord begin, QWord end, DataStructure container){
-//        //TODO - bin offset
-//        final Address64 begin64 = B.qWordToAddr64(begin);
-//        final Address64 end64 = B.qWordToAddr64(end);
-//
-//        begin64.subtract(new Address64("0x0000000100000000"));
-//        end64.subtract(new Address64("0x0000000100000000"));
-//
-//        byte[] range = B.getRangeAtAddress(in.getRaw(),begin64,end64);
-//
-//        final CompiledText dataRange = new CompiledText(range,begin64,end64, ByteOrder.LITTLE_ENDIAN);
-//        dataRange.setContainingDataStructure(container);
-//        in.buildDecompile().add(dataRange);
-//    }
-
-//    public static void addCompiledText32ToABI(ABI in,DWord begin,DWord end){
-//        in.buildDecompile().add(new CompiledText(in.getRaw(),B.dWordToAddr32(begin),B.dWordToAddr32(end),ByteOrder.LITTLE_ENDIAN));
-//    }
-//
-//    public static void addCompiledText64ToABI(ABI in,QWord begin,QWord end){
-//        in.buildDecompile().add(new CompiledText(in.getRaw(),B.qWordToAddr64(begin),B.qWordToAddr64(end),ByteOrder.LITTLE_ENDIAN));
-//    }
-
-    public static int shortToInt(short in){
-        return (in & 0x7FFF) + 0x7FFF + 1;
-    }
-
     public static Address32 dWordToAddr32(DWord begin){
         byte[] tmpBegin;
         if(begin.BYTEORDER == ByteOrder.LITTLE_ENDIAN){

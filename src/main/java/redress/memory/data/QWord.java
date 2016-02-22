@@ -15,15 +15,14 @@ public class QWord extends Data{
     public static final QWord NULL = new QWord();
 
     public QWord(){
-        super(0, Address32.NULL, Address32.NULL, ByteOrder.BIG_ENDIAN);
+        super(0, Address32.NULL, Address32.NULL, Type.DATA_NULL,ByteOrder.BIG_ENDIAN);
     }
 
     public QWord(byte[] in,Type type,ByteOrder order){
         this(in,Address32.NULL,type,order);
     }
     public QWord(byte[] in,Address beginAddress,Type type,ByteOrder order){
-        super(8,beginAddress,beginAddress.clone(),order);
-        this.type=type;
+        super(8,beginAddress,beginAddress.clone(),type,order);
         this.endAddress.add(new Address32("0x00000008"));
         if(in.length != BYTES){
             return;
@@ -37,8 +36,7 @@ public class QWord extends Data{
         this(in,Address32.NULL,type,order);
     }
     public QWord(String in,Address beginAddress,Type type,ByteOrder order){
-        super(8,beginAddress,beginAddress.clone(),order);
-        this.type=type;
+        super(8,beginAddress,beginAddress.clone(),type,order);
         this.endAddress.add(new Address32("0x00000008"));
         final byte[] tmp = B.stringToBytes(in);
         if(tmp.length != BYTES){

@@ -41,10 +41,6 @@ public abstract class Data extends Container implements Addressable{
         this.type = type;
     }
 
-    public Data(int bytes,Address beginAddr,Address endAddress, ByteOrder order){
-        this(bytes,beginAddr,endAddress,Type.DATA_NULL,order);
-    }
-
     public Type getDataType(){
         return this.type;
     }
@@ -83,6 +79,29 @@ public abstract class Data extends Container implements Addressable{
 
     @Override
     public String toString(){
+        switch(type){
+            case DATA_NULL:
+                return getStringValue();
+            case DATA_BYTE:
+                return getStringValue();
+            case DATA_CHAR:
+                return new String(getCharValue());
+            case DATA_U_INT:
+                return String.valueOf(getIntValue());
+            case DATA_INT:
+                return String.valueOf(getIntValue());
+            case DATA_FLOAT:break;
+            case DATA_DOUBLE:break;
+            case DATA_LONG:break;
+            case DATA_BOOL:break;
+            case TEXT_COMPILED:
+                return getStringValue();
+            case TEXT_DECOMPILED:
+                return comment;
+            case COMMENT:
+                return comment;
+            default:break;
+        }
         return getStringValue()+" "+BYTEORDER;
     }
 

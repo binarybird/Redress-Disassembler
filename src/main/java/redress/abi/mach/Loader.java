@@ -69,11 +69,11 @@ public interface Loader {
 
     public class char16 extends Data {
         public char16() {
-            super(0, Address32.NULL, Address32.NULL, ByteOrder.BIG_ENDIAN);
+            super(0, Address32.NULL, Address32.NULL,Type.DATA_CHAR,ByteOrder.BIG_ENDIAN);
         }
 
         public char16(byte[] in, Address begin, Address end) {
-            super(in.length, begin, end, ByteOrder.LITTLE_ENDIAN);
+            super(in.length, begin, end, Type.DATA_CHAR,ByteOrder.LITTLE_ENDIAN);
             for (int i = 0; i < in.length; i++) {
                 container[i] = in[i];
             }
@@ -89,7 +89,7 @@ public interface Loader {
 
         @Override
         public Type getDataType() {
-            return Type.DATA_CHAR;
+            return type;
         }
 
         @Override

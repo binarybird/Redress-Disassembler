@@ -15,16 +15,15 @@ public class Word extends Data {
     public static final Word NULL = new Word();
 
     public Word(){
-        super(0, Address32.NULL,Address32.NULL, ByteOrder.BIG_ENDIAN);
+        super(0, Address32.NULL,Address32.NULL,Type.DATA_NULL, ByteOrder.BIG_ENDIAN);
     }
 
     public Word(byte[] in,Type type,ByteOrder order){
         this(in,Address32.NULL,type,order);
     }
     public Word(byte[] in,Address beginAddress,Type type,ByteOrder order){
-        super(2,beginAddress,beginAddress.clone(),order);
+        super(2,beginAddress,beginAddress.clone(),type,order);
         this.endAddress.add(new Address32("0x00000002"));
-        this.type = type;
         if(in.length != BYTES){
             return;
         }
@@ -37,9 +36,8 @@ public class Word extends Data {
         this(in,Address32.NULL,type,order);
     }
     public Word(String in,Address beginAddress,Type type,ByteOrder order){
-        super(2,beginAddress,beginAddress.clone(),order);
+        super(2,beginAddress,beginAddress.clone(),type,order);
         this.endAddress.add(new Address32("0x00000002"));
-        this.type = type;
         final byte[] tmp = B.stringToBytes(in);
         if(tmp.length != BYTES){
             System.out.println("Size Overflow!");

@@ -15,15 +15,14 @@ public class DWord extends Data {
     public static final DWord NULL = new DWord();
 
     public DWord(){
-        super(0, Address32.NULL, Address32.NULL, ByteOrder.BIG_ENDIAN);
+        super(0, Address32.NULL, Address32.NULL,Type.DATA_NULL, ByteOrder.BIG_ENDIAN);
     }
 
     public DWord(byte[] in,Type type,ByteOrder order){
         this(in,Address32.NULL,type,order);
     }
     public DWord(byte[] in,Address beginAddress,Type type,ByteOrder order){
-        super(4,beginAddress,beginAddress.clone(),order);
-        this.type = type;
+        super(4,beginAddress,beginAddress.clone(),type,order);
         this.endAddress.add(new Address32("0x00000004"));
         if(in.length != BYTES){
             return;
@@ -37,8 +36,7 @@ public class DWord extends Data {
         this(in,Address32.NULL,type,order);
     }
     public DWord(String in,Address beginAddress,Type type,ByteOrder order){
-        super(4,beginAddress,beginAddress.clone(),order);
-        this.type = type;
+        super(4,beginAddress,beginAddress.clone(),type,order);
         this.endAddress.add(new Address32("0x00000004"));
         final byte[] tmp = B.stringToBytes(in);
         if(tmp.length != BYTES){

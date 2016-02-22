@@ -87,6 +87,14 @@ public abstract class Container implements Comparable<Container>{
 
     public double getDoubleValue(){return B.bytesToDouble(container,BYTEORDER);}
 
+    public char[] getCharValue(){
+
+        String g = new String(container);
+        char[] o = g.toCharArray();
+
+        return o;
+    }
+
     public byte getLeastSignificantByte(){
         if(BYTEORDER == ByteOrder.LITTLE_ENDIAN){
             return container[0];

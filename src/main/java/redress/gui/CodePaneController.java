@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class CodePaneController extends TableView<CodePaneController.DisplaySet> {
     private final static Logger LOGGER = Logger.getLogger(CodePaneController.class.getName());
     private final TableColumn<DisplaySet,String> addressColumn = new TableColumn<>("Address");
+    private final TableColumn<DisplaySet,String> dataTypeColumn = new TableColumn<>("DataType");
     private final TableColumn<DisplaySet,String> codeColumn = new TableColumn<>("Code");
     private final TableColumn<DisplaySet,String> commentColumn = new TableColumn<>("Comment");
 
@@ -25,10 +26,12 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         this.widthProperty().addListener(c->{
             final double w = this.getWidth();
             addressColumn.setPrefWidth(w/4);
-            codeColumn.setPrefWidth(this.getWidth() / 2);
+            dataTypeColumn.setPrefWidth(w/4);
+            codeColumn.setPrefWidth(w/4);
             commentColumn.setPrefWidth(w / 4);
         });
         addressColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("address"));
+        dataTypeColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("informationType"));
         codeColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("text"));
         commentColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet,String>("comment"));
 
@@ -45,7 +48,7 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         });
 
 
-        this.getColumns().addAll(addressColumn, codeColumn, commentColumn);
+        this.getColumns().addAll(addressColumn,dataTypeColumn, codeColumn, commentColumn);
     }
 
     public void set(LinkedList<Data> in){
@@ -64,20 +67,18 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
 
         //TODO - add color ivar to Data
         public DisplaySet(Data in){
-            if(in.getDataType() == Data.Type.COMMENT) {
-                this.address = new SimpleStringProperty("");
-                this.text = new SimpleStringProperty(in.toString());
-                this.comment = new SimpleStringProperty(in.getComment());
-            }else if(in.getDataType() == Data.Type.TEXT_DECOMPILED) {
-                this.address = new SimpleStringProperty(in.getBeginAddress().toString());
-                this.text = new SimpleStringProperty(in.getComment());
-                this.comment = new SimpleStringProperty(in.toString());
-            }else{
-                this.address = new SimpleStringProperty(in.getBeginAddress().toString());
-                this.text = new SimpleStringProperty(in.toString());
-                this.comment = new SimpleStringProperty(in.getComment());
-
-            }
+//            if(in.getDataType() == Data.Type.COMMENT) {
+//                this.address = new SimpleStringProperty("");
+//                this.text = new SimpleStringProperty(in.toString());
+//                this.comment = new SimpleStringProperty(in.getComment());
+//            }else if(in.getDataType() == Data.Type.TEXT_DECOMPILED) {
+//                this.address = new SimpleStringProperty(in.getBeginAddress().toString());
+//                this.text = new SimpleStringProperty(in.getComment());
+//                this.comment = new SimpleStringProperty(in.toString());
+//            }else{
+            this.address = new SimpleStringProperty(in.getBeginAddress().toString());
+            this.text = new SimpleStringProperty(in.toString());
+            this.comment = new SimpleStringProperty(in.getComment());
             this.data=in;
             this.informationType = new SimpleStringProperty(in.getDataType().toString());
         }
@@ -91,12 +92,17 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         public String getComment(){return comment.get();}
         public void setComment(String in){comment.set(in);}
 
-        public Data getData(){
-            return data;
-        }
         public String getInformationType(){
             return informationType.get();
         }
+        public void setInformationType(String type){
+            this.informationType.set(type);
+        }
+
+        public Data getData(){
+            return data;
+        }
+
 
         @Override
         public int compareTo(Data o) {

@@ -14,7 +14,7 @@ import java.util.LinkedList;
 /**
  * Created by jamesrichardson on 2/10/16.
  */
-public abstract class Mach implements ABI {
+public abstract class Mach extends ABI {
     public static final DWord MACH_ID_32 = new DWord("0xfeedface", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
     public static final DWord MACH_DI_32 = new DWord("0xcefaedfe", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
     public static final DWord MACH_ID_64 = new DWord("0xfeedfacf", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);
@@ -29,30 +29,6 @@ public abstract class Mach implements ABI {
 
     public Mach(byte[] binary) {
         this.raw=binary;
-    }
-
-    protected LinkedList<Data> getAllData(){
-        final LinkedList<Data> ret = new LinkedList<>();
-        for(DataStructure s : getChildren()){
-            ret.add(Data.generateCommentContainer(s.getComment()));
-            ret.addAll(getAllData(s));
-        }
-        return ret;
-    }
-
-    private LinkedList<Data> getAllData(DataStructure dataStructure){
-        final LinkedList<Data> ret = new LinkedList<>();
-
-        if(dataStructure == null)
-            return ret;
-
-        ret.addAll(dataStructure.getStructureData());
-        for(DataStructure child : dataStructure.getChildren()){
-            ret.add(Data.generateCommentContainer(child.getComment()));
-            ret.addAll(getAllData(child));
-        }
-
-        return ret;
     }
 
     @Override
