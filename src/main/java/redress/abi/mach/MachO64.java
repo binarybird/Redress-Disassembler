@@ -1,9 +1,8 @@
 package redress.abi.mach;
 
-import redress.abi.generic.ABI;
-import redress.abi.generic.ABIType;
-import redress.memory.struct.DataStructure;
-import redress.memory.data.Data;
+import redress.abi.generic.IContainer;
+import redress.abi.generic.enums.ABIArch;
+import redress.abi.generic.enums.ABIType;
 
 import java.util.LinkedList;
 
@@ -12,25 +11,22 @@ import java.util.LinkedList;
  */
 public class MachO64 extends Mach{
 
-    private static final ABIType ABI_TYPE = ABIType.MACH_64;
-
-    public MachO64(byte[] binary) {
-        super(binary);
+    public MachO64(byte[] raw) {
+        super(raw);
     }
 
     @Override
     public ABIType getType() {
-        return ABI_TYPE;
+        return ABIType.MACH_64;
     }
 
     @Override
-    public LinkedList<Data> buildDecompile() {
-        return getAllData();
+    public ABIArch getArch() {
+        return ABIArch.X86;
     }
 
     @Override
-    public byte[] getRaw() {
-        return raw;
+    public LinkedList<IContainer> getStructureData() {
+        return null;
     }
-
 }

@@ -1,17 +1,13 @@
-package redress.memory.struct;
+package redress.util;
 
 import capstone.Capstone;
 import capstone.X86;
-import redress.abi.generic.ABI;
-import redress.abi.generic.ABIArch;
-import redress.abi.generic.ABIType;
-import redress.memory.Addressable;
-import redress.memory.address.Address;
+import redress.abi.generic.AbstractABI;
+import redress.abi.generic.enums.ABIArch;
+import redress.abi.generic.enums.ABIType;
 import redress.memory.address.Address32;
-import redress.memory.data.Data;
+import redress.memory.data.AbstractData;
 import redress.memory.data.Range;
-import redress.memory.struct.DataStructure;
-import redress.util.B;
 
 import java.nio.ByteOrder;
 import java.util.LinkedList;
@@ -19,49 +15,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by binar on 2/21/2016.
- *
- * This is a super class for all compiled text.
- *
+ * Created by jamesrichardson on 2/22/16.
  */
-public class CompiledText extends DataStructure {
-    private final static Logger LOGGER = Logger.getLogger(CompiledText.class.getName());
+public class T {
+    private final static Logger LOGGER = Logger.getLogger(T.class.getName());
 
-    final byte[] compiledText;
-    final ABI abi;
+    private T(){}
 
-    public CompiledText(Addressable parent, byte[] compiledText, Address begin, Address end, ABI abi) {
-        super(parent);
-        this.compiledText = compiledText;
-        this.beginAddress = begin;
-        this.endAddress = end;
-        this.abi = abi;
-    }
-
-    public LinkedList<Data> deCompileText(){
-        final LinkedList<Data> ret = new LinkedList<>();
-        final int length = this.endAddress.getIntValue()-this.beginAddress.getIntValue();
+    public static LinkedList<AbstractData> deCompileText(Range text, AbstractABI abi){
+        final LinkedList<AbstractData> ret = new LinkedList<>();
+        final int length = text.getEndAddress().getIntValue()-text.getBeginAddress().getIntValue();
         final Capstone cs = getCapstone(abi.getType(), abi.getArch());
 
-        ret.add(Data.generateCommentContainer("Procedure Start, Length: "+length+" bytes"));
+        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, text.getBeginAddress().toString(),text.getEndAddress().toString(), B.bytesToString(new byte[]{text.getContainer()[0]})});
 
-        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, beginAddress.toString(),endAddress.toString(), B.bytesToString(new byte[]{compiledText[0]})});
-
+        ret.add(B.C("Procedure Start, Length: " + length + " bytes"));
         try {
-            final Capstone.CsInsn[] disasm = cs.disasm(compiledText, beginAddress.getIntValue());
+            final Capstone.CsInsn[] disasm = cs.disasm(text.getContainer(), text.getBeginAddress().getIntValue());
             for (Capstone.CsInsn csin : disasm) {
                 ret.add(print_ins_detail(csin, cs, abi));
             }
         }catch(Exception e){
             e.printStackTrace();
         }
-
-        ret.add(Data.generateCommentContainer("Procedure End, Length: "+length+" bytes"));
+        ret.add(B.C("Procedure End, Length: " + length + " bytes"));
 
         return ret;
     }
 
-    private Capstone getCapstone(ABIType fileType, ABIArch abiArch) {
+    private static Capstone getCapstone(ABIType fileType, ABIArch abiArch) {
         Capstone cs = null;
         if(fileType == ABIType.MACH_64 || fileType == ABIType.PE_64 || fileType == ABIType.ELF_64){
             if(abiArch == ABIArch.X86) {
@@ -78,22 +60,21 @@ public class CompiledText extends DataStructure {
     /**
      * Code adapted from Capstone project
      */
-    private Range print_ins_detail(Capstone.CsInsn ins,Capstone cs,ABI abi) {
+    private static Range print_ins_detail(Capstone.CsInsn ins,Capstone cs,AbstractABI abi) {
         final StringBuilder comment = new StringBuilder();
-
-
 
         //TODO - comment is instruction string
         //TODO - container is instruction raw
         //TODO - get raw inst from abi raw
+        //TODO - get proper addr size from abi
 //        final byte[] lengthOfInstruction = B.intToBytes(B.shortToInt(ins.size), ByteOrder.BIG_ENDIAN);
 //        final Address begin = new Address32(B.intToBytes(B.longToInt(ins.address),ByteOrder.BIG_ENDIAN));
 //        final Address end = (Address)begin.clone().add(new Address32(lengthOfInstruction));
 //        final byte[] rawInst = B.getRangeAtAddress(abi.getRaw(),begin,end);
         //final Range range = new Range(rawInst,begin,end,Data.Type.TEXT_DECOMPILED, ByteOrder.BIG_ENDIAN);
 
-        final Address32 begin = new Address32(B.intToBytes(B.longToInt(ins.address),ByteOrder.BIG_ENDIAN));
-        final Range range = new Range(new byte[0],begin,Address32.NULL,Data.Type.TEXT_DECOMPILED, ByteOrder.BIG_ENDIAN);
+        final Address32 begin = new Address32(B.intToBytes(B.longToInt(ins.address), ByteOrder.BIG_ENDIAN));
+        final Range range = new Range(new byte[0],begin,Address32.NULL, null,AbstractData.Type.DATA_NULL, ByteOrder.BIG_ENDIAN);
 
         comment.append(ins.mnemonic);
         comment.append(" ");
@@ -256,12 +237,8 @@ public class CompiledText extends DataStructure {
                 }
             }
         }
-        range.setComment(comment.toString());
+        range.setUserData(ins);
+        range.setComments(comment.toString());
         return range;
-    }
-
-    @Override
-    public LinkedList<Data> getStructureData() {
-        return deCompileText();
     }
 }

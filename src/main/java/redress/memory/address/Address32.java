@@ -5,7 +5,7 @@ import redress.util.B;
 /**
  * Created by jamesrichardson on 2/11/16.
  */
-public class Address32 extends Address{
+public class Address32 extends AbstractAddress {
     public static final Address32 NULL = new Address32("0x00000000");
 
     public Address32(byte[] in){

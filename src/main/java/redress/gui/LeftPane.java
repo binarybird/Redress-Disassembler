@@ -52,7 +52,7 @@ public class LeftPane extends Pane {
 //        }
 //
 //        decodeArea.setText(s);
-//        popup.getChildren().add(decodeArea);
+//        popup.getHeader().add(decodeArea);
 //
 //        final Scene scene = new Scene(popup);
 //        final Stage stage1 = new Stage();

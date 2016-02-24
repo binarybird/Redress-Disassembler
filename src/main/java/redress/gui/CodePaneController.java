@@ -1,7 +1,8 @@
 package redress.gui;
 
 import javafx.beans.property.SimpleStringProperty;
-import redress.memory.data.Data;
+import redress.abi.generic.IContainer;
+import redress.memory.data.AbstractData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
@@ -38,7 +39,7 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         this.setRowFactory(tableView -> {
             TableRow<DisplaySet> row = new TableRow<>();
             row.itemProperty().addListener((obs, prev, cur) -> {
-                if (cur != null && Data.Type.valueOf(cur.getInformationType()) == Data.Type.COMMENT) {
+                if (cur != null && AbstractData.Type.valueOf(cur.getInformationType()) == AbstractData.Type.COMMENT) {
                     row.setStyle("-fx-background-color: yellowgreen;");
                     return;
                 }
@@ -51,36 +52,56 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         this.getColumns().addAll(addressColumn,dataTypeColumn, codeColumn, commentColumn);
     }
 
-    public void set(LinkedList<Data> in){
+    public void set(LinkedList<IContainer> in){
         final List<DisplaySet> tmp = new LinkedList<>();
         in.forEach(e-> tmp.add(new DisplaySet(e)));
         final ObservableList<DisplaySet> wrapped = FXCollections.<DisplaySet>observableList(tmp);
         this.setItems(wrapped);
     }
 
-    public class DisplaySet implements Comparable<Data>{
+    public class DisplaySet implements Comparable<AbstractData>{
         private final SimpleStringProperty address;
         private final SimpleStringProperty text;
         private final SimpleStringProperty comment;
         private final SimpleStringProperty informationType;
-        private final Data data;
+        private final IContainer data;
 
         //TODO - add color ivar to Data
-        public DisplaySet(Data in){
-//            if(in.getDataType() == Data.Type.COMMENT) {
-//                this.address = new SimpleStringProperty("");
-//                this.text = new SimpleStringProperty(in.toString());
-//                this.comment = new SimpleStringProperty(in.getComment());
-//            }else if(in.getDataType() == Data.Type.TEXT_DECOMPILED) {
-//                this.address = new SimpleStringProperty(in.getBeginAddress().toString());
-//                this.text = new SimpleStringProperty(in.getComment());
-//                this.comment = new SimpleStringProperty(in.toString());
-//            }else{
-            this.address = new SimpleStringProperty(in.getBeginAddress().toString());
-            this.text = new SimpleStringProperty(in.toString());
-            this.comment = new SimpleStringProperty(in.getComment());
-            this.data=in;
-            this.informationType = new SimpleStringProperty(in.getDataType().toString());
+        public DisplaySet(IContainer in){
+            if(in instanceof AbstractData) {
+                if(((AbstractData) in).getDataType() == AbstractData.Type.COMMENT) {
+                    String one = "";
+                    String two = "";
+                    String three = "";
+
+                    if(((AbstractData) in).getComment().length != 3) {
+                        this.comment = new SimpleStringProperty("Comment length for spacer must 4");
+                        this.address = new SimpleStringProperty("");
+                        this.text = new SimpleStringProperty("");
+                        this.informationType = new SimpleStringProperty(((AbstractData) in).getDataType().toString());
+                    }
+                    else {
+                        this.comment = new SimpleStringProperty(((AbstractData) in).getComment()[2]);
+                        this.address = new SimpleStringProperty(((AbstractData) in).getComment()[0]);
+                        this.text = new SimpleStringProperty(((AbstractData) in).getComment()[1]);
+                        this.informationType = new SimpleStringProperty(((AbstractData) in).getDataType().toString());
+                    }
+                }else{
+                    this.address = new SimpleStringProperty(((AbstractData) in).getBeginAddress().toString());
+                    this.text = new SimpleStringProperty(in.toString());
+                    String s = "";
+                    if(((AbstractData) in).getComment() != null && ((AbstractData) in).getComment()[0] != null)
+                        s = ((AbstractData) in).getComment()[0];
+                    this.comment = new SimpleStringProperty(s);
+                    this.informationType = new SimpleStringProperty(((AbstractData) in).getDataType().toString());
+                }
+            }else{
+                this.address = new SimpleStringProperty("");
+                this.text = new SimpleStringProperty(in.toString());
+                this.comment = new SimpleStringProperty("");
+                this.informationType = new SimpleStringProperty("");
+            }
+            this.data = in;
         }
 
         public String getAddress(){return address.get();}
@@ -99,21 +120,23 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
             this.informationType.set(type);
         }
 
-        public Data getData(){
+        public IContainer getData(){
             return data;
         }
 
 
         @Override
-        public int compareTo(Data o) {
+        public int compareTo(AbstractData o) {
 
             if(o == null || o.getBeginAddress() == null)
                 return 0;
 
-            if(o.getDataType() == Data.Type.COMMENT)
+            if(o.getDataType() == AbstractData.Type.COMMENT)
                 return 0;
 
-            return this.getData().getBeginAddress().compareTo(o.getBeginAddress());
+            if(this.getData() instanceof AbstractData)
+                return ((AbstractData)this.getData()).getBeginAddress().compareTo(o.getBeginAddress());
+            else return 0;
         }
     }
 }

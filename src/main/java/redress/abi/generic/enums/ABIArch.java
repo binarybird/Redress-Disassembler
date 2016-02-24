@@ -1,4 +1,4 @@
-package redress.abi.generic;
+package redress.abi.generic.enums;
 
 /**
  * Created by jamesrichardson on 2/19/16.

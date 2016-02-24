@@ -1,11 +1,8 @@
 package redress.abi.mach;
 
-import redress.memory.struct.DataStructure;
-import redress.memory.Addressable;
-import redress.memory.Container;
-import redress.memory.address.Address;
-import redress.memory.address.Address32;
+import redress.abi.generic.*;
 import redress.memory.data.*;
+import redress.util.B;
 
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -62,38 +59,29 @@ public interface Loader {
     //#include <mach/machine/thread_status.h>
     //#include <architecture/byte_order.h>
 
-
-    public class union {
-        public byte[] value;
-    }
-
-    public class char16 extends Data {
-        public char16() {
-            super(0, Address32.NULL, Address32.NULL,Type.DATA_CHAR,ByteOrder.BIG_ENDIAN);
-        }
-
-        public char16(byte[] in, Address begin, Address end) {
-            super(in.length, begin, end, Type.DATA_CHAR,ByteOrder.LITTLE_ENDIAN);
-            for (int i = 0; i < in.length; i++) {
-                container[i] = in[i];
-            }
-            this.value = new String(in);
-        }
+    public class char16 extends AbstractData {
 
         public String value;
 
+        public char16(byte[] bytes, IStructure parent, Type type, ByteOrder order) {
+            super(bytes.length, parent, type, order);
+            for (int i = 0; i < bytes.length; i++) {
+                container[i] = bytes[i];
+            }
+            this.value = new String(bytes);
+        }
+
+        public char16(){
+            super(0, null, Type.DATA_NULL, ByteOrder.BIG_ENDIAN);
+        }
+
         @Override
-        public Container flipByteOrder() {
+        public IContainer flipByteOrder() {
             return null;
         }
 
         @Override
-        public Type getDataType() {
-            return type;
-        }
-
-        @Override
-        public Data clone() {
+        public AbstractData clone() {
             return null;
         }
     }
@@ -102,7 +90,7 @@ public interface Loader {
      * The 32-bit mach header appears at the very beginning of the object file for
      * 32-bit architectures.
      */
-    public class mach_header extends DataStructure {
+    public class mach_header extends AbstractHeader {
         public DWord magic = new DWord();
         public final static String magicComment = "/* mach magic number identifier */";
         public DWord cputype = new DWord();
@@ -118,34 +106,35 @@ public interface Loader {
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
 
-        public mach_header(Addressable parent) {
+        public mach_header(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            magic.setComment(magicComment);
-            cputype.setComment(cputypeComment);
-            cpusubtype.setComment(cpusubtypeComment);
-            filetype.setComment(filetypeComment);
-            ncmds.setComment(ncmdsComment);
-            sizeofcmds.setComment(sizeofcmdsComment);
-            flags.setComment(flagsComment);
-            return new LinkedList<Data>(Arrays.asList(magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags));
+        public LinkedList<IContainer> getStructureData() {
+            magic.setComments(magicComment);
+            cputype.setComments(cputypeComment);
+            cpusubtype.setComments(cpusubtypeComment);
+            filetype.setComments(filetypeComment);
+            ncmds.setComments(ncmdsComment);
+            sizeofcmds.setComments(sizeofcmdsComment);
+            flags.setComments(flagsComment);
+            return new LinkedList<IContainer>(Arrays.asList(B.C("","","",""),magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags));
         }
+
     }
 
     ;
 
     /* Constant for the magic field of the mach_header (32-bit architectures) */
-    public static final DWord MH_MAGIC = new DWord("0xfeedface", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);	/* the mach magic number */
-    public static final DWord MH_CIGAM = new DWord("0xcefaedfe", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);	/* NXSwapInt(MH_MAGIC) */
+    public static final DWord MH_MAGIC = new DWord("0xfeedface", AbstractData.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);	/* the mach magic number */
+    public static final DWord MH_CIGAM = new DWord("0xcefaedfe", AbstractData.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN);	/* NXSwapInt(MH_MAGIC) */
 
     /*
      * The 64-bit mach header appears at the very beginning of object files for
      * 64-bit architectures.
      */
-    public class mach_header_64 extends DataStructure {
+    public class mach_header_64 extends AbstractHeader {
         public DWord magic = new DWord();
         public final static String magicComment = "/* mach magic number identifier */";
         public DWord cputype = new DWord();
@@ -163,29 +152,33 @@ public interface Loader {
         public DWord reserved = new DWord();
         public final static String reservedComment = "/* reserved */";
 
-        public mach_header_64(Addressable parent) {
+        public mach_header_64(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            magic.setComment(magicComment);
-            cputype.setComment(cputypeComment);
-            cpusubtype.setComment(cpusubtypeComment);
-            filetype.setComment(filetypeComment);
-            ncmds.setComment(ncmdsComment);
-            sizeofcmds.setComment(sizeofcmdsComment);
-            flags.setComment(flagsComment);
-            reserved.setComment(reservedComment);
-            return new LinkedList<>(Arrays.asList(magic,cputype,cpusubtype,filetype,ncmds,sizeofcmds,flags,reserved));
+        public LinkedList<IContainer> getStructureData() {
+            magic.setComments(magicComment);
+            cputype.setComments(cputypeComment);
+            cpusubtype.setComments(cpusubtypeComment);
+            filetype.setComments(filetypeComment);
+            ncmds.setComments(ncmdsComment);
+            sizeofcmds.setComments(sizeofcmdsComment);
+            flags.setComments(flagsComment);
+            reserved.setComments(reservedComment);
+            return new LinkedList<IContainer>(Arrays.asList(B.C("","Mach Header 64",
+                    "     /* The 64-bit mach header appears at the very beginning of object files for\n" +
+                    "      * 64-bit architectures.\n" +
+                    "      */"),magic,cputype,cpusubtype,filetype,ncmds,sizeofcmds,flags,reserved));
         }
+
     }
 
-    ;
+
 
     /* Constant for the magic field of the mach_header_64 (64-bit architectures) */
-    public static final DWord MH_MAGIC_64 = new DWord("0xfeedfacf", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN); /* the 64-bit mach magic number */
-    public static final DWord MH_CIGAM_64 = new DWord("0xcffaedfe", Data.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN); /* NXSwapInt(MH_MAGIC_64) */
+    public static final DWord MH_MAGIC_64 = new DWord("0xfeedfacf", AbstractData.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN); /* the 64-bit mach magic number */
+    public static final DWord MH_CIGAM_64 = new DWord("0xcffaedfe", AbstractData.Type.DATA_BYTE,ByteOrder.BIG_ENDIAN); /* NXSwapInt(MH_MAGIC_64) */
 
     /*
      * The layout of the file depends on the filetype.  For all but the MH_OBJECT
@@ -210,93 +203,93 @@ public interface Loader {
      *
      * Constants for the filetype field of the mach_header
      */
-    public static final DWord MH_OBJECT = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* relocatable object file */
-    public static final DWord MH_EXECUTE = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* demand paged executable file */
-    public static final DWord MH_FVMLIB = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* fixed VM shared library file */
-    public static final DWord MH_CORE = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* core file */
-    public static final DWord MH_PRELOAD = new DWord("0x00000005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* preloaded executable file */
-    public static final DWord MH_DYLIB = new DWord("0x00000006", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamically bound shared library */
-    public static final DWord MH_DYLINKER = new DWord("0x00000007", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamic link editor */
-    public static final DWord MH_BUNDLE = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamically bound bundle file */
-    public static final DWord MH_DYLIB_STUB = new DWord("0x00000009", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* shared library stub for static */
+    public static final DWord MH_OBJECT = new DWord("0x00000001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* relocatable object file */
+    public static final DWord MH_EXECUTE = new DWord("0x00000002", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* demand paged executable file */
+    public static final DWord MH_FVMLIB = new DWord("0x00000003", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* fixed VM shared library file */
+    public static final DWord MH_CORE = new DWord("0x00000004", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* core file */
+    public static final DWord MH_PRELOAD = new DWord("0x00000005", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* preloaded executable file */
+    public static final DWord MH_DYLIB = new DWord("0x00000006", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamically bound shared library */
+    public static final DWord MH_DYLINKER = new DWord("0x00000007", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamic link editor */
+    public static final DWord MH_BUNDLE = new DWord("0x00000008", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* dynamically bound bundle file */
+    public static final DWord MH_DYLIB_STUB = new DWord("0x00000009", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* shared library stub for static */
     /*  linking only, no section contents */
-    public static final DWord MH_DSYM = new DWord("0x0000000a", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* companion file with only debug */
+    public static final DWord MH_DSYM = new DWord("0x0000000a", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* companion file with only debug */
     /*  sections */
-    public static final DWord MH_KEXT_BUNDLE = new DWord("0x0000000b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* x86_64 kexts */
+    public static final DWord MH_KEXT_BUNDLE = new DWord("0x0000000b", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* x86_64 kexts */
 
     /* Constants for the flags field of the mach_header */
-    public static final DWord MH_NOUNDEFS = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file has no undefined
+    public static final DWord MH_NOUNDEFS = new DWord("0x00000001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file has no undefined
                        references */
-    public static final DWord MH_INCRLINK = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file is the output of an
+    public static final DWord MH_INCRLINK = new DWord("0x00000002", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file is the output of an
 					   incremental link against a base file
 					   and can't be link edited again */
-    public static final DWord MH_DYLDLINK = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file is input for the
+    public static final DWord MH_DYLDLINK = new DWord("0x00000004", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file is input for the
 					   dynamic linker and can't be staticly
 					   link edited again */
-    public static final DWord MH_BINDATLOAD = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file's undefined
+    public static final DWord MH_BINDATLOAD = new DWord("0x00000008", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the object file's undefined
 					   references are bound by the dynamic
 					   linker when loaded. */
-    public static final DWord MH_PREBOUND = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the file has its dynamic undefined
+    public static final DWord MH_PREBOUND = new DWord("0x00000010", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the file has its dynamic undefined
 					   references prebound. */
-    public static final DWord MH_SPLIT_SEGS = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the file has its read-only and
+    public static final DWord MH_SPLIT_SEGS = new DWord("0x00000020", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the file has its read-only and
 					   read-write segments split */
-    public static final DWord MH_LAZY_INIT = new DWord("0x00000040", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the shared library init routine is
+    public static final DWord MH_LAZY_INIT = new DWord("0x00000040", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the shared library init routine is
 					   to be run lazily via catching memory
 					   faults to its writeable segments
 					   (obsolete) */
-    public static final DWord MH_TWOLEVEL = new DWord("0x00000080", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the image is using two-level name
+    public static final DWord MH_TWOLEVEL = new DWord("0x00000080", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the image is using two-level name
 					   space bindings */
-    public static final DWord MH_FORCE_FLAT = new DWord("0x00000100", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the executable is forcing all images
+    public static final DWord MH_FORCE_FLAT = new DWord("0x00000100", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the executable is forcing all images
 					   to use flat name space bindings */
-    public static final DWord MH_NOMULTIDEFS = new DWord("0x00000200", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* this umbrella guarantees no multiple
+    public static final DWord MH_NOMULTIDEFS = new DWord("0x00000200", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* this umbrella guarantees no multiple
 					   defintions of symbols in its
 					   sub-images so the two-level namespace
 					   hints can always be used. */
-    public static final DWord MH_NOFIXPREBINDING = new DWord("0x00000400", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* do not have dyld notify the
+    public static final DWord MH_NOFIXPREBINDING = new DWord("0x00000400", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* do not have dyld notify the
 					   prebinding agent about this
 					   executable */
-    public static final DWord MH_PREBINDABLE = new DWord("0x00000800", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);           /* the binary is not prebound but can
+    public static final DWord MH_PREBINDABLE = new DWord("0x00000800", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);           /* the binary is not prebound but can
 					   have its prebinding redone. only used
                                            when MH_PREBOUND is not set. */
-    public static final DWord MH_ALLMODSBOUND = new DWord("0x00001000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* indicates that this binary binds to
+    public static final DWord MH_ALLMODSBOUND = new DWord("0x00001000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* indicates that this binary binds to
                                            all two-level namespace modules of
 					   its dependent libraries. only used
 					   when MH_PREBINDABLE and MH_TWOLEVEL
 					   are both set. */
-    public static final DWord MH_SUBSECTIONS_VIA_SYMBOLS = new DWord("0x00002000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);/* safe to divide up the sections into
+    public static final DWord MH_SUBSECTIONS_VIA_SYMBOLS = new DWord("0x00002000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);/* safe to divide up the sections into
 					    sub-sections via symbols for dead
 					    code stripping */
-    public static final DWord MH_CANONICAL = new DWord("0x00004000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the binary has been canonicalized
+    public static final DWord MH_CANONICAL = new DWord("0x00004000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the binary has been canonicalized
 					   via the unprebind operation */
-    public static final DWord MH_WEAK_DEFINES = new DWord("0x00008000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the final linked image contains
+    public static final DWord MH_WEAK_DEFINES = new DWord("0x00008000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);		/* the final linked image contains
 					   external weak symbols */
-    public static final DWord MH_BINDS_TO_WEAK = new DWord("0x00010000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the final linked image uses
+    public static final DWord MH_BINDS_TO_WEAK = new DWord("0x00010000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the final linked image uses
 					   weak symbols */
 
-    public static final DWord MH_ALLOW_STACK_EXECUTION = new DWord("0x00020000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);/* When this bit is set, all stacks
+    public static final DWord MH_ALLOW_STACK_EXECUTION = new DWord("0x00020000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);/* When this bit is set, all stacks
 					   in the task will be given stack
 					   execution privilege.  Only used in
 					   MH_EXECUTE filetypes. */
-    public static final DWord MH_DEAD_STRIPPABLE_DYLIB = new DWord("0x00400000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Only for use on dylibs.  When
+    public static final DWord MH_DEAD_STRIPPABLE_DYLIB = new DWord("0x00400000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Only for use on dylibs.  When
 					     linking against a dylib that
 					     has this bit set, the static linker
 					     will automatically not create a
 					     LC_LOAD_DYLIB load command to the
 					     dylib if no symbols are being
 					     referenced from the dylib. */
-    public static final DWord MH_ROOT_SAFE = new DWord("0x00040000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);           /* When this bit is set, the binary
+    public static final DWord MH_ROOT_SAFE = new DWord("0x00040000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);           /* When this bit is set, the binary
 					  declares it is safe for use in
 					  processes with uid zero */
 
-    public static final DWord MH_SETUID_SAFE = new DWord("0x00080000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);         /* When this bit is set, the binary
+    public static final DWord MH_SETUID_SAFE = new DWord("0x00080000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);         /* When this bit is set, the binary
 					  declares it is safe for use in
 					  processes when issetugid() is true */
 
-    public static final DWord MH_NO_REEXPORTED_DYLIBS = new DWord("0x00100000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* When this bit is set on a dylib,
+    public static final DWord MH_NO_REEXPORTED_DYLIBS = new DWord("0x00100000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* When this bit is set on a dylib,
 					  the static linker does not need to
 					  examine dependent dylibs to see
 					  if any are re-exported */
-    public static final DWord MH_PIE = new DWord("0x00200000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);			/* When this bit is set, the OS will
+    public static final DWord MH_PIE = new DWord("0x00200000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);			/* When this bit is set, the OS will
 					   load the main executable at a
 					   random address.  Only used in
 					   MH_EXECUTE filetypes. */
@@ -318,22 +311,22 @@ public interface Loader {
      * to these tables will not work well or at all on some machines.  With all
      * padding zeroed like objects will compare byte for byte.
      */
-    public class load_command extends DataStructure {
+    public class load_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public static final String cmdComment = "/* type of load command */";
         public DWord cmdsize = new DWord();
         public static final String cmdsizeComment = "/* total size of command in bytes */";
 
-        public load_command(Addressable parent) {
+        public load_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
+        public LinkedList<IContainer> getStructureData() {
             {
-                cmd.setComment(cmdComment);
-                cmdsize.setComment(cmdsizeComment);
-                return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+                cmd.setComments(cmdComment);
+                cmdsize.setComments(cmdsizeComment);
+                return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
             }
         }
     }
@@ -349,50 +342,50 @@ public interface Loader {
      * image.  Other load commands without this bit that are not understood will
      * simply be ignored.
      */
-    public static final DWord LC_REQ_DYLD = new DWord("0x80000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord LC_REQ_DYLD = new DWord("0x80000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
     /* Constants for the cmd field of all load commands, the type */
-    public static final DWord LC_SEGMENT = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* segment of this file to be mapped */
-    public static final DWord LC_SYMTAB = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* link-edit stab symbol table info */
-    public static final DWord LC_SYMSEG = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* link-edit gdb symbol table info (obsolete) */
-    public static final DWord LC_THREAD = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* thread */
-    public static final DWord LC_UNIXTHREAD = new DWord("0x00000005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* unix thread (includes a stack) */
-    public static final DWord LC_LOADFVMLIB = new DWord("0x00000006", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a specified fixed VM shared library */
-    public static final DWord LC_IDFVMLIB = new DWord("0x00000007", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* fixed VM shared library identification */
-    public static final DWord LC_IDENT = new DWord("0x00000008",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* object identification info (obsolete) */
-    public static final DWord LC_FVMFILE = new DWord("0x00000009", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* fixed VM file inclusion (internal use) */
-    public static final DWord LC_PREPAGE = new DWord("0x0000000a", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);     /* prepage command (internal use) */
-    public static final DWord LC_DYSYMTAB = new DWord("0x0000000b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamic link-edit symbol table info */
-    public static final DWord LC_LOAD_DYLIB = new DWord("0x0000000c", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a dynamically linked shared library */
-    public static final DWord LC_ID_DYLIB = new DWord("0x0000000d", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamically linked shared lib ident */
-    public static final DWord LC_LOAD_DYLINKER = new DWord("0x0000000e", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a dynamic linker */
-    public static final DWord LC_ID_DYLINKER = new DWord("0x0000000f", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamic linker identification */
-    public static final DWord LC_PREBOUND_DYLIB = new DWord("0x00000010",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* modules prebound for a dynamically */
+    public static final DWord LC_SEGMENT = new DWord("0x00000001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* segment of this file to be mapped */
+    public static final DWord LC_SYMTAB = new DWord("0x00000002", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* link-edit stab symbol table info */
+    public static final DWord LC_SYMSEG = new DWord("0x00000003", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* link-edit gdb symbol table info (obsolete) */
+    public static final DWord LC_THREAD = new DWord("0x00000004", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* thread */
+    public static final DWord LC_UNIXTHREAD = new DWord("0x00000005", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* unix thread (includes a stack) */
+    public static final DWord LC_LOADFVMLIB = new DWord("0x00000006", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a specified fixed VM shared library */
+    public static final DWord LC_IDFVMLIB = new DWord("0x00000007", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* fixed VM shared library identification */
+    public static final DWord LC_IDENT = new DWord("0x00000008", AbstractData.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* object identification info (obsolete) */
+    public static final DWord LC_FVMFILE = new DWord("0x00000009", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* fixed VM file inclusion (internal use) */
+    public static final DWord LC_PREPAGE = new DWord("0x0000000a", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);     /* prepage command (internal use) */
+    public static final DWord LC_DYSYMTAB = new DWord("0x0000000b", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamic link-edit symbol table info */
+    public static final DWord LC_LOAD_DYLIB = new DWord("0x0000000c", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a dynamically linked shared library */
+    public static final DWord LC_ID_DYLIB = new DWord("0x0000000d", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamically linked shared lib ident */
+    public static final DWord LC_LOAD_DYLINKER = new DWord("0x0000000e", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* load a dynamic linker */
+    public static final DWord LC_ID_DYLINKER = new DWord("0x0000000f", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* dynamic linker identification */
+    public static final DWord LC_PREBOUND_DYLIB = new DWord("0x00000010", AbstractData.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* modules prebound for a dynamically */
     /*  linked shared library */
-    public static final DWord LC_ROUTINES = new DWord("0x00000011", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* image routines */
-    public static final DWord LC_SUB_FRAMEWORK = new DWord("0x00000012", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub framework */
-    public static final DWord LC_SUB_UMBRELLA = new DWord("0x00000013",Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub umbrella */
-    public static final DWord LC_SUB_CLIENT = new DWord("0x00000014", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub client */
-    public static final DWord LC_SUB_LIBRARY = new DWord("0x00000015", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub library */
-    public static final DWord LC_TWOLEVEL_HINTS = new DWord("0x00000016", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* two-level namespace lookup hints */
-    public static final DWord LC_PREBIND_CKSUM = new DWord("0x00000017",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* prebind checksum */
+    public static final DWord LC_ROUTINES = new DWord("0x00000011", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* image routines */
+    public static final DWord LC_SUB_FRAMEWORK = new DWord("0x00000012", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub framework */
+    public static final DWord LC_SUB_UMBRELLA = new DWord("0x00000013", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub umbrella */
+    public static final DWord LC_SUB_CLIENT = new DWord("0x00000014", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub client */
+    public static final DWord LC_SUB_LIBRARY = new DWord("0x00000015", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* sub library */
+    public static final DWord LC_TWOLEVEL_HINTS = new DWord("0x00000016", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* two-level namespace lookup hints */
+    public static final DWord LC_PREBIND_CKSUM = new DWord("0x00000017", AbstractData.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* prebind checksum */
 
     /*
      * load a dynamically linked shared library that is allowed to be missing
      * (all symbols are weak imported).
      */
-    public static final DWord LC_LOAD_WEAK_DYLIB = new DWord("0x80000018", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord LC_SEGMENT_64 = new DWord("0x00000019", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* 64-bit segment of this file to be mapped */
-    public static final DWord LC_ROUTINES_64 = new DWord("0x0000001a",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* 64-bit image routines */
-    public static final DWord LC_UUID = new DWord("0x0000001b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the uuid */
-    public static final DWord LC_RPATH = new DWord("0x8000001c", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);    /* runpath additions */
-    public static final DWord LC_CODE_SIGNATURE = new DWord("0x0000001d", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* local of code signature */
-    public static final DWord LC_SEGMENT_SPLIT_INFO = new DWord("0x0000001e", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* local of info to split segments */
-    public static final DWord LC_REEXPORT_DYLIB = new DWord("0x8000001f",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN); /* load and re-export dylib */
-    public static final DWord LC_LAZY_LOAD_DYLIB = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* delay load of dylib until first use */
-    public static final DWord LC_ENCRYPTION_INFO = new DWord("0x00000021",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* encrypted segment information */
-    public static final DWord LC_DYLD_INFO = new DWord("0x00000022",Data.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* compressed dyld information */
-    public static final DWord LC_DYLD_INFO_ONLY = new DWord("0x80000022", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* compressed dyld information only */
+    public static final DWord LC_LOAD_WEAK_DYLIB = new DWord("0x80000018", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord LC_SEGMENT_64 = new DWord("0x00000019", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* 64-bit segment of this file to be mapped */
+    public static final DWord LC_ROUTINES_64 = new DWord("0x0000001a", AbstractData.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* 64-bit image routines */
+    public static final DWord LC_UUID = new DWord("0x0000001b", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the uuid */
+    public static final DWord LC_RPATH = new DWord("0x8000001c", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);    /* runpath additions */
+    public static final DWord LC_CODE_SIGNATURE = new DWord("0x0000001d", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* local of code signature */
+    public static final DWord LC_SEGMENT_SPLIT_INFO = new DWord("0x0000001e", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* local of info to split segments */
+    public static final DWord LC_REEXPORT_DYLIB = new DWord("0x8000001f", AbstractData.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN); /* load and re-export dylib */
+    public static final DWord LC_LAZY_LOAD_DYLIB = new DWord("0x00000020", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* delay load of dylib until first use */
+    public static final DWord LC_ENCRYPTION_INFO = new DWord("0x00000021", AbstractData.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* encrypted segment information */
+    public static final DWord LC_DYLD_INFO = new DWord("0x00000022", AbstractData.Type.DATA_BYTE,  ByteOrder.BIG_ENDIAN);	/* compressed dyld information */
+    public static final DWord LC_DYLD_INFO_ONLY = new DWord("0x80000022", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* compressed dyld information only */
 
     // public static final DWord	MH_DEAD_STRIPPABLE_DYLIB = new DWord("0x00400000",ByteOrder.LITTLE_ENDIAN);
     /* Only for use on dylibs.  When
@@ -402,25 +395,25 @@ public interface Loader {
 					     LC_LOAD_DYLIB load command to the
 					     dylib if no symbols are being
 					     referenced from the dylib. */
-    public static final DWord MH_HAS_TLV_DESCRIPTORS = new DWord("0x00800000",Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Contains a section of type
+    public static final DWord MH_HAS_TLV_DESCRIPTORS = new DWord("0x00800000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Contains a section of type
 					    S_THREAD_LOCAL_VARIABLES */
 
-    public static final DWord MH_NO_HEAP_EXECUTION = new DWord("0x01000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* When this bit is set, the OS will
+    public static final DWord MH_NO_HEAP_EXECUTION = new DWord("0x01000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* When this bit is set, the OS will
 					   run the main executable with
 					   a non-executable heap even on
 					   platforms (e.g. i386) that don't
 					   require it. Only used in MH_EXECUTE
 					   filetypes. */
-    public static final DWord LC_LOAD_UPWARD_DYLIB = new DWord("0x80000023", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);// | LC_REQ_DYLD) /* load upward dylib */
-    public static final DWord LC_VERSION_MIN_MACOSX = new DWord("0x00000024", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);   /* build for MacOSX min OS version */
-    public static final DWord LC_VERSION_MIN_IPHONEOS = new DWord("0x00000025", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* build for iPhoneOS min OS version */
-    public static final DWord LC_FUNCTION_STARTS = new DWord("0x00000026", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* compressed table of function start addresses */
-    public static final DWord LC_DYLD_ENVIRONMENT = new DWord("0x00000027", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* string for dyld to treat
+    public static final DWord LC_LOAD_UPWARD_DYLIB = new DWord("0x80000023", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);// | LC_REQ_DYLD) /* load upward dylib */
+    public static final DWord LC_VERSION_MIN_MACOSX = new DWord("0x00000024", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);   /* build for MacOSX min OS version */
+    public static final DWord LC_VERSION_MIN_IPHONEOS = new DWord("0x00000025", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* build for iPhoneOS min OS version */
+    public static final DWord LC_FUNCTION_STARTS = new DWord("0x00000026", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* compressed table of function start addresses */
+    public static final DWord LC_DYLD_ENVIRONMENT = new DWord("0x00000027", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* string for dyld to treat
 				    like environment variable */
-    public static final DWord LC_MAIN = new DWord("0x80000028", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);//|LC_REQ_DYLD) /* replacement for LC_UNIXTHREAD */
-    public static final DWord LC_DATA_IN_CODE = new DWord("0x00000029", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* table of non-instructions in __text */
-    public static final DWord LC_SOURCE_VERSION = new DWord("0x0000002A", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* source version used to build binary */
-    public static final DWord LC_DYLIB_CODE_SIGN_DRS = new DWord("0x0000002B", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Code signing DRs copied from linked dylibs */
+    public static final DWord LC_MAIN = new DWord("0x80000028", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);//|LC_REQ_DYLD) /* replacement for LC_UNIXTHREAD */
+    public static final DWord LC_DATA_IN_CODE = new DWord("0x00000029", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* table of non-instructions in __text */
+    public static final DWord LC_SOURCE_VERSION = new DWord("0x0000002A", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* source version used to build binary */
+    public static final DWord LC_DYLIB_CODE_SIGN_DRS = new DWord("0x0000002B", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* Code signing DRs copied from linked dylibs */
 
     /*
      * A variable length string in a load command is represented by an lc_str
@@ -430,18 +423,24 @@ public interface Loader {
      * Once again any padded bytes to bring the cmdsize field to a multiple
      * of 4 bytes must be zero.
      */
-    public class lc_str extends DataStructure {
+    public class lc_str extends AbstractTable {
         public DWord offset = new DWord();
         public Range ptr = new Range();
 
-        public lc_str(Addressable parent) {
+        public lc_str(IStructure parent) {
             super(parent);
+        }
+        public lc_str() {
+            super(null);
+        }
+        @Override
+        public LinkedList<IContainer> getStructureData() {
+            return new LinkedList<>(Arrays.asList(offset, ptr));
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-
-            return new LinkedList<>(Arrays.asList(offset, ptr));
+        public AbstractTable clone() {
+            return null;
         }
     }
 
@@ -457,7 +456,7 @@ public interface Loader {
      * section public classures directly follow the segment command and their size is
      * reflected in cmdsize.
      */
-    public class segment_command extends DataStructure { /* for 32-bit architectures */
+    public class segment_command extends AbstractLoadCommand { /* for 32-bit architectures */
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SEGMENT */";
         public DWord cmdsize = new DWord();
@@ -481,23 +480,23 @@ public interface Loader {
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
 
-        public segment_command(Addressable parent) {
+        public segment_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            segname.setComment(segnameComment);
-            vmaddr.setComment(vmaddrComment);
-            vmsize.setComment(vmsizeComment);
-            fileoff.setComment(fileoffComment);
-            filesize.setComment(filesizeComment);
-            maxprot.setComment(maxprotComment);
-            initprot.setComment(initprotComment);
-            nsects.setComment(nsectsComment);
-            flags.setComment(flagsComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            segname.setComments(segnameComment);
+            vmaddr.setComments(vmaddrComment);
+            vmsize.setComments(vmsizeComment);
+            fileoff.setComments(fileoffComment);
+            filesize.setComments(filesizeComment);
+            maxprot.setComments(maxprotComment);
+            initprot.setComments(initprotComment);
+            nsects.setComments(nsectsComment);
+            flags.setComments(flagsComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, segname, vmaddr, vmsize, fileoff, filesize, maxprot, initprot, nsects, flags));
         }
     }
@@ -510,7 +509,7 @@ public interface Loader {
      * sections then section_64 public classures directly follow the 64-bit segment
      * command and their size is reflected in cmdsize.
      */
-    public class segment_command_64 extends DataStructure { /* for 64-bit architectures */
+    public class segment_command_64 extends AbstractLoadCommand { /* for 64-bit architectures */
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SEGMENT_64 */";
         public DWord cmdsize = new DWord();
@@ -534,40 +533,40 @@ public interface Loader {
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags */";
 
-        public segment_command_64(Addressable parent) {
+        public segment_command_64(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            segname.setComment(segnameComment);
-            vmaddr.setComment(vmaddrComment);
-            vmsize.setComment(vmsizeComment);
-            fileoff.setComment(fileoffComment);
-            filesize.setComment(filesizeComment);
-            maxprot.setComment(maxprotComment);
-            initprot.setComment(initprotComment);
-            nsects.setComment(nsectsComment);
-            flags.setComment(flagsComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, segname, vmaddr, vmsize, maxprot, initprot, nsects, flags));
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            segname.setComments(segnameComment);
+            vmaddr.setComments(vmaddrComment);
+            vmsize.setComments(vmsizeComment);
+            fileoff.setComments(fileoffComment);
+            filesize.setComments(filesizeComment);
+            maxprot.setComments(maxprotComment);
+            initprot.setComments(initprotComment);
+            nsects.setComments(nsectsComment);
+            flags.setComments(flagsComment);
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize, segname, vmaddr, vmsize, maxprot, initprot, nsects, flags));
         }
     }
 
     ;
 
     /* Constants for the flags field of the segment_command */
-    public static final DWord SG_HIGHVM = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the file contents for this segment is for
+    public static final DWord SG_HIGHVM = new DWord("0x00000001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* the file contents for this segment is for
 				   the high part of the VM space, the low part
 				   is zero filled (for stacks in core files) */
-    public static final DWord SG_FVMLIB = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* this segment is the VM that is allocated by
+    public static final DWord SG_FVMLIB = new DWord("0x00000002", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* this segment is the VM that is allocated by
 				   a fixed VM library, for overlap checking in
 				   the link editor */
-    public static final DWord SG_NORELOC = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* this segment has nothing that was relocated
+    public static final DWord SG_NORELOC = new DWord("0x00000004", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* this segment has nothing that was relocated
 				   in it and nothing relocated to it, that is
 				   it maybe safely replaced without relocation*/
-    public static final DWord SG_PROTECTED_VERSION_1 = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* This segment is protected.  If the
+    public static final DWord SG_PROTECTED_VERSION_1 = new DWord("0x00000008", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN); /* This segment is protected.  If the
 				       segment starts at file offset 0, the
 				       first page of the segment is not
 				       protected.  All other pages of the
@@ -600,7 +599,7 @@ public interface Loader {
      * fields of the section public classure for mach object files is described in the
      * header file <reloc.h>.
      */
-    public class section extends DataStructure { /* for 32-bit architectures */
+    public class section extends AbstractSection { /* for 32-bit architectures */
         //public section(Segment parent){}
         public char16 sectname = new char16();
         public final static String sectnameComment = "/* name of this section */";
@@ -625,30 +624,30 @@ public interface Loader {
         public DWord reserved2 = new DWord();
         public final static String reserved2Comment = "/* reserved (for count or sizeof) */";
 
-        public section(Addressable parent) {
+        public section(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            sectname.setComment(sectnameComment);
-            segname.setComment(segnameComment);
-            addr.setComment(addrComment);
-            size.setComment(sizeComment);
-            offset.setComment(offsetComment);
-            align.setComment(alignComment);
-            reloff.setComment(reloffComment);
-            nreloc.setComment(nrelocComment);
-            flags.setComment(flagsComment);
-            reserved1.setComment(reserved1Comment);
-            reserved2.setComment(reserved2Comment);
-            return new LinkedList<>(Arrays.asList(sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2));
+        public LinkedList<IContainer> getStructureData() {
+            sectname.setComments(sectnameComment);
+            segname.setComments(segnameComment);
+            addr.setComments(addrComment);
+            size.setComments(sizeComment);
+            offset.setComments(offsetComment);
+            align.setComments(alignComment);
+            reloff.setComments(reloffComment);
+            nreloc.setComments(nrelocComment);
+            flags.setComments(flagsComment);
+            reserved1.setComments(reserved1Comment);
+            reserved2.setComments(reserved2Comment);
+            return new LinkedList<IContainer>(Arrays.asList(sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2));
         }
     }
 
     ;
 
-    public class section_64 extends DataStructure { /* for 64-bit architectures */
+    public class section_64 extends AbstractSection { /* for 64-bit architectures */
 
         public char16 sectname = new char16();
         public final static String sectnameComment = "/* name of this section */";
@@ -675,28 +674,28 @@ public interface Loader {
         public DWord reserved3 = new DWord();
         public final static String reserved3Comment = "/* reserved */";
 
-        public section_64(Addressable parent) {
+        public section_64(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            sectname.setComment(sectnameComment);
-            segname.setComment(segnameComment);
+        public LinkedList<IContainer> getStructureData() {
+            sectname.setComments(sectnameComment);
+            segname.setComments(segnameComment);
 
-            addr.setComment(addrComment);
-            size.setComment(sizeComment);
+            addr.setComments(addrComment);
+            size.setComments(sizeComment);
 
-            offset.setComment(offsetComment);
-            reloff.setComment(reloffComment);
+            offset.setComments(offsetComment);
+            reloff.setComments(reloffComment);
 
-            nreloc.setComment(nrelocComment);
-            flags.setComment(flagsComment);
+            nreloc.setComments(nrelocComment);
+            flags.setComments(flagsComment);
 
-            reserved1.setComment(reserved1Comment);
-            reserved2.setComment(reserved2Comment);
+            reserved1.setComments(reserved1Comment);
+            reserved2.setComments(reserved2Comment);
 
-            reserved3.setComment(reserved3Comment);
+            reserved3.setComments(reserved3Comment);
             return new LinkedList<>(Arrays.asList(sectname, segname, addr, size, offset, reloff, nreloc, flags, reserved1, reserved2, reserved3));
         }
     }
@@ -709,16 +708,16 @@ public interface Loader {
      * can only have one type) but the section attributes are not (it may have more
      * than one attribute).
      */
-    public static final DWord SECTION_TYPE = new DWord("0x000000ff", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* 256 section types */
-    public static final DWord SECTION_ATTRIBUTES = new DWord("0xffffff00", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/*  24 section attributes */
+    public static final DWord SECTION_TYPE = new DWord("0x000000ff", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* 256 section types */
+    public static final DWord SECTION_ATTRIBUTES = new DWord("0xffffff00", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/*  24 section attributes */
 
     /* Constants for the type of a section */
-    public static final DWord S_REGULAR = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* regular section */
-    public static final DWord S_ZEROFILL = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* zero fill on demand section */
-    public static final DWord S_CSTRING_LITERALS = new DWord("0x00000002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only literal C strings*/
-    public static final DWord S_4BYTE_LITERALS = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 4 byte literals */
-    public static final DWord S_8BYTE_LITERALS = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 8 byte literals */
-    public static final DWord S_LITERAL_POINTERS = new DWord("0x00000005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only pointers to */
+    public static final DWord S_REGULAR = new DWord("0x00000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* regular section */
+    public static final DWord S_ZEROFILL = new DWord("0x00000001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* zero fill on demand section */
+    public static final DWord S_CSTRING_LITERALS = new DWord("0x00000002", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only literal C strings*/
+    public static final DWord S_4BYTE_LITERALS = new DWord("0x00000003", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 4 byte literals */
+    public static final DWord S_8BYTE_LITERALS = new DWord("0x00000004", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 8 byte literals */
+    public static final DWord S_LITERAL_POINTERS = new DWord("0x00000005", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only pointers to */
     /*  literals */
     /*
      * For the two types of symbol pointers sections and the symbol stubs section
@@ -732,63 +731,63 @@ public interface Loader {
      * in the section is 4 bytes and for symbol stubs sections the byte size of the
      * stubs is stored in the reserved2 field of the section public classure.
      */
-    public static final DWord S_NON_LAZY_SYMBOL_POINTERS = new DWord("0x00000006", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only non-lazy
+    public static final DWord S_NON_LAZY_SYMBOL_POINTERS = new DWord("0x00000006", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only non-lazy
 						   symbol pointers */
-    public static final DWord S_LAZY_SYMBOL_POINTERS = new DWord("0x00000007", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only lazy symbol
+    public static final DWord S_LAZY_SYMBOL_POINTERS = new DWord("0x00000007", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only lazy symbol
 						   pointers */
-    public static final DWord S_SYMBOL_STUBS = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only symbol
+    public static final DWord S_SYMBOL_STUBS = new DWord("0x00000008", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only symbol
 						   stubs, byte size of stub in
 						   the reserved2 field */
-    public static final DWord S_MOD_INIT_FUNC_POINTERS = new DWord("0x00000009", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only function
+    public static final DWord S_MOD_INIT_FUNC_POINTERS = new DWord("0x00000009", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only function
 						   pointers for initialization*/
-    public static final DWord S_MOD_TERM_FUNC_POINTERS = new DWord("0x0000000a", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only function
+    public static final DWord S_MOD_TERM_FUNC_POINTERS = new DWord("0x0000000a", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only function
 						   pointers for termination */
-    public static final DWord S_COALESCED = new DWord("0x0000000b", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains symbols that
+    public static final DWord S_COALESCED = new DWord("0x0000000b", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains symbols that
 						   are to be coalesced */
-    public static final DWord S_GB_ZEROFILL = new DWord("0x0000000c", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* zero fill on demand section
+    public static final DWord S_GB_ZEROFILL = new DWord("0x0000000c", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* zero fill on demand section
 						   (that can be larger than 4
 						   gigabytes) */
-    public static final DWord S_INTERPOSING = new DWord("0x0000000d", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only pairs of
+    public static final DWord S_INTERPOSING = new DWord("0x0000000d", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only pairs of
 						   function pointers for
 						   interposing */
-    public static final DWord S_16BYTE_LITERALS = new DWord("0x0000000e", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 16 byte
+    public static final DWord S_16BYTE_LITERALS = new DWord("0x0000000e", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only 16 byte
 						   literals */
-    public static final DWord S_DTRACE_DOF = new DWord("0x0000000f", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains
+    public static final DWord S_DTRACE_DOF = new DWord("0x0000000f", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains
 						   DTrace Object Format */
-    public static final DWord S_LAZY_DYLIB_SYMBOL_POINTERS = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only lazy
+    public static final DWord S_LAZY_DYLIB_SYMBOL_POINTERS = new DWord("0x00000010", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section with only lazy
 						   symbol pointers to lazy
 						   loaded dylibs */
     /*
      * Constants for the section attributes part of the flags field of a section
      * public classure.
      */
-    public static final DWord SECTION_ATTRIBUTES_USR = new DWord("0xff000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* User setable attributes */
-    public static final DWord S_ATTR_PURE_INSTRUCTIONS = new DWord("0x80000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains only true
+    public static final DWord SECTION_ATTRIBUTES_USR = new DWord("0xff000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* User setable attributes */
+    public static final DWord S_ATTR_PURE_INSTRUCTIONS = new DWord("0x80000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains only true
 						   machine instructions */
-    public static final DWord S_ATTR_NO_TOC = new DWord("0x40000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains coalesced
+    public static final DWord S_ATTR_NO_TOC = new DWord("0x40000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains coalesced
 						   symbols that are not to be
 						   in a ranlib table of
 						   contents */
-    public static final DWord S_ATTR_STRIP_STATIC_SYMS = new DWord("0x20000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* ok to strip static symbols
+    public static final DWord S_ATTR_STRIP_STATIC_SYMS = new DWord("0x20000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* ok to strip static symbols
 						   in this section in files
 						   with the MH_DYLDLINK flag */
-    public static final DWord S_ATTR_NO_DEAD_STRIP = new DWord("0x10000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* no dead stripping */
-    public static final DWord S_ATTR_LIVE_SUPPORT = new DWord("0x08000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* blocks are live if they
+    public static final DWord S_ATTR_NO_DEAD_STRIP = new DWord("0x10000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* no dead stripping */
+    public static final DWord S_ATTR_LIVE_SUPPORT = new DWord("0x08000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* blocks are live if they
 						   reference live blocks */
-    public static final DWord S_ATTR_SELF_MODIFYING_CODE = new DWord("0x04000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* Used with i386 code stubs
+    public static final DWord S_ATTR_SELF_MODIFYING_CODE = new DWord("0x04000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* Used with i386 code stubs
 						   written on by dyld */
 
     /*
      * Section types to support thread local variables
      */
-    public static final DWord S_THREAD_LOCAL_REGULAR = new DWord("0x00000011", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* template of initial
+    public static final DWord S_THREAD_LOCAL_REGULAR = new DWord("0x00000011", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* template of initial
 							  values for TLVs */
-    public static final DWord S_THREAD_LOCAL_ZEROFILL = new DWord("0x00000012", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* template of initial
+    public static final DWord S_THREAD_LOCAL_ZEROFILL = new DWord("0x00000012", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* template of initial
 							  values for TLVs */
-    public static final DWord S_THREAD_LOCAL_VARIABLES = new DWord("0x00000013", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* TLV descriptors */
-    public static final DWord S_THREAD_LOCAL_VARIABLE_POINTERS = new DWord("0x00000014", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* pointers to TLV
+    public static final DWord S_THREAD_LOCAL_VARIABLES = new DWord("0x00000013", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* TLV descriptors */
+    public static final DWord S_THREAD_LOCAL_VARIABLE_POINTERS = new DWord("0x00000014", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* pointers to TLV
                                                           descriptors */
-    public static final DWord S_THREAD_LOCAL_INIT_FUNCTION_POINTERS = new DWord("0x00000015", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* functions to call
+    public static final DWord S_THREAD_LOCAL_INIT_FUNCTION_POINTERS = new DWord("0x00000015", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* functions to call
 							  to initialize TLV
 							  values */
 
@@ -802,13 +801,13 @@ public interface Loader {
  * from sections with this attribute into its output file.  These sections
  * generally contain DWARF debugging info.
  */
-    public static final DWord S_ATTR_DEBUG = new DWord("0x02000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* a debug section */
-    public static final DWord SECTION_ATTRIBUTES_SYS = new DWord("0x00ffff00", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* system setable attributes */
-    public static final DWord S_ATTR_SOME_INSTRUCTIONS = new DWord("0x00000400", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains some
+    public static final DWord S_ATTR_DEBUG = new DWord("0x02000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* a debug section */
+    public static final DWord SECTION_ATTRIBUTES_SYS = new DWord("0x00ffff00", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* system setable attributes */
+    public static final DWord S_ATTR_SOME_INSTRUCTIONS = new DWord("0x00000400", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section contains some
 						   machine instructions */
-    public static final DWord S_ATTR_EXT_RELOC = new DWord("0x00000200", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section has external
+    public static final DWord S_ATTR_EXT_RELOC = new DWord("0x00000200", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section has external
 						   relocation entries */
-    public static final DWord S_ATTR_LOC_RELOC = new DWord("0x00000100", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section has local
+    public static final DWord S_ATTR_LOC_RELOC = new DWord("0x00000100", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);	/* section has local
 						   relocation entries */
 
 
@@ -878,26 +877,31 @@ public interface Loader {
      * minor version number.  The address of where the headers are loaded is in
      * header_addr. (THIS IS OBSOLETE and no longer supported).
      */
-    public class fvmlib extends DataStructure {
-        public lc_str name = new lc_str(this);
+    public class fvmlib extends AbstractTable {
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* library's target pathname */";
         public DWord minor_version = new DWord();
         public final static String minor_versionComment = "/* library's minor version number */";
         public DWord header_addr = new DWord();
         public final static String header_addrComment = "/* library's header address */";
 
-        public fvmlib(Addressable parent) {
+        public fvmlib(){
+            super(null);
+        }
+
+        public fvmlib(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            name.setComment(nameComment);
-            minor_version.setComment(minor_versionComment);
-            header_addr.setComment(header_addrComment);
+        public LinkedList<IContainer> getStructureData() {
+            name.setComments(nameComment);
+            minor_version.setComments(minor_versionComment);
+            header_addr.setComments(header_addrComment);
 
             return new LinkedList<>(Arrays.asList(minor_version, header_addr));
         }
+
     }
 
     ;
@@ -909,25 +913,25 @@ public interface Loader {
      * fvmlib_command (cmd == LC_LOADFVMLIB) for each library it uses.
      * (THIS IS OBSOLETE and no longer supported).
      */
-    public class fvmlib_command extends DataStructure {
+    public class fvmlib_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_IDFVMLIB or LC_LOADFVMLIB */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public fvmlib fvmlib = new fvmlib(this);
+        public fvmlib fvmlib = new fvmlib();
         public final static String fvmlibComment = "/* the library identification */";
 
-        public fvmlib_command(Addressable parent) {
+        public fvmlib_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            fvmlib.setComment(fvmlibComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            fvmlib.setComments(fvmlibComment);
 
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -942,8 +946,8 @@ public interface Loader {
      * built and copied into user so it can be use to determined if the library used
      * at runtime is exactly the same as used to built the program.
      */
-    public class dylib extends DataStructure {
-        public lc_str name = new lc_str(this);
+    public class dylib extends AbstractTable {
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* library's path name */";
         public DWord timestamp = new DWord();
         public final static String timestampComment = "/* library's build time stamp */";
@@ -952,16 +956,20 @@ public interface Loader {
         public DWord compatibility_version = new DWord();
         public final static String compatibility_versionComment = "/* library's compatibility vers number*/";
 
-        public dylib(Addressable parent) {
+        public dylib(){
+            super(null);
+        }
+
+        public dylib(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            name.setComment(nameComment);
-            timestamp.setComment(timestampComment);
-            current_version.setComment(current_versionComment);
-            compatibility_version.setComment(compatibility_versionComment);
+        public LinkedList<IContainer> getStructureData() {
+            name.setComments(nameComment);
+            timestamp.setComments(timestampComment);
+            current_version.setComments(current_versionComment);
+            compatibility_version.setComments(compatibility_versionComment);
 
             return new LinkedList<>(Arrays.asList(timestamp, current_version, compatibility_version));
         }
@@ -976,23 +984,23 @@ public interface Loader {
      * dylib_command (cmd == LC_LOAD_DYLIB, LC_LOAD_WEAK_DYLIB, or
      * LC_REEXPORT_DYLIB) for each library it uses.
      */
-    public class dylib_command extends DataStructure {
+    public class dylib_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB, LC_REEXPORT_DYLIB */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public dylib dylib = new dylib(this);
+        public dylib dylib = new dylib();
         public final static String dylibComment = "/* the library identification */";
 
-        public dylib_command(Addressable parent) {
+        public dylib_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            dylib.setComment(dylibComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            dylib.setComments(dylibComment);
 
             return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
@@ -1010,25 +1018,25 @@ public interface Loader {
      * The name of the umbrella framework for subframeworks is recorded in the
      * following public classure.
      */
-    public class sub_framework_command extends DataStructure {
+    public class sub_framework_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_FRAMEWORK */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes umbrella string */";
-        public lc_str umbrella = new lc_str(this);
+        public lc_str umbrella = new lc_str();
         public final static String umbrellaComment = "/* the umbrella framework name */";
 
-        public sub_framework_command(Addressable parent) {
+        public sub_framework_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            umbrella.setComment(umbrellaComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            umbrella.setComments(umbrellaComment);
 
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1043,25 +1051,25 @@ public interface Loader {
      * usually a framework name.  It can also be a name used for bundles clients
      * where the bundle is built with "-client_name client_name".
      */
-    public class sub_client_command extends DataStructure {
+    public class sub_client_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_CLIENT */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes client string */";
-        public lc_str client = new lc_str(this);
+        public lc_str client = new lc_str();
         public final static String clientComment = "/* the client name */";
 
-        public sub_client_command(Addressable parent) {
+        public sub_client_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            client.setComment(clientComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            client.setComments(clientComment);
 
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1080,23 +1088,23 @@ public interface Loader {
      * Zero or more sub_umbrella frameworks may be use by an umbrella framework.
      * The name of a sub_umbrella framework is recorded in the following public classure.
      */
-    public class sub_umbrella_command extends DataStructure {
+    public class sub_umbrella_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_UMBRELLA */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sub_umbrella string */";
-        public lc_str sub_umbrella = new lc_str(this);
+        public lc_str sub_umbrella = new lc_str();
         public final static String sub_umbrellaComment = "/* the sub_umbrella framework name */";
 
-        public sub_umbrella_command(Addressable parent) {
+        public sub_umbrella_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            sub_umbrella.setComment(sub_umbrellaComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            sub_umbrella.setComments(sub_umbrellaComment);
 
             return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
@@ -1119,25 +1127,25 @@ public interface Loader {
      * The name of a sub_library framework is recorded in the following public classure.
      * For example /usr/lib/libobjc_profile.A.dylib would be recorded as "libobjc".
      */
-    public class sub_library_command extends DataStructure {
+    public class sub_library_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SUB_LIBRARY */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes sub_library string */";
-        public lc_str sub_library = new lc_str(this);
+        public lc_str sub_library = new lc_str();
         public final static String sub_libraryComment = "/* the sub_library name */";
 
-        public sub_library_command(Addressable parent) {
+        public sub_library_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            sub_library.setComment(sub_libraryComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            sub_library.setComments(sub_libraryComment);
 
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1152,31 +1160,31 @@ public interface Loader {
      * of the first byte.  So the bit for the Nth module is:
      * (linked_modules[N/8] >> N%8) & 1
      */
-    public class prebound_dylib_command extends DataStructure {
+    public class prebound_dylib_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_PREBOUND_DYLIB */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes strings */";
-        public lc_str name = new lc_str(this);
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* library's path name */";
         public DWord nmodules = new DWord();
         public final static String nmodulesComment = "/* number of modules in library */";
-        public lc_str linked_modules = new lc_str(this);
+        public lc_str linked_modules = new lc_str();
         public final static String linked_modulesComment = "/* bit vector of linked modules */";
 
-        public prebound_dylib_command(Addressable parent) {
+        public prebound_dylib_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            nmodules.setComment(nmodulesComment);
-            name.setComment(nameComment);
-            linked_modules.setComment(linked_modulesComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            nmodules.setComments(nmodulesComment);
+            name.setComments(nameComment);
+            linked_modules.setComments(linked_modulesComment);
 
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
         }
     }
 
@@ -1188,23 +1196,23 @@ public interface Loader {
      * contains a dylinker_command to identify the dynamic linker (LC_ID_DYLINKER).
      * A file can have at most one of these.
      */
-    public class dylinker_command extends DataStructure {
+    public class dylinker_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ID_DYLINKER or LC_LOAD_DYLINKER */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public lc_str name = new lc_str(this);
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* dynamic linker's path name */";
 
-        public dylinker_command(Addressable parent) {
+        public dylinker_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            name.setComment(nameComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            name.setComments(nameComment);
 
             return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
@@ -1233,22 +1241,22 @@ public interface Loader {
      * created (based on the shell's limit for the stack size).  Command arguments
      * and environment variables are copied onto that stack.
      */
-    public class thread_command extends DataStructure {
+    public class thread_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_THREAD or  LC_UNIXTHREAD */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* total size of this command */";
 
-        public thread_command(Addressable parent) {
+        public thread_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
 
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
         }
 	/* public DWord flavor		   flavor of thread state */
 	/* public DWord count		   count of longs in thread state */
@@ -1266,7 +1274,7 @@ public interface Loader {
      * and then calls it.  This gets called before any module initialization
      * routines (used for C++ static conpublic classors) in the library.
      */
-    public class routines_command extends DataStructure { /* for 32-bit architectures */
+    public class routines_command extends AbstractLoadCommand { /* for 32-bit architectures */
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ROUTINES */";
         public DWord cmdsize = new DWord();
@@ -1288,22 +1296,22 @@ public interface Loader {
         public DWord reserved6 = new DWord();
         public final static String reserved6Comment = "/* reserved 6 */";
 
-        public routines_command(Addressable parent) {
+        public routines_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            init_address.setComment(init_addressComment);
-            init_module.setComment(init_moduleComment);
-            reserved1.setComment(reserved1Comment);
-            reserved2.setComment(reserved2Comment);
-            reserved3.setComment(reserved3Comment);
-            reserved4.setComment(reserved4Comment);
-            reserved5.setComment(reserved5Comment);
-            reserved6.setComment(reserved6Comment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            init_address.setComments(init_addressComment);
+            init_module.setComments(init_moduleComment);
+            reserved1.setComments(reserved1Comment);
+            reserved2.setComments(reserved2Comment);
+            reserved3.setComments(reserved3Comment);
+            reserved4.setComments(reserved4Comment);
+            reserved5.setComments(reserved5Comment);
+            reserved6.setComments(reserved6Comment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
         }
     }
@@ -1313,7 +1321,7 @@ public interface Loader {
     /*
      * The 64-bit routines command.  Same use as above.
      */
-    public class routines_command_64 extends DataStructure { /* for 64-bit architectures */
+    public class routines_command_64 extends AbstractLoadCommand { /* for 64-bit architectures */
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ROUTINES_64 */";
         public DWord cmdsize = new DWord();
@@ -1335,22 +1343,22 @@ public interface Loader {
         public QWord reserved6 = new QWord();
         public final static String reserved6Comment = "/* reserved 6 */";
 
-        public routines_command_64(Addressable parent) {
+        public routines_command_64(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            init_address.setComment(init_addressComment);
-            init_module.setComment(init_moduleComment);
-            reserved1.setComment(reserved1Comment);
-            reserved2.setComment(reserved2Comment);
-            reserved3.setComment(reserved3Comment);
-            reserved4.setComment(reserved4Comment);
-            reserved5.setComment(reserved5Comment);
-            reserved6.setComment(reserved6Comment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            init_address.setComments(init_addressComment);
+            init_module.setComments(init_moduleComment);
+            reserved1.setComments(reserved1Comment);
+            reserved2.setComments(reserved2Comment);
+            reserved3.setComments(reserved3Comment);
+            reserved4.setComments(reserved4Comment);
+            reserved5.setComments(reserved5Comment);
+            reserved6.setComments(reserved6Comment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
         }
     }
@@ -1362,7 +1370,7 @@ public interface Loader {
      * "stab" style symbol table information as described in the header files
      * <nlist.h> and <stab.h>.
      */
-    public class symtab_command extends DataStructure {
+    public class symtab_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SYMTAB */";
         public DWord cmdsize = new DWord();
@@ -1376,18 +1384,18 @@ public interface Loader {
         public DWord strsize = new DWord();
         public final static String strsizeComment = "/* string table size in bytes */";
 
-        public symtab_command(Addressable parent) {
+        public symtab_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            symoff.setComment(symoffComment);
-            nsyms.setComment(nsymsComment);
-            stroff.setComment(stroffComment);
-            strsize.setComment(strsizeComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            symoff.setComments(symoffComment);
+            nsyms.setComments(nsymsComment);
+            stroff.setComments(stroffComment);
+            strsize.setComments(strsizeComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, symoff, nsyms, stroff, strsize));
         }
     }
@@ -1434,7 +1442,7 @@ public interface Loader {
      * For executable and object modules the relocation entries continue to hang
      * off the section public classures.
      */
-    public class dysymtab_command extends DataStructure {
+    public class dysymtab_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_DYSYMTAB */";
         public DWord cmdsize = new DWord();
@@ -1568,32 +1576,32 @@ public interface Loader {
         public DWord nlocrel = new DWord();
         public final static String nlocrelComment = "/* number of local relocation entries */";
 
-        public dysymtab_command(Addressable parent) {
+        public dysymtab_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            ilocalsym.setComment(ilocalsymComment);
-            nlocalsym.setComment(nlocalsymComment);
-            iextdefsym.setComment(iextdefsymComment);
-            nextrefsyms.setComment(nextrefsymsComment);
-            iundefsym.setComment(iundefsymComment);
-            nundefsym.setComment(nundefsymComment);
-            tocoff.setComment(tocoffComment);
-            ntoc.setComment(ntocComment);
-            modtaboff.setComment(modtaboffComment);
-            nmodtab.setComment(nmodtabComment);
-            extrefsymoff.setComment(extrefsymoffComment);
-            nextdefsym.setComment(nextdefsymComment);
-            indirectsymoff.setComment(indirectsymoffComment);
-            nindirectsyms.setComment(nindirectsymsComment);
-            extreloff.setComment(extreloffComment);
-            nextrel.setComment(nextrelComment);
-            locreloff.setComment(locreloffComment);
-            nlocrel.setComment(nlocrelComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            ilocalsym.setComments(ilocalsymComment);
+            nlocalsym.setComments(nlocalsymComment);
+            iextdefsym.setComments(iextdefsymComment);
+            nextrefsyms.setComments(nextrefsymsComment);
+            iundefsym.setComments(iundefsymComment);
+            nundefsym.setComments(nundefsymComment);
+            tocoff.setComments(tocoffComment);
+            ntoc.setComments(ntocComment);
+            modtaboff.setComments(modtaboffComment);
+            nmodtab.setComments(nmodtabComment);
+            extrefsymoff.setComments(extrefsymoffComment);
+            nextdefsym.setComments(nextdefsymComment);
+            indirectsymoff.setComments(indirectsymoffComment);
+            nindirectsyms.setComments(nindirectsymsComment);
+            extreloff.setComments(extreloffComment);
+            nextrel.setComments(nextrelComment);
+            locreloff.setComments(locreloffComment);
+            nlocrel.setComments(nlocrelComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, ilocalsym, nlocalsym, iextdefsym, nextrefsyms, iundefsym, nundefsym, tocoff, ntoc, modtaboff, nmodtab, extrefsymoff, nextdefsym, indirectsymoff, nindirectsyms, extreloff, nextrel, locreloff, nlocrel));
         }
     }
@@ -1607,25 +1615,25 @@ public interface Loader {
      * removed.  In which case it has the value INDIRECT_SYMBOL_LOCAL.  If the
      * symbol was also absolute INDIRECT_SYMBOL_ABS is or'ed with that.
      */
-    public static final DWord INDIRECT_SYMBOL_LOCAL = new DWord("0x80000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord INDIRECT_SYMBOL_ABS = new DWord("0x40000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord INDIRECT_SYMBOL_LOCAL = new DWord("0x80000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord INDIRECT_SYMBOL_ABS = new DWord("0x40000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
 
     /* a table of contents entry */
-    public class dylib_table_of_contents extends DataStructure {
+    public class dylib_table_of_contents extends AbstractTable {
         public DWord symbol_index = new DWord();
         public final static String symbol_indexComment = "/* the defined external symbol (index into the symbol table) */";
         public DWord module_index = new DWord();
         public final static String module_indexComment = "/* index into the module table this symbol is defined in */";
 
-        public dylib_table_of_contents(Addressable parent) {
-            super(parent);
+        public dylib_table_of_contents(IStructure parent) {
+            super( parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            symbol_index.setComment(symbol_indexComment);
-            module_index.setComment(module_indexComment);
+        public LinkedList<IContainer> getStructureData() {
+            symbol_index.setComments(symbol_indexComment);
+            module_index.setComments(module_indexComment);
             return new LinkedList<>(Arrays.asList(symbol_index, module_index));
         }
     }
@@ -1633,7 +1641,7 @@ public interface Loader {
     ;
 
     /* a module table entry */
-    public class dylib_module extends DataStructure {
+    public class dylib_module extends AbstractTable {
         public DWord module_name = new DWord();
         public final static String module_nameComment = "/* the module name (index into string table) */";
 
@@ -1664,33 +1672,34 @@ public interface Loader {
         public DWord objc_module_info_size = new DWord();
         public final static String objc_module_info_sizeComment = "/* for this module size of the (__OBJC,__module_info) section */";
 
-        public dylib_module(Addressable parent) {
+        public dylib_module(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            module_name.setComment(module_nameComment);
-            iextdefsym.setComment(iextdefsymComment);
-            nextdefsym.setComment(nextdefsymComment);
-            irefsym.setComment(irefsymComment);
-            ilocalsym.setComment(ilocalsymComment);
-            nlocalsym.setComment(nlocalsymComment);
-            iextrel.setComment(iextrelComment);
-            nextrel.setComment(nextrelComment);
-            iinit_iterm.setComment(iinit_itermComment);
-            ninit_nterm.setComment(ninit_ntermComment);
-            objc_module_info_addr.setComment(objc_module_info_addrComment);
-            objc_module_info_size.setComment(objc_module_info_sizeComment);
-            nrefsym.setComment(nrefsymComment);
+        public LinkedList<IContainer> getStructureData() {
+            module_name.setComments(module_nameComment);
+            iextdefsym.setComments(iextdefsymComment);
+            nextdefsym.setComments(nextdefsymComment);
+            irefsym.setComments(irefsymComment);
+            ilocalsym.setComments(ilocalsymComment);
+            nlocalsym.setComments(nlocalsymComment);
+            iextrel.setComments(iextrelComment);
+            nextrel.setComments(nextrelComment);
+            iinit_iterm.setComments(iinit_itermComment);
+            ninit_nterm.setComments(ninit_ntermComment);
+            objc_module_info_addr.setComments(objc_module_info_addrComment);
+            objc_module_info_size.setComments(objc_module_info_sizeComment);
+            nrefsym.setComments(nrefsymComment);
             return new LinkedList<>(Arrays.asList(module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
         }
+
     }
 
     ;
 
     /* a 64-bit module table entry */
-    public class dylib_module_64 extends DataStructure {
+    public class dylib_module_64 extends AbstractTable {
         public DWord module_name = new DWord();
         public final static String module_nameComment = "/* the module name (index into string table) */";
         public DWord iextdefsym = new DWord();
@@ -1718,27 +1727,28 @@ public interface Loader {
         public QWord objc_module_info_addr = new QWord();
         public final static String objc_module_info_addrComment = "/* for this module address of the start of the (__OBJC,__module_info) section */";
 
-        public dylib_module_64(Addressable parent) {
+        public dylib_module_64( IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            module_name.setComment(module_nameComment);
-            iextdefsym.setComment(iextdefsymComment);
-            nextdefsym.setComment(nextdefsymComment);
-            irefsym.setComment(irefsymComment);
-            ilocalsym.setComment(ilocalsymComment);
-            nlocalsym.setComment(nlocalsymComment);
-            iextrel.setComment(iextrelComment);
-            nextrel.setComment(nextrelComment);
-            iinit_iterm.setComment(iinit_itermComment);
-            ninit_nterm.setComment(ninit_ntermComment);
-            objc_module_info_addr.setComment(objc_module_info_addrComment);
-            objc_module_info_size.setComment(objc_module_info_sizeComment);
-            nrefsym.setComment(nrefsymComment);
-            return new LinkedList<>(Arrays.asList(module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
+        public LinkedList<IContainer> getStructureData() {
+            module_name.setComments(module_nameComment);
+            iextdefsym.setComments(iextdefsymComment);
+            nextdefsym.setComments(nextdefsymComment);
+            irefsym.setComments(irefsymComment);
+            ilocalsym.setComments(ilocalsymComment);
+            nlocalsym.setComments(nlocalsymComment);
+            iextrel.setComments(iextrelComment);
+            nextrel.setComments(nextrelComment);
+            iinit_iterm.setComments(iinit_itermComment);
+            ninit_nterm.setComments(ninit_ntermComment);
+            objc_module_info_addr.setComments(objc_module_info_addrComment);
+            objc_module_info_size.setComments(objc_module_info_sizeComment);
+            nrefsym.setComments(nrefsymComment);
+            return new LinkedList<IContainer>(Arrays.asList(module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
         }
+
     }
 
     ;
@@ -1751,20 +1761,20 @@ public interface Loader {
      * reference that is being made.  The constants for the flags are defined in
      * <mach-o/nlist.h> as they are also used for symbol table entries.
      */
-    public class dylib_reference extends DataStructure {
+    public class dylib_reference extends AbstractTable {
         public DWord isym = new DWord();
         public final static String isymComment = "/* index into the symbol table */";
         public DWord flags = new DWord();
         public final static String flagsComment = "/* flags to indicate the type of reference */";
 
-        public dylib_reference(Addressable parent) {
+        public dylib_reference(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            isym.setComment(isymComment);
-            flags.setComment(flagsComment);
+        public LinkedList<IContainer> getStructureData() {
+            isym.setComments(isymComment);
+            flags.setComments(flagsComment);
             return new LinkedList<>(Arrays.asList(isym, flags));
         }
     }
@@ -1775,7 +1785,7 @@ public interface Loader {
      * The twolevel_hints_command contains the offset and number of hints in the
      * two-level namespace lookup hints table.
      */
-    public class twolevel_hints_command extends DataStructure {
+    public class twolevel_hints_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_TWOLEVEL_HINTS */";
         public DWord cmdsize = new DWord();
@@ -1785,16 +1795,16 @@ public interface Loader {
         public DWord nhints = new DWord();
         public final static String nhintsComment = "/* number of hints in the hint table */";
 
-        public twolevel_hints_command(Addressable parent) {
+        public twolevel_hints_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            offset.setComment(offsetComment);
-            nhints.setComment(nhintsComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            offset.setComments(offsetComment);
+            nhints.setComments(nhintsComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, offset, nhints));
         }
     }
@@ -1817,22 +1827,23 @@ public interface Loader {
      * library's table of contents.  This is used as the starting point of the
      * binary search or a directed linear search.
      */
-    public class twolevel_hint extends DataStructure {
+    public class twolevel_hint extends AbstractTable{
         public DWord isub_image = new DWord();
         public final static String isub_imageComment = "/* index into the sub images */";
         public DWord itoc = new DWord();
         public final static String itocComment = "/* index into the table of contents */";
 
-        public twolevel_hint(Addressable parent) {
+        public twolevel_hint(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            isub_image.setComment(isub_imageComment);
-            itoc.setComment(itocComment);
-            return new LinkedList<>(Arrays.asList(isub_image, itoc));
+        public LinkedList<IContainer> getStructureData() {
+            isub_image.setComments(isub_imageComment);
+            itoc.setComments(itocComment);
+            return new LinkedList<IContainer>(Arrays.asList(isub_image, itoc));
         }
+
     }
 
     ;
@@ -1847,7 +1858,7 @@ public interface Loader {
      * is re-done and the cksum field is non-zero it is left unchanged from the
      * input file.
      */
-    public class prebind_cksum_command extends DataStructure {
+    public class prebind_cksum_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_PREBIND_CKSUM */";
         public DWord cmdsize = new DWord();
@@ -1855,15 +1866,15 @@ public interface Loader {
         public DWord cksum = new DWord();
         public final static String cksumComment = "/* the check sum or zero */";
 
-        public prebind_cksum_command(Addressable parent) {
+        public prebind_cksum_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            cksum.setComment(cksumComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            cksum.setComments(cksumComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, cksum));
         }
     }
@@ -1874,7 +1885,7 @@ public interface Loader {
      * The uuid load command contains a single 128-bit unique random number that
      * identifies an object produced by the static link editor.
      */
-    public class uuid_command extends DataStructure {
+    public class uuid_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_UUID */";
         public DWord cmdsize = new DWord();
@@ -1882,16 +1893,16 @@ public interface Loader {
         public char16 uuid = new char16();
         public final static String uuidComment = "/* the 128-bit uuid */";
 
-        public uuid_command(Addressable parent) {
+        public uuid_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            uuid.setComment(uuidComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, uuid));
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            uuid.setComments(uuidComment);
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize, uuid));
         }
     }
 
@@ -1901,23 +1912,23 @@ public interface Loader {
      * The rpath_command contains a path which at runtime should be added to
      * the current run path used to find @rpath prefixed dylibs.
      */
-    public class rpath_command extends DataStructure {
+    public class rpath_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_RPATH */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes string */";
-        public lc_str path = new lc_str(this);
+        public lc_str path = new lc_str();
         public final static String pathComment = "/* path to add to run path */";
 
-        public rpath_command(Addressable parent) {
+        public rpath_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            path.setComment(pathComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            path.setComments(pathComment);
 
             return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
@@ -1929,7 +1940,7 @@ public interface Loader {
  * The version_min_command contains the min OS version on which this
  * binary was built to run.
  */
-    public class version_min_command extends DataStructure {
+    public class version_min_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_VERSION_MIN_MACOSX or LC_VERSION_MIN_IPHONEOS  */";
         public DWord cmdsize = new DWord();
@@ -1939,16 +1950,16 @@ public interface Loader {
         public DWord sdk = new DWord();
         public final static String sdkComment = "/* X.Y.Z is encoded in nibbles xxxx.yy.zz */";
 
-        public version_min_command(Addressable parent) {
+        public version_min_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            version.setComment(versionComment);
-            sdk.setComment(sdkComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            version.setComments(versionComment);
+            sdk.setComments(sdkComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, version, sdk));
         }
     }
@@ -1960,7 +1971,7 @@ public interface Loader {
  * The linkedit_data_command contains the offsets and sizes of a blob
  * of data in the __LINKEDIT segment.
  */
-    public class linkedit_data_command extends DataStructure {
+    public class linkedit_ABI_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, or LC_DYLIB_CODE_SIGN_DRS */";
         public DWord cmdsize = new DWord();
@@ -1970,17 +1981,17 @@ public interface Loader {
         public DWord datasize = new DWord();
         public final static String datasizeComment = "/* file size of data in __LINKEDIT segment  */";
 
-        public linkedit_data_command(Addressable parent) {
+        public linkedit_ABI_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            dataoff.setComment(dataoffComment);
-            datasize.setComment(datasizeComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, dataoff, datasize));
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            dataoff.setComments(dataoffComment);
+            datasize.setComments(datasizeComment);
+            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize, dataoff, datasize));
         }
     }
 
@@ -1990,7 +2001,7 @@ public interface Loader {
      * The encryption_info_command contains the file offset and size of an
      * of an encrypted segment.
      */
-    public class encryption_info_command extends DataStructure {
+    public class encryption_info_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_ENCRYPTION_INFO */";
         public DWord cmdsize = new DWord();
@@ -2002,17 +2013,17 @@ public interface Loader {
         public DWord cryptid = new DWord();
         public final static String cryptidComment = "/* which enryption system, 0 means not-encrypted yet */";
 
-        public encryption_info_command(Addressable parent) {
+        public encryption_info_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            cryptoff.setComment(cryptoffComment);
-            cryptsize.setComment(cryptsizeComment);
-            cryptid.setComment(cryptidComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            cryptoff.setComments(cryptoffComment);
+            cryptsize.setComments(cryptsizeComment);
+            cryptid.setComments(cryptidComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, cryptoff, cryptsize, cryptid));
         }
     }
@@ -2027,7 +2038,7 @@ public interface Loader {
      * is encoded using byte streams, so no endian swapping is needed
      * to interpret it.
      */
-    public class dyld_info_command extends DataStructure {
+    public class dyld_info_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_DYLD_INFO or LC_DYLD_INFO_ONLY */";
         public DWord cmdsize = new DWord();
@@ -2133,24 +2144,24 @@ public interface Loader {
         public DWord export_size = new DWord();
         public final static String export_sizeComment = "/* size of lazy binding infs */";
 
-        public dyld_info_command(Addressable parent) {
+        public dyld_info_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            rebase_off.setComment(rebase_offComment);
-            rebase_size.setComment(rebase_sizeComment);
-            bind_off.setComment(bind_offComment);
-            bind_size.setComment(bind_sizeComment);
-            weak_bind_off.setComment(weak_bind_offComment);
-            weak_bind_size.setComment(weak_bind_sizeComment);
-            lazy_bind_off.setComment(lazy_bind_offComment);
-            lazy_bind_size.setComment(lazy_bind_sizeComment);
-            export_off.setComment(export_offComment);
-            export_size.setComment(export_sizeComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            rebase_off.setComments(rebase_offComment);
+            rebase_size.setComments(rebase_sizeComment);
+            bind_off.setComments(bind_offComment);
+            bind_size.setComments(bind_sizeComment);
+            weak_bind_off.setComments(weak_bind_offComment);
+            weak_bind_size.setComments(weak_bind_sizeComment);
+            lazy_bind_off.setComments(lazy_bind_offComment);
+            lazy_bind_size.setComments(lazy_bind_sizeComment);
+            export_off.setComments(export_offComment);
+            export_size.setComments(export_sizeComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, rebase_off, rebase_size, bind_off, bind_size, weak_bind_off, weak_bind_size, lazy_bind_off, lazy_bind_size, export_off, export_size));
         }
     }
@@ -2164,17 +2175,17 @@ public interface Loader {
     public static final int REBASE_TYPE_TEXT_ABSOLUTE32 = 2;
     public static final int REBASE_TYPE_TEXT_PCREL32 = 3;
 
-    public static final DWord REBASE_OPCODE_MASK = new DWord("0x000000F0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_IMMEDIATE_MASK = new DWord("0x0000000F", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DONE = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_SET_TYPE_IMM = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000030", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_ADD_ADDR_IMM_SCALED = new DWord("0x00000040", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_IMM_TIMES = new DWord("0x00000050", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES = new DWord("0x00000060", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_ADD_ADDR_ULEB = new DWord("0x00000070", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x00000080", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_MASK = new DWord("0x000000F0", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_IMMEDIATE_MASK = new DWord("0x0000000F", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DONE = new DWord("0x00000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_SET_TYPE_IMM = new DWord("0x00000010", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000020", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000030", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_ADD_ADDR_IMM_SCALED = new DWord("0x00000040", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_IMM_TIMES = new DWord("0x00000050", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES = new DWord("0x00000060", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_ADD_ADDR_ULEB = new DWord("0x00000070", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord REBASE_OPCODE_DO_REBASE_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x00000080", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
 
     /*
@@ -2188,36 +2199,36 @@ public interface Loader {
     public static final int BIND_SPECIAL_DYLIB_MAIN_EXECUTABLE = -1;
     public static final int BIND_SPECIAL_DYLIB_FLAT_LOOKUP = -2;
 
-    public static final DWord BIND_SYMBOL_FLAGS_WEAK_IMPORT = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_SYMBOL_FLAGS_NON_WEAK_DEFINITION = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_SYMBOL_FLAGS_WEAK_IMPORT = new DWord("0x00000001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_SYMBOL_FLAGS_NON_WEAK_DEFINITION = new DWord("0x00000008", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
-    public static final DWord BIND_OPCODE_MASK = new DWord("0x000000F0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_IMMEDIATE_MASK = new DWord("0x0000000F", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DONE = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_IMM = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB = new DWord("0x00000020", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_DYLIB_SPECIAL_IMM = new DWord("0x00000030", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM = new DWord("0x00000040", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_TYPE_IMM = new DWord("0x00000050", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_ADDEND_SLEB = new DWord("0x00000060", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000070", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000080", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND = new DWord("0x00000090", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_ULEB = new DWord("0x000000A0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED = new DWord("0x000000B0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord BIND_OPCODE_DO_BIND_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x000000C0", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_MASK = new DWord("0x000000F0", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_IMMEDIATE_MASK = new DWord("0x0000000F", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DONE = new DWord("0x00000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_IMM = new DWord("0x00000010", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB = new DWord("0x00000020", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_DYLIB_SPECIAL_IMM = new DWord("0x00000030", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM = new DWord("0x00000040", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_TYPE_IMM = new DWord("0x00000050", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_ADDEND_SLEB = new DWord("0x00000060", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB = new DWord("0x00000070", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_ADD_ADDR_ULEB = new DWord("0x00000080", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND = new DWord("0x00000090", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_ULEB = new DWord("0x000000A0", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED = new DWord("0x000000B0", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord BIND_OPCODE_DO_BIND_ULEB_TIMES_SKIPPING_ULEB = new DWord("0x000000C0", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
 
 
     /*
      * The following are used on the flags byte of a terminal node
      * in the export information.
      */
-    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_MASK = new DWord("0x00000003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_REGULAR = new DWord("0x00000000", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_THREAD_LOCAL = new DWord("0x00000001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_WEAK_DEFINITION = new DWord("0x00000004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_INDIRECT_DEFINITION = new DWord("0x00000008", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
-    public static final DWord EXPORT_SYMBOL_FLAGS_HAS_SPECIALIZATIONS = new DWord("0x00000010", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_MASK = new DWord("0x00000003", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_REGULAR = new DWord("0x00000000", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_KIND_THREAD_LOCAL = new DWord("0x00000001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_WEAK_DEFINITION = new DWord("0x00000004", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_INDIRECT_DEFINITION = new DWord("0x00000008", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
+    public static final DWord EXPORT_SYMBOL_FLAGS_HAS_SPECIALIZATIONS = new DWord("0x00000010", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);
     /* In Version 2010:
     #define EXPORT_SYMBOL_FLAGS_REEXPORT				0x08
 #define EXPORT_SYMBOL_FLAGS_STUB_AND_RESOLVER			0x10
@@ -2232,7 +2243,7 @@ public interface Loader {
      * roots also being a multiple of a long.  Also the padding must again be
      * zeroed. (THIS IS OBSOLETE and no longer supported).
      */
-    public class symseg_command extends DataStructure {
+    public class symseg_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SYMSEG */";
         public DWord cmdsize = new DWord();
@@ -2242,16 +2253,16 @@ public interface Loader {
         public DWord size = new DWord();
         public final static String sizeComment = "/* symbol segment size in bytes */";
 
-        public symseg_command(Addressable parent) {
+        public symseg_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            offset.setComment(offsetComment);
-            size.setComment(sizeComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            offset.setComments(offsetComment);
+            size.setComments(sizeComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, offset, size));
         }
     }
@@ -2264,20 +2275,20 @@ public interface Loader {
      * the command is padded out with zero bytes to a multiple of 4 bytes/
      * (THIS IS OBSOLETE and no longer supported).
      */
-    public class ident_command extends DataStructure {
+    public class ident_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_IDENT */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* strings that follow this command */";
 
-        public ident_command(Addressable parent) {
+        public ident_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize));
         }
     }
@@ -2290,26 +2301,26 @@ public interface Loader {
      * internal use.  The kernel ignores this command when loading a program into
      * memory).
      */
-    public class fvmfile_command extends DataStructure {
+    public class fvmfile_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_FVMFILE */";
         public DWord cmdsize = new DWord();
         public final static String cmdsizeComment = "/* includes pathname string */";
-        public lc_str name = new lc_str(this);
+        public lc_str name = new lc_str();
         public final static String nameComment = "/* files pathname */";
         public DWord header_addr = new DWord();
         public final static String header_addrComment = "/* files virtual address */";
 
-        public fvmfile_command(Addressable parent) {
+        public fvmfile_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            name.setComment(nameComment);
-            header_addr.setComment(header_addrComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            name.setComments(nameComment);
+            header_addr.setComments(header_addrComment);
 
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, header_addr));
         }
@@ -2324,7 +2335,7 @@ public interface Loader {
      * of main().  If -stack_size was used at link time, the stacksize
      * field will contain the stack size need for the main thread.
      */
-    public class entry_point_command extends DataStructure {
+    public class entry_point_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_MAIN only used in MH_EXECUTE filetypes */";
         public DWord cmdsize = new DWord();
@@ -2334,16 +2345,16 @@ public interface Loader {
         public QWord stacksize = new QWord();
         public final static String stacksizeComment = "/* if not zero, initial stack size */";
 
-        public entry_point_command(Addressable parent) {
+        public entry_point_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            entryoff.setComment(entryoffComment);
-            stacksize.setComment(stacksizeComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            entryoff.setComments(entryoffComment);
+            stacksize.setComments(stacksizeComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, entryoff, stacksize));
         }
     }
@@ -2355,7 +2366,7 @@ public interface Loader {
      * The source_version_command is an optional load command containing
      * the version of the sources used to build the binary.
      */
-    public class source_version_command extends DataStructure {
+    public class source_version_command extends AbstractLoadCommand {
         public DWord cmd = new DWord();
         public final static String cmdComment = "/* LC_SOURCE_VERSION */";
         public DWord cmdsize = new DWord();
@@ -2363,15 +2374,15 @@ public interface Loader {
         public QWord version = new QWord();
         public final static String versionComment = "/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */";
 
-        public source_version_command(Addressable parent) {
+        public source_version_command(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            cmd.setComment(cmdComment);
-            cmdsize.setComment(cmdsizeComment);
-            version.setComment(versionComment);
+        public LinkedList<IContainer> getStructureData() {
+            cmd.setComments(cmdComment);
+            cmdsize.setComments(cmdsizeComment);
+            version.setComments(versionComment);
             return new LinkedList<>(Arrays.asList(cmd, cmdsize, version));
         }
     }
@@ -2385,7 +2396,7 @@ public interface Loader {
      * describes a range of data in a code section.  This load command
      * is only used in final linked images.
      */
-    public class data_in_code_entry extends DataStructure {
+    public class ABI_in_code_entry extends AbstractTable {
         public DWord offset = new DWord();
         public final static String offsetComment = "/* from mach_header to start of data range*/";
         public Word length = new Word();
@@ -2393,32 +2404,33 @@ public interface Loader {
         public Word kind = new Word();
         public final static String kindComment = " /* a DICE_KIND_* value  */";
 
-        public data_in_code_entry(Addressable parent) {
+        public ABI_in_code_entry(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            offset.setComment(offsetComment);
-            length.setComment(lengthComment);
-            kind.setComment(kindComment);
+        public LinkedList<IContainer> getStructureData() {
+            offset.setComments(offsetComment);
+            length.setComments(lengthComment);
+            kind.setComments(kindComment);
             return new LinkedList<>(Arrays.asList(offset, length, kind));
         }
+
     }
 
     ;
-    public static final Word DICE_KIND_DATA = new Word("0x0001", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$data$...  label */
-    public static final Word DICE_KIND_JUMP_TABLE8 = new Word("0x0002", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt8$...   label */
-    public static final Word DICE_KIND_JUMP_TABLE16 = new Word("0x0003", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt16$...  label */
-    public static final Word DICE_KIND_JUMP_TABLE32 = new Word("0x0004", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt32$...  label */
-    public static final Word DICE_KIND_ABS_JUMP_TABLE32 = new Word("0x0005", Data.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jta32$... label */
+    public static final Word DICE_KIND_DATA = new Word("0x0001", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$data$...  label */
+    public static final Word DICE_KIND_JUMP_TABLE8 = new Word("0x0002", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt8$...   label */
+    public static final Word DICE_KIND_JUMP_TABLE16 = new Word("0x0003", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt16$...  label */
+    public static final Word DICE_KIND_JUMP_TABLE32 = new Word("0x0004", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jt32$...  label */
+    public static final Word DICE_KIND_ABS_JUMP_TABLE32 = new Word("0x0005", AbstractData.Type.DATA_BYTE, ByteOrder.BIG_ENDIAN);  /* L$start$jta32$... label */
 
 
     /*
      * Sections of type S_THREAD_LOCAL_VARIABLES contain an array
      * of tlv_descriptor structures.
      */
-    public class tlv_descriptor extends DataStructure {
+    public class tlv_descriptor extends AbstractTable {
         byte[] tlv_descriptor;
         public final static String tlv_descriptorComment = "/*tlv_descriptor/*";
         public QWord key = new QWord();
@@ -2426,14 +2438,14 @@ public interface Loader {
         public QWord offset = new QWord();
         public final static String offsetComment = "/*offset*/";
 
-        public tlv_descriptor(Addressable parent) {
+        public tlv_descriptor(IStructure parent) {
             super(parent);
         }
 
         @Override
-        public LinkedList<Data> getStructureData() {
-            key.setComment(keyComment);
-            offset.setComment(offsetComment);
+        public LinkedList<IContainer> getStructureData() {
+            key.setComments(keyComment);
+            offset.setComments(offsetComment);
             return new LinkedList<>(Arrays.asList(key, offset));
         }
     }

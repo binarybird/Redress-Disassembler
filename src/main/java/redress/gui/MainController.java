@@ -1,9 +1,9 @@
 package redress.gui;
 
-import redress.abi.generic.ABI;
-import redress.memory.struct.DataStructure;
-import redress.memory.data.Data;
-import redress.memory.data.Word;
+import redress.abi.generic.AbstractABI;
+import redress.abi.generic.IContainer;
+import redress.abi.generic.visitors.LoadVisitor;
+import redress.memory.data.AbstractData;
 import javafx.application.Application;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.dockfx.*;
 import org.dockfx.demo.DockFX;
+import redress.abi.generic.visitors.DataCollectVisitor;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,7 +35,7 @@ public class MainController extends AnchorPane {
 
     private RightPane rp;
     private LeftPane lp;
-    private ABI abi;
+    private AbstractABI abi;
     private CodePaneController codePaneController;
     private MenuBarController menuBarController;
     private DockNode codePaneDock;
@@ -102,15 +103,21 @@ public class MainController extends AnchorPane {
     public boolean isLoaded(){return loadedProperty.get();}
     public Stage getPrimaryStage(){return primaryStage;}
     public void setPrimaryStage(Stage stage){this.primaryStage = stage;}
-    public ABI getABI(){return abi;}
-    public void setABI(ABI abi){
+    public AbstractABI getABI(){return abi;}
+    public void setABI(AbstractABI abi){
         this.abi = abi;
-        final LinkedList<Data> tableData = new LinkedList<>();
 
-        //getAllData(abi).forEach(tableData::add);
-        //abi.buildDecompile().forEach(e->{tableData.addAll(e.deCompileText(abi.getType(),abi.getArch()));});
+        final LinkedList<IContainer> tableData = new LinkedList<>();
+        final DataCollectVisitor v = new DataCollectVisitor();
+        final LoadVisitor lv = new LoadVisitor(abi);
 
-        this.codePaneController.set(abi.buildDecompile());
+        abi.accept(v);
+        tableData.addAll(v.getData());
+
+        abi.accept(lv);
+        tableData.addAll(lv.getData());
+
+        this.codePaneController.set(tableData);
         this.loadedProperty.set(true);
     }
 
@@ -118,9 +125,9 @@ public class MainController extends AnchorPane {
 
     public MenuBarController getMenuBarController(){return menuBarController;}
 
-    public class AddrComparator implements Comparator<Data>{
+    public class AddrComparator implements Comparator<AbstractData>{
         @Override
-        public int compare(Data o1, Data o2) {
+        public int compare(AbstractData o1, AbstractData o2) {
             if(o1 == null || o2 == null)
                 return 0;
             if(o1.getBeginAddress() == null || o2.getBeginAddress() == null)

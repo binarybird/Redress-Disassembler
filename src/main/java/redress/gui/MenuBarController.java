@@ -1,13 +1,13 @@
 package redress.gui;
 
-import redress.abi.generic.ABI;
-import redress.abi.generic.Reader;
+import redress.abi.generic.AbstractABI;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
+import redress.abi.mach.parse.Reader;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -76,7 +76,7 @@ public class MenuBarController {
             if(toOpen == null)
                 return;
 
-            ABI read = null;
+            AbstractABI read = null;
             try {
                 read = Reader.Read(toOpen);
             }catch(Exception e){

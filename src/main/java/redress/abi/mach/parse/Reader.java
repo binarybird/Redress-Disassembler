@@ -9,7 +9,7 @@ import redress.abi.mach.MachO32;
 import redress.abi.mach.MachO64;
 import redress.abi.mach.parse.x86.MachParser32;
 import redress.abi.mach.parse.x86_64.MachParser64;
-import redress.memory.data.Data;
+import redress.memory.data.AbstractData;
 import redress.util.B;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public class Reader {
         final FileInputStream fis = new FileInputStream(in);
         fis.read(binary);
 
-        final DWord dWordAtAddress = B.getDWordAtAddress(binary, new Address64("0x0000000000000000"), Data.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        final DWord dWordAtAddress = B.getDWordAtAddress(binary, new Address64("0x0000000000000000"), null,AbstractData.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
 
         if(dWordAtAddress == null)
             return null;

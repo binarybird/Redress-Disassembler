@@ -5,7 +5,7 @@ import redress.util.B;
 /**
  * Created by jamesrichardson on 2/11/16.
  */
-public class Address16 extends Address{
+public class Address16 extends AbstractAddress {
     public static final Address16 NULL = new Address16("0x0000");
 
     public Address16(byte[] in){

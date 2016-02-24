@@ -1,14 +1,15 @@
 package redress.util;
 
-import redress.abi.generic.ABI;
-import redress.memory.*;
-import redress.memory.address.Address;
+import redress.memory.data.AbstractData;
+import redress.abi.generic.IContainer;
+import redress.abi.generic.IStructure;
+import redress.memory.address.AbstractAddress;
 import redress.memory.address.Address32;
 import redress.memory.address.Address64;
 import redress.memory.data.*;
-import redress.memory.struct.DataStructure;
 
 import javax.xml.bind.DatatypeConverter;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -146,7 +147,7 @@ public final class B {
 
     public static Address32 dWordToAddr32(DWord begin){
         byte[] tmpBegin;
-        if(begin.BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+        if(begin.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
             tmpBegin = begin.flipByteOrder().getContainer();
         }else{
             tmpBegin = begin.getContainer();
@@ -156,7 +157,7 @@ public final class B {
 
     public static Address64 qWordToAddr64(QWord begin){
         byte[] tmpBegin;
-        if(begin.BYTEORDER == ByteOrder.LITTLE_ENDIAN){
+        if(begin.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
             tmpBegin = begin.flipByteOrder().getContainer();
         }else{
             tmpBegin = begin.getContainer();
@@ -164,51 +165,51 @@ public final class B {
         return new Address64(tmpBegin);
     }
 
-    public static Word getWordAtAddress(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
-        final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
+    public static Word getWordAtAddress(final byte[] raw, final AbstractAddress address,IStructure parent, AbstractData.Type type, ByteOrder resultOrder){
+        final int addr = bytesToInt(address.getContainer(),address.getByteOrder());
 
-        return new Word(new byte[]{raw[addr],raw[addr+1]},address.clone(),type,resultOrder);
+        return new Word(new byte[]{raw[addr],raw[addr+1]},address.clone(),parent,type,resultOrder);
     }
 
-    public static Word getWordAtAddressAndIncrement(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
-        final Word ret = getWordAtAddress(raw,address,type,resultOrder);
+    public static Word getWordAtAddressAndIncrement(final byte[] raw, final AbstractAddress address,IStructure parent, AbstractData.Type type, ByteOrder resultOrder){
+        final Word ret = getWordAtAddress(raw,address,parent,type,resultOrder);
 
-        address.add(Word.SIZEOF_B);
+        add(ret,Word.SIZEOF_B);
 
         return ret;
     }
 
-    public static DWord getDWordAtAddress(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
-        final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
+    public static DWord getDWordAtAddress(final byte[] raw, final AbstractAddress address,IStructure parent, AbstractData.Type type, ByteOrder resultOrder){
+        final int addr = bytesToInt(address.getContainer(),address.getByteOrder());
 
-        return new DWord(new byte[]{raw[addr],raw[addr+1],raw[addr+2],raw[addr+3]},address.clone(),type,resultOrder);
+        return new DWord(new byte[]{raw[addr],raw[addr+1],raw[addr+2],raw[addr+3]},address.clone(),parent,type,resultOrder);
     }
 
-    public static DWord getDWordAtAddressAndIncrement(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
-        final DWord ret = getDWordAtAddress(raw,address,type,resultOrder);
+    public static DWord getDWordAtAddressAndIncrement(final byte[] raw, final AbstractAddress address,IStructure parent, AbstractData.Type type, ByteOrder resultOrder){
+        final DWord ret = getDWordAtAddress(raw,address,parent,type,resultOrder);
 
-        address.add(DWord.SIZEOF_B);
+        add(address, DWord.SIZEOF_B);
 
         return ret;
     }
 
-    public static QWord getQWordAtAddress(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
-        final int addr = bytesToInt(address.getContainer(),address.BYTEORDER);
+    public static QWord getQWordAtAddress(final byte[] raw, final AbstractAddress address,IStructure parent, AbstractData.Type type, ByteOrder resultOrder){
+        final int addr = bytesToInt(address.getContainer(),address.getByteOrder());
 
-        return new QWord(new byte[]{raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7]},address.clone(),type,resultOrder);
+        return new QWord(new byte[]{raw[addr],raw[addr+1],raw[addr+2],raw[addr+3],raw[addr+4],raw[addr+5],raw[addr+6],raw[addr+7]},address.clone(),parent,type,resultOrder);
     }
 
-    public static QWord getQWordAtAddressAndIncrement(final byte[] raw, final Address address, Data.Type type, ByteOrder resultOrder){
-        final QWord ret = getQWordAtAddress(raw,address,type,resultOrder);
+    public static QWord getQWordAtAddressAndIncrement(final byte[] raw, final AbstractAddress address,IStructure parent, AbstractData.Type type, ByteOrder resultOrder){
+        final QWord ret = getQWordAtAddress(raw,address,parent,type,resultOrder);
 
-        address.add(QWord.SIZEOF_B);
+        add(address, QWord.SIZEOF_B);
 
         return ret;
     }
 
-    public static byte[] getRangeAtAddress(final byte[] raw, final Address begin, final Address end){
-        final int beginArrAddr = bytesToInt(begin.getContainer(),begin.BYTEORDER);
-        final int endArrAddr = bytesToInt(end.getContainer(),begin.BYTEORDER);
+    public static byte[] getRangeAtAddress(final byte[] raw, final AbstractAddress begin, final AbstractAddress end){
+        final int beginArrAddr = bytesToInt(begin.getContainer(),begin.getByteOrder());
+        final int endArrAddr = bytesToInt(end.getContainer(),begin.getByteOrder());
 
         final byte[] ret = new byte[endArrAddr-beginArrAddr];
 
@@ -241,18 +242,160 @@ public final class B {
         return ret;
     }
 
-    public static <T extends Address> T getEndAddressFromOffset(T beginning, Container offset){
+    /**
+     *
+     * @param toMe
+     * @param addMe
+     * @return Adds argument addMe to argument toMe
+     */
+    public static IContainer add(IContainer toMe,IContainer addMe){
+        //No unsigned values anywhere in java (cept char) - we have to do it the hard way
+        IContainer oneContainer;
+        IContainer twoContainer;
 
-        final T ret = (T)beginning.clone();
-
-        if(offset.BYTEORDER == ByteOrder.LITTLE_ENDIAN) {
-            ret.add(offset.flipByteOrder());
+        //BigInt takes BigEndian only
+        if(toMe.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
+            oneContainer = toMe.flipByteOrder();
         }else{
-            ret.add(offset);
+            oneContainer = toMe;
         }
 
-        return ret;
+        if(addMe.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
+            twoContainer = addMe.flipByteOrder();
+        }else{
+            twoContainer = addMe;
+        }
+
+
+        //Get BigInt
+        final BigInteger oneUnsigned = new BigInteger(1,oneContainer.getContainer());
+        final BigInteger twoUnsigned = new BigInteger(1,twoContainer.getContainer());
+
+        //Add
+        final byte[] res  = oneUnsigned.add(twoUnsigned).toByteArray();
+
+
+        Arrays.fill(toMe.getContainer(), (byte) 0x00);
+
+        //Restore original endinass
+        byte[] tmp;
+        if(toMe.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
+            tmp = B.flipByteOrder(res);
+            //store result
+            if(toMe.getContainer().length >= res.length){
+                for(int i=0;i<tmp.length;i++){
+                    toMe.getContainer()[i] = tmp[i];
+                }
+            }else{
+                for(int i=0;i<toMe.getContainer().length;i++){
+                    toMe.getContainer()[i] = tmp[i];
+                }
+            }
+        }else{
+            tmp = res;
+            //store result
+            if(toMe.getContainer().length >= tmp.length){
+                int padding = toMe.getContainer().length - tmp.length;
+                for(int i=0;i<tmp.length;i++){
+                    toMe.getContainer()[padding+i] = tmp[i];
+                }
+            }else{
+                int padding = tmp.length - toMe.getContainer().length;
+                for(int i=0;i<toMe.getContainer().length;i++){
+                    toMe.getContainer()[i] = tmp[i+padding];
+                }
+            }
+        }
+        return toMe;
     }
+
+    /**
+     *
+     * @param fromMe
+     * @param subMe
+     * @return Adds argument addMe to argument toMe
+     */
+    public static IContainer subtract(IContainer fromMe,IContainer subMe){
+        //No unsigned values anywhere in java (cept char) - we have to do it the hard way
+        IContainer oneContainer;
+        IContainer twoContainer;
+
+        //BigInt takes BigEndian only
+        if(fromMe.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
+            oneContainer = fromMe.flipByteOrder();
+        }else{
+            oneContainer = fromMe;
+        }
+
+        if(subMe.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
+            twoContainer = subMe.flipByteOrder();
+        }else{
+            twoContainer = subMe;
+        }
+
+
+        //Get BigInt
+        final BigInteger oneUnsigned = new BigInteger(1,oneContainer.getContainer());
+        final BigInteger twoUnsigned = new BigInteger(1,twoContainer.getContainer());
+
+        //Add
+        final byte[] res  = oneUnsigned.subtract(twoUnsigned).toByteArray();
+
+
+        Arrays.fill(fromMe.getContainer(), (byte) 0x00);
+
+        //Restore original endinass
+        byte[] tmp;
+        if(fromMe.getByteOrder() == ByteOrder.LITTLE_ENDIAN){
+            tmp = B.flipByteOrder(res);
+            //store result
+            if(fromMe.getContainer().length >= res.length){
+                for(int i=0;i<tmp.length;i++){
+                    fromMe.getContainer()[i] = tmp[i];
+                }
+            }else{
+                for(int i=0;i<fromMe.getContainer().length;i++){
+                    fromMe.getContainer()[i] = tmp[i];
+                }
+            }
+        }else{
+            tmp = res;
+            //store result
+            if(fromMe.getContainer().length >= tmp.length){
+                int padding = fromMe.getContainer().length - tmp.length;
+                for(int i=0;i<tmp.length;i++){
+                    fromMe.getContainer()[padding+i] = tmp[i];
+                }
+            }else{
+                int padding = tmp.length - fromMe.getContainer().length;
+                for(int i=0;i<fromMe.getContainer().length;i++){
+                    fromMe.getContainer()[i] = tmp[i+padding];
+                }
+            }
+        }
+        return fromMe;
+    }
+    public static AbstractData C(String ...comment){
+        Word comm = new Word(new byte[0], AbstractData.Type.COMMENT, ByteOrder.BIG_ENDIAN);
+        comm.setComments(comment);
+        return comm;
+    }
+
+
+//    public static <T extends AbstractAddress> T getEndAddressFromOffset(T beginning, Container offset){
+//
+//        final T ret = (T)beginning.clone();
+//
+//        if(offset.getByteOrder() == ByteOrder.LITTLE_ENDIAN) {
+//            ret.add(offset.flipByteOrder());
+//        }else{
+//            ret.add(offset);
+//        }
+//
+//        return ret;
+//    }
+
+
 
 //    public static byte[] getWordAtAddress(final byte[] raw,final byte[] address){
 //
