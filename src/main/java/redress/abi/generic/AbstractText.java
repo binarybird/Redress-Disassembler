@@ -3,8 +3,11 @@ package redress.abi.generic;
 import capstone.Capstone;
 import redress.abi.generic.visitors.AbstractStructureVisitor;
 import redress.memory.address.AbstractAddress;
+import redress.memory.data.AbstractData;
 
 import java.nio.ByteOrder;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -16,18 +19,44 @@ public abstract class AbstractText implements IStructure, IContainer {
     protected final IStructure parent;
     protected AbstractAddress beginAddress;
     protected AbstractAddress endAddress;
-    protected String[] comment = new String[0];
+    protected final HashSet<String> comment = new HashSet<>();
     protected final Capstone.CsInsn instruction;
     protected byte[] container;
     protected ByteOrder order;
+    protected final String instructionStringValue;
+    protected String segment = "";
+    protected String section = "";
 
-    protected AbstractText(IStructure parent,Capstone.CsInsn ins) {
+    public AbstractText(IStructure parent,AbstractAddress begin,AbstractAddress end,byte[] content,Capstone.CsInsn ins,String builtInstruction) {
         this.parent = parent;
         this.instruction = ins;
+        this.beginAddress = begin;
+        this.endAddress = end;
+        this.container = new byte[content.length];
+        for(int i=0;i<content.length;i++)
+            this.container[i] = content[i];
+        this.instructionStringValue = builtInstruction;
+    }
+
+    public AbstractData.Type getDataType(){
+        return AbstractData.Type.TEXT_DECOMPILED;
     }
 
     public Capstone.CsInsn getInstruction(){
         return instruction;
+    }
+
+    public void setSegmentName(String in){
+        this.segment = in;
+    }
+    public String getSegmentName(){
+        return segment;
+    }
+    public void setSectionName(String in){
+        this.section = in;
+    }
+    public String getSectionName(){
+        return section;
     }
 
     public void setContiner(byte[] in){
@@ -97,12 +126,13 @@ public abstract class AbstractText implements IStructure, IContainer {
     }
 
     @Override
-    public void setComments(String... comment) {
-        this.comment = comment;
+    public void addComments(String... comment){
+        for(String s : comment)
+            this.comment.add(s);
     }
 
     @Override
-    public String[] getComment() {
+    public HashSet<String> getComments(){
         return comment;
     }
 
@@ -112,5 +142,10 @@ public abstract class AbstractText implements IStructure, IContainer {
             return 0;
 
         return this.beginAddress.compareTo(o.getBeginAddress());
+    }
+
+    @Override
+    public String toString(){
+        return this.instructionStringValue;
     }
 }

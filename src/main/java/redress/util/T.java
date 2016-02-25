@@ -3,11 +3,14 @@ package redress.util;
 import capstone.Capstone;
 import capstone.X86;
 import redress.abi.generic.AbstractABI;
+import redress.abi.generic.IContainer;
 import redress.abi.generic.enums.ABIArch;
 import redress.abi.generic.enums.ABIType;
+import redress.memory.address.AbstractAddress;
 import redress.memory.address.Address32;
 import redress.memory.data.AbstractData;
 import redress.memory.data.Range;
+import redress.memory.data.Text;
 
 import java.nio.ByteOrder;
 import java.util.LinkedList;
@@ -22,14 +25,50 @@ public class T {
 
     private T(){}
 
-    public static LinkedList<AbstractData> deCompileText(Range text, AbstractABI abi){
-        final LinkedList<AbstractData> ret = new LinkedList<>();
+    public static LinkedList<IContainer> deCompileStringsAligned(int aligned, Range text, AbstractABI abi){
+        final LinkedList<IContainer> ret = new LinkedList<>();
+        final int length = text.getEndAddress().getIntValue()-text.getBeginAddress().getIntValue();
+        LOGGER.log(Level.INFO,"Decompiling {4} byte aligned Strings {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, text.getBeginAddress().toString(),text.getEndAddress().toString(), B.bytesToByteString(new byte[]{text.getContainer()[0]}),aligned});
+        return ret;
+    }
+
+    public static LinkedList<IContainer> deCompileCStrings(Range text, AbstractABI abi){
+        final LinkedList<IContainer> ret = new LinkedList<>();
+        final int length = text.getEndAddress().getIntValue()-text.getBeginAddress().getIntValue();
+        LOGGER.log(Level.INFO,"Decompiling CStrings {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, text.getBeginAddress().toString(),text.getEndAddress().toString(), B.bytesToByteString(new byte[]{text.getContainer()[0]})});
+
+        for(int i=0;i<text.getContainer().length-1;i++){
+            if(text.getContainer()[i] == 0x43 &&
+               text.getContainer()[i+1] == 0x00)
+            {
+                byte[] str = new byte[i+1];
+                for(int j=i;j>-1;j--){
+                    str[j]=text.getContainer()[j];
+                }
+
+                final AbstractAddress strEnd = text.getBeginAddress().clone();
+                final AbstractAddress strBegin = text.getBeginAddress().clone();
+                strEnd.add(i);
+
+                final Range range = new Range(str, strBegin, strEnd, null, AbstractData.Type.DATA_CHAR, ByteOrder.LITTLE_ENDIAN);
+                range.addComments("Hex Representation:\n");
+                range.addComments(B.bytesToByteString(str));//display the hex
+
+                ret.add(range);
+
+            }
+        }
+
+        return ret;
+    }
+
+    public static LinkedList<IContainer> deCompileText(Range text, AbstractABI abi){
+        final LinkedList<IContainer> ret = new LinkedList<>();
         final int length = text.getEndAddress().getIntValue()-text.getBeginAddress().getIntValue();
         final Capstone cs = getCapstone(abi.getType(), abi.getArch());
 
-        LOGGER.log(Level.INFO,"Decompiling {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, text.getBeginAddress().toString(),text.getEndAddress().toString(), B.bytesToString(new byte[]{text.getContainer()[0]})});
+        LOGGER.log(Level.INFO,"Decompiling Code {0} bytes from {1} to {2}, first byte {3}",new Object[]{length, text.getBeginAddress().toString(),text.getEndAddress().toString(), B.bytesToByteString(new byte[]{text.getContainer()[0]})});
 
-        ret.add(B.C("Procedure Start, Length: " + length + " bytes"));
         try {
             final Capstone.CsInsn[] disasm = cs.disasm(text.getContainer(), text.getBeginAddress().getIntValue());
             for (Capstone.CsInsn csin : disasm) {
@@ -38,7 +77,6 @@ public class T {
         }catch(Exception e){
             e.printStackTrace();
         }
-        ret.add(B.C("Procedure End, Length: " + length + " bytes"));
 
         return ret;
     }
@@ -60,7 +98,7 @@ public class T {
     /**
      * Code adapted from Capstone project
      */
-    private static Range print_ins_detail(Capstone.CsInsn ins,Capstone cs,AbstractABI abi) {
+    private static Text print_ins_detail(Capstone.CsInsn ins,Capstone cs,AbstractABI abi) {
         final StringBuilder comment = new StringBuilder();
 
         //TODO - comment is instruction string
@@ -74,7 +112,8 @@ public class T {
         //final Range range = new Range(rawInst,begin,end,Data.Type.TEXT_DECOMPILED, ByteOrder.BIG_ENDIAN);
 
         final Address32 begin = new Address32(B.intToBytes(B.longToInt(ins.address), ByteOrder.BIG_ENDIAN));
-        final Range range = new Range(new byte[0],begin,Address32.NULL, null,AbstractData.Type.DATA_NULL, ByteOrder.BIG_ENDIAN);
+        final Range range = new Range(new byte[0],begin,Address32.NULL, null,AbstractData.Type.TEXT_DECOMPILED, ByteOrder.BIG_ENDIAN);
+
 
         comment.append(ins.mnemonic);
         comment.append(" ");
@@ -84,11 +123,11 @@ public class T {
 
         if(operands != null) {
             comment.append("Prefix: ");
-            comment.append(B.bytesToString(operands.prefix));
+            comment.append(B.bytesToByteString(operands.prefix));
             comment.append("\n");
 
             comment.append("Opcode:");
-            comment.append(B.bytesToString(operands.opcode));
+            comment.append(B.bytesToByteString(operands.opcode));
             comment.append("\n");
 
             // print REX prefix (non-zero value is relevant for x86_64)
@@ -237,8 +276,7 @@ public class T {
                 }
             }
         }
-        range.setUserData(ins);
-        range.setComments(comment.toString());
-        return range;
+
+        return new Text(range,ins,comment.toString());
     }
 }

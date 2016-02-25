@@ -9,6 +9,7 @@ import redress.util.B;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -28,7 +29,8 @@ public abstract class AbstractData implements IContainer, IAddressable {
         DATA_DOUBLE,
         DATA_LONG,
         DATA_BOOL,
-        DATA_TABLE,
+        TEXT_DECOMPILED,
+        TEXT_COMPILED,
         COMMENT
     }
 
@@ -41,7 +43,7 @@ public abstract class AbstractData implements IContainer, IAddressable {
     public final int BYTES;
     protected Object userData = null;
     protected Type type = Type.DATA_NULL;
-    protected String[] comment;
+    protected final HashSet<String> comment = new HashSet<>();
 
     protected AbstractData(int bytes, IStructure parent, Type type, ByteOrder order){
         BYTES=bytes;
@@ -61,6 +63,11 @@ public abstract class AbstractData implements IContainer, IAddressable {
 
     public void add(IContainer in){
         B.add(this,in);
+    }
+
+    public void add(int i){
+        QWord w = new QWord(B.intToBytes(i,ByteOrder.BIG_ENDIAN),Type.DATA_NULL,ByteOrder.BIG_ENDIAN);
+        add(w);
     }
 
     public void subtract(IContainer in){
@@ -84,7 +91,7 @@ public abstract class AbstractData implements IContainer, IAddressable {
     }
 
     public String getStringValue(){
-        return B.bytesToString(container);
+        return B.bytesToByteString(container);
     }
 
     public long getLongValue(){
@@ -141,6 +148,28 @@ public abstract class AbstractData implements IContainer, IAddressable {
         return equals((AbstractData) o, false);
     }
 
+    public boolean and(IContainer in){
+        final byte[] container1;
+
+        if(this.getByteOrder() != in.getByteOrder())
+            container1 = in.flipByteOrder().getContainer();
+        else
+            container1 = in.getContainer();
+
+        if(container1.length >= container.length){
+            for(int i=0;i<container.length;i++){
+                if(container1[i] != 0 && container1[i] == container[i])
+                    return true;
+            }
+        }else{
+            for(int i=0;i<container1.length;i++){
+                if(container1[i] != 0 && container1[i] == container[i])
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public boolean equals(AbstractData o, boolean ignoreLength){
         IContainer tmp;
         if(this.BYTEORDER == o.getByteOrder()){
@@ -194,12 +223,13 @@ public abstract class AbstractData implements IContainer, IAddressable {
     }
 
     @Override
-    public void setComments(String... comment){
-        this.comment = comment;
+    public void addComments(String... comment){
+        for(String s : comment)
+            this.comment.add(s);
     }
 
     @Override
-    public String[] getComment(){
+    public HashSet<String> getComments(){
         return comment;
     }
 
@@ -223,7 +253,7 @@ public abstract class AbstractData implements IContainer, IAddressable {
             case DATA_LONG:break;
             case DATA_BOOL:break;
             case COMMENT:
-                return comment[0];
+                return "";
             default:break;
         }
         return getStringValue()+" "+BYTEORDER;

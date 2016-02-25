@@ -1,8 +1,8 @@
 package redress.abi.mach;
 
 import redress.abi.generic.*;
+import redress.memory.data.TableSeperator;
 import redress.memory.data.*;
-import redress.util.B;
 
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -110,18 +110,29 @@ public interface Loader {
             super(parent);
         }
 
-        @Override
-        public LinkedList<IContainer> getStructureData() {
-            magic.setComments(magicComment);
-            cputype.setComments(cputypeComment);
-            cpusubtype.setComments(cpusubtypeComment);
-            filetype.setComments(filetypeComment);
-            ncmds.setComments(ncmdsComment);
-            sizeofcmds.setComments(sizeofcmdsComment);
-            flags.setComments(flagsComment);
-            return new LinkedList<IContainer>(Arrays.asList(B.C("","","",""),magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags));
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once) {
+                magic.addComments(magicComment);
+                cputype.addComments(cputypeComment);
+                cpusubtype.addComments(cpusubtypeComment);
+                filetype.addComments(filetypeComment);
+                ncmds.addComments(ncmdsComment);
+                sizeofcmds.addComments(sizeofcmdsComment);
+                flags.addComments(flagsComment);
+            }
+            TableSeperator s = new TableSeperator("","/*\n" +
+                    " * The 32-bit mach header appears at the very beginning of the object file for\n" +
+                    " * 32-bit architectures.\n" +
+                    "  */","","");
+            return new LinkedList<IContainer>(Arrays.asList(s,s,magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags));
         }
 
+        @Override
+        public LinkedList<IContainer> getStructureData() {
+            return runOnce();
+        }
     }
 
     ;
@@ -156,20 +167,31 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                magic.addComments(magicComment);
+                cputype.addComments(cputypeComment);
+                cpusubtype.addComments(cpusubtypeComment);
+                filetype.addComments(filetypeComment);
+                ncmds.addComments(ncmdsComment);
+                sizeofcmds.addComments(sizeofcmdsComment);
+                flags.addComments(flagsComment);
+                reserved.addComments(reservedComment);
+            }
+
+
+            TableSeperator s = new TableSeperator("mach_header_64","","","/*\n" +
+                    " * The 64-bit mach header appears at the very beginning of object files for\n" +
+                    " * 64-bit architectures.\n" +
+                    " */");
+            return new LinkedList<IContainer>(Arrays.asList(s,magic,cputype,cpusubtype,filetype,ncmds,sizeofcmds,flags,reserved));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            magic.setComments(magicComment);
-            cputype.setComments(cputypeComment);
-            cpusubtype.setComments(cpusubtypeComment);
-            filetype.setComments(filetypeComment);
-            ncmds.setComments(ncmdsComment);
-            sizeofcmds.setComments(sizeofcmdsComment);
-            flags.setComments(flagsComment);
-            reserved.setComments(reservedComment);
-            return new LinkedList<IContainer>(Arrays.asList(B.C("","Mach Header 64",
-                    "     /* The 64-bit mach header appears at the very beginning of object files for\n" +
-                    "      * 64-bit architectures.\n" +
-                    "      */"),magic,cputype,cpusubtype,filetype,ncmds,sizeofcmds,flags,reserved));
+            return runOnce();
         }
 
     }
@@ -321,13 +343,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+            }
+
+                TableSeperator s = new TableSeperator("load_command","","","");
+
+                return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            {
-                cmd.setComments(cmdComment);
-                cmdsize.setComments(cmdsizeComment);
-                return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
-            }
+            return runOnce();
         }
     }
 
@@ -433,9 +465,18 @@ public interface Loader {
         public lc_str() {
             super(null);
         }
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+            }
+            TableSeperator s = new TableSeperator("lc_str","","","");
+            return new LinkedList<IContainer>(Arrays.asList(s,offset, ptr));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            return new LinkedList<>(Arrays.asList(offset, ptr));
+            return runOnce();
         }
 
         @Override
@@ -484,20 +525,30 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                segname.addComments(segnameComment);
+                vmaddr.addComments(vmaddrComment);
+                vmsize.addComments(vmsizeComment);
+                fileoff.addComments(fileoffComment);
+                filesize.addComments(filesizeComment);
+                maxprot.addComments(maxprotComment);
+                initprot.addComments(initprotComment);
+                nsects.addComments(nsectsComment);
+                flags.addComments(flagsComment);
+            }
+            TableSeperator s = new TableSeperator("segment_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, segname, vmaddr, vmsize, fileoff, filesize, maxprot, initprot, nsects, flags));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            segname.setComments(segnameComment);
-            vmaddr.setComments(vmaddrComment);
-            vmsize.setComments(vmsizeComment);
-            fileoff.setComments(fileoffComment);
-            filesize.setComments(filesizeComment);
-            maxprot.setComments(maxprotComment);
-            initprot.setComments(initprotComment);
-            nsects.setComments(nsectsComment);
-            flags.setComments(flagsComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, segname, vmaddr, vmsize, fileoff, filesize, maxprot, initprot, nsects, flags));
+            return runOnce();
         }
     }
 
@@ -537,20 +588,30 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                segname.addComments(segnameComment);
+                vmaddr.addComments(vmaddrComment);
+                vmsize.addComments(vmsizeComment);
+                fileoff.addComments(fileoffComment);
+                filesize.addComments(filesizeComment);
+                maxprot.addComments(maxprotComment);
+                initprot.addComments(initprotComment);
+                nsects.addComments(nsectsComment);
+                flags.addComments(flagsComment);
+            }
+            TableSeperator s = new TableSeperator("segment_command_64","","","");
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, segname, vmaddr, vmsize, maxprot, initprot, nsects, flags));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            segname.setComments(segnameComment);
-            vmaddr.setComments(vmaddrComment);
-            vmsize.setComments(vmsizeComment);
-            fileoff.setComments(fileoffComment);
-            filesize.setComments(filesizeComment);
-            maxprot.setComments(maxprotComment);
-            initprot.setComments(initprotComment);
-            nsects.setComments(nsectsComment);
-            flags.setComments(flagsComment);
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize, segname, vmaddr, vmsize, maxprot, initprot, nsects, flags));
+            return runOnce();
         }
     }
 
@@ -628,20 +689,30 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                sectname.addComments(sectnameComment);
+                segname.addComments(segnameComment);
+                addr.addComments(addrComment);
+                size.addComments(sizeComment);
+                offset.addComments(offsetComment);
+                align.addComments(alignComment);
+                reloff.addComments(reloffComment);
+                nreloc.addComments(nrelocComment);
+                flags.addComments(flagsComment);
+                reserved1.addComments(reserved1Comment);
+                reserved2.addComments(reserved2Comment);
+            }
+            TableSeperator s = new TableSeperator("section","","","");
+
+            return new LinkedList<IContainer>(Arrays.asList(s,sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            sectname.setComments(sectnameComment);
-            segname.setComments(segnameComment);
-            addr.setComments(addrComment);
-            size.setComments(sizeComment);
-            offset.setComments(offsetComment);
-            align.setComments(alignComment);
-            reloff.setComments(reloffComment);
-            nreloc.setComments(nrelocComment);
-            flags.setComments(flagsComment);
-            reserved1.setComments(reserved1Comment);
-            reserved2.setComments(reserved2Comment);
-            return new LinkedList<IContainer>(Arrays.asList(sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2));
+            return runOnce();
         }
     }
 
@@ -678,25 +749,35 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                sectname.addComments(sectnameComment);
+                segname.addComments(segnameComment);
+
+                addr.addComments(addrComment);
+                size.addComments(sizeComment);
+
+                offset.addComments(offsetComment);
+                reloff.addComments(reloffComment);
+
+                nreloc.addComments(nrelocComment);
+                flags.addComments(flagsComment);
+
+                reserved1.addComments(reserved1Comment);
+                reserved2.addComments(reserved2Comment);
+
+                reserved3.addComments(reserved3Comment);
+            }
+            TableSeperator s = new TableSeperator("section_64","","","");
+
+            return new LinkedList<>(Arrays.asList(s,sectname, segname, addr, size, offset, reloff, nreloc, flags, reserved1, reserved2, reserved3));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            sectname.setComments(sectnameComment);
-            segname.setComments(segnameComment);
-
-            addr.setComments(addrComment);
-            size.setComments(sizeComment);
-
-            offset.setComments(offsetComment);
-            reloff.setComments(reloffComment);
-
-            nreloc.setComments(nrelocComment);
-            flags.setComments(flagsComment);
-
-            reserved1.setComments(reserved1Comment);
-            reserved2.setComments(reserved2Comment);
-
-            reserved3.setComments(reserved3Comment);
-            return new LinkedList<>(Arrays.asList(sectname, segname, addr, size, offset, reloff, nreloc, flags, reserved1, reserved2, reserved3));
+            return runOnce();
         }
     }
 
@@ -893,13 +974,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                name.addComments(nameComment);
+                minor_version.addComments(minor_versionComment);
+                header_addr.addComments(header_addrComment);
+            }
+            TableSeperator s = new TableSeperator("fvmlib","","","");
+
+
+            return new LinkedList<>(Arrays.asList(s,s,minor_version, header_addr));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            name.setComments(nameComment);
-            minor_version.setComments(minor_versionComment);
-            header_addr.setComments(header_addrComment);
-
-            return new LinkedList<>(Arrays.asList(minor_version, header_addr));
+            return runOnce();
         }
 
     }
@@ -925,13 +1016,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                fvmlib.addComments(fvmlibComment);
+            }
+            TableSeperator s = new TableSeperator("fvmlib_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            fvmlib.setComments(fvmlibComment);
-
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -964,14 +1065,24 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                name.addComments(nameComment);
+                timestamp.addComments(timestampComment);
+                current_version.addComments(current_versionComment);
+                compatibility_version.addComments(compatibility_versionComment);
+            }
+            TableSeperator s = new TableSeperator("dylib","","","");
+
+
+            return new LinkedList<>(Arrays.asList(s,timestamp, current_version, compatibility_version));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            name.setComments(nameComment);
-            timestamp.setComments(timestampComment);
-            current_version.setComments(current_versionComment);
-            compatibility_version.setComments(compatibility_versionComment);
-
-            return new LinkedList<>(Arrays.asList(timestamp, current_version, compatibility_version));
+            return runOnce();
         }
     }
 
@@ -996,13 +1107,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                dylib.addComments(dylibComment);
+            }
+            TableSeperator s = new TableSeperator("dylib_command","","dylib_command","");
+
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            dylib.setComments(dylibComment);
-
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1030,13 +1151,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                umbrella.addComments(umbrellaComment);
+            }
+            TableSeperator s = new TableSeperator("sub_framework_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            umbrella.setComments(umbrellaComment);
-
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1063,13 +1194,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                client.addComments(clientComment);
+            }
+            TableSeperator s = new TableSeperator("sub_client_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            client.setComments(clientComment);
-
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1100,13 +1241,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                sub_umbrella.addComments(sub_umbrellaComment);
+            }
+            TableSeperator s = new TableSeperator("sub_umbrella_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            sub_umbrella.setComments(sub_umbrellaComment);
-
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1139,13 +1290,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                sub_library.addComments(sub_libraryComment);
+            }
+            TableSeperator s = new TableSeperator("sub_library_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            sub_library.setComments(sub_libraryComment);
-
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1176,15 +1337,25 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                nmodules.addComments(nmodulesComment);
+                name.addComments(nameComment);
+                linked_modules.addComments(linked_modulesComment);
+            }
+            TableSeperator s = new TableSeperator("prebound_dylib_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            nmodules.setComments(nmodulesComment);
-            name.setComments(nameComment);
-            linked_modules.setComments(linked_modulesComment);
-
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1208,13 +1379,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                name.addComments(nameComment);
+            }
+            TableSeperator s = new TableSeperator("dylinker_command","","","");
+
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            name.setComments(nameComment);
-
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1251,12 +1432,22 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+            }
+            TableSeperator s = new TableSeperator("thread_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
 	/* public DWord flavor		   flavor of thread state */
 	/* public DWord count		   count of longs in thread state */
@@ -1300,19 +1491,29 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                init_address.addComments(init_addressComment);
+                init_module.addComments(init_moduleComment);
+                reserved1.addComments(reserved1Comment);
+                reserved2.addComments(reserved2Comment);
+                reserved3.addComments(reserved3Comment);
+                reserved4.addComments(reserved4Comment);
+                reserved5.addComments(reserved5Comment);
+                reserved6.addComments(reserved6Comment);
+            }
+            TableSeperator s = new TableSeperator("routines_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            init_address.setComments(init_addressComment);
-            init_module.setComments(init_moduleComment);
-            reserved1.setComments(reserved1Comment);
-            reserved2.setComments(reserved2Comment);
-            reserved3.setComments(reserved3Comment);
-            reserved4.setComments(reserved4Comment);
-            reserved5.setComments(reserved5Comment);
-            reserved6.setComments(reserved6Comment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
+            return runOnce();
         }
     }
 
@@ -1347,19 +1548,29 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                init_address.addComments(init_addressComment);
+                init_module.addComments(init_moduleComment);
+                reserved1.addComments(reserved1Comment);
+                reserved2.addComments(reserved2Comment);
+                reserved3.addComments(reserved3Comment);
+                reserved4.addComments(reserved4Comment);
+                reserved5.addComments(reserved5Comment);
+                reserved6.addComments(reserved6Comment);
+            }
+            TableSeperator s = new TableSeperator("routines_command_64","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            init_address.setComments(init_addressComment);
-            init_module.setComments(init_moduleComment);
-            reserved1.setComments(reserved1Comment);
-            reserved2.setComments(reserved2Comment);
-            reserved3.setComments(reserved3Comment);
-            reserved4.setComments(reserved4Comment);
-            reserved5.setComments(reserved5Comment);
-            reserved6.setComments(reserved6Comment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, init_address, init_module, reserved1, reserved2, reserved3, reserved4, reserved5, reserved6));
+            return runOnce();
         }
     }
 
@@ -1388,15 +1599,25 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                symoff.addComments(symoffComment);
+                nsyms.addComments(nsymsComment);
+                stroff.addComments(stroffComment);
+                strsize.addComments(strsizeComment);
+            }
+            TableSeperator s = new TableSeperator("symtab_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, symoff, nsyms, stroff, strsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            symoff.setComments(symoffComment);
-            nsyms.setComments(nsymsComment);
-            stroff.setComments(stroffComment);
-            strsize.setComments(strsizeComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, symoff, nsyms, stroff, strsize));
+            return runOnce();
         }
     }
 
@@ -1580,29 +1801,39 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                ilocalsym.addComments(ilocalsymComment);
+                nlocalsym.addComments(nlocalsymComment);
+                iextdefsym.addComments(iextdefsymComment);
+                nextrefsyms.addComments(nextrefsymsComment);
+                iundefsym.addComments(iundefsymComment);
+                nundefsym.addComments(nundefsymComment);
+                tocoff.addComments(tocoffComment);
+                ntoc.addComments(ntocComment);
+                modtaboff.addComments(modtaboffComment);
+                nmodtab.addComments(nmodtabComment);
+                extrefsymoff.addComments(extrefsymoffComment);
+                nextdefsym.addComments(nextdefsymComment);
+                indirectsymoff.addComments(indirectsymoffComment);
+                nindirectsyms.addComments(nindirectsymsComment);
+                extreloff.addComments(extreloffComment);
+                nextrel.addComments(nextrelComment);
+                locreloff.addComments(locreloffComment);
+                nlocrel.addComments(nlocrelComment);
+            }
+            TableSeperator s = new TableSeperator("dysymtab_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, ilocalsym, nlocalsym, iextdefsym, nextrefsyms, iundefsym, nundefsym, tocoff, ntoc, modtaboff, nmodtab, extrefsymoff, nextdefsym, indirectsymoff, nindirectsyms, extreloff, nextrel, locreloff, nlocrel));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            ilocalsym.setComments(ilocalsymComment);
-            nlocalsym.setComments(nlocalsymComment);
-            iextdefsym.setComments(iextdefsymComment);
-            nextrefsyms.setComments(nextrefsymsComment);
-            iundefsym.setComments(iundefsymComment);
-            nundefsym.setComments(nundefsymComment);
-            tocoff.setComments(tocoffComment);
-            ntoc.setComments(ntocComment);
-            modtaboff.setComments(modtaboffComment);
-            nmodtab.setComments(nmodtabComment);
-            extrefsymoff.setComments(extrefsymoffComment);
-            nextdefsym.setComments(nextdefsymComment);
-            indirectsymoff.setComments(indirectsymoffComment);
-            nindirectsyms.setComments(nindirectsymsComment);
-            extreloff.setComments(extreloffComment);
-            nextrel.setComments(nextrelComment);
-            locreloff.setComments(locreloffComment);
-            nlocrel.setComments(nlocrelComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, ilocalsym, nlocalsym, iextdefsym, nextrefsyms, iundefsym, nundefsym, tocoff, ntoc, modtaboff, nmodtab, extrefsymoff, nextdefsym, indirectsymoff, nindirectsyms, extreloff, nextrel, locreloff, nlocrel));
+            return runOnce();
         }
     }
 
@@ -1630,11 +1861,21 @@ public interface Loader {
             super( parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                symbol_index.addComments(symbol_indexComment);
+                module_index.addComments(module_indexComment);
+            }
+            TableSeperator s = new TableSeperator("dylib_table_of_contents","","","");
+
+            return new LinkedList<>(Arrays.asList(s,symbol_index, module_index));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            symbol_index.setComments(symbol_indexComment);
-            module_index.setComments(module_indexComment);
-            return new LinkedList<>(Arrays.asList(symbol_index, module_index));
+            return runOnce();
         }
     }
 
@@ -1676,22 +1917,32 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                module_name.addComments(module_nameComment);
+                iextdefsym.addComments(iextdefsymComment);
+                nextdefsym.addComments(nextdefsymComment);
+                irefsym.addComments(irefsymComment);
+                ilocalsym.addComments(ilocalsymComment);
+                nlocalsym.addComments(nlocalsymComment);
+                iextrel.addComments(iextrelComment);
+                nextrel.addComments(nextrelComment);
+                iinit_iterm.addComments(iinit_itermComment);
+                ninit_nterm.addComments(ninit_ntermComment);
+                objc_module_info_addr.addComments(objc_module_info_addrComment);
+                objc_module_info_size.addComments(objc_module_info_sizeComment);
+                nrefsym.addComments(nrefsymComment);
+            }
+            TableSeperator s = new TableSeperator("dylib_module","","","");
+
+            return new LinkedList<>(Arrays.asList(s,module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            module_name.setComments(module_nameComment);
-            iextdefsym.setComments(iextdefsymComment);
-            nextdefsym.setComments(nextdefsymComment);
-            irefsym.setComments(irefsymComment);
-            ilocalsym.setComments(ilocalsymComment);
-            nlocalsym.setComments(nlocalsymComment);
-            iextrel.setComments(iextrelComment);
-            nextrel.setComments(nextrelComment);
-            iinit_iterm.setComments(iinit_itermComment);
-            ninit_nterm.setComments(ninit_ntermComment);
-            objc_module_info_addr.setComments(objc_module_info_addrComment);
-            objc_module_info_size.setComments(objc_module_info_sizeComment);
-            nrefsym.setComments(nrefsymComment);
-            return new LinkedList<>(Arrays.asList(module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
+            return runOnce();
         }
 
     }
@@ -1731,22 +1982,32 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                module_name.addComments(module_nameComment);
+                iextdefsym.addComments(iextdefsymComment);
+                nextdefsym.addComments(nextdefsymComment);
+                irefsym.addComments(irefsymComment);
+                ilocalsym.addComments(ilocalsymComment);
+                nlocalsym.addComments(nlocalsymComment);
+                iextrel.addComments(iextrelComment);
+                nextrel.addComments(nextrelComment);
+                iinit_iterm.addComments(iinit_itermComment);
+                ninit_nterm.addComments(ninit_ntermComment);
+                objc_module_info_addr.addComments(objc_module_info_addrComment);
+                objc_module_info_size.addComments(objc_module_info_sizeComment);
+                nrefsym.addComments(nrefsymComment);
+            }
+            TableSeperator s = new TableSeperator("dylib_module_64","","","");
+
+            return new LinkedList<IContainer>(Arrays.asList(s,module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            module_name.setComments(module_nameComment);
-            iextdefsym.setComments(iextdefsymComment);
-            nextdefsym.setComments(nextdefsymComment);
-            irefsym.setComments(irefsymComment);
-            ilocalsym.setComments(ilocalsymComment);
-            nlocalsym.setComments(nlocalsymComment);
-            iextrel.setComments(iextrelComment);
-            nextrel.setComments(nextrelComment);
-            iinit_iterm.setComments(iinit_itermComment);
-            ninit_nterm.setComments(ninit_ntermComment);
-            objc_module_info_addr.setComments(objc_module_info_addrComment);
-            objc_module_info_size.setComments(objc_module_info_sizeComment);
-            nrefsym.setComments(nrefsymComment);
-            return new LinkedList<IContainer>(Arrays.asList(module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
+            return runOnce();
         }
 
     }
@@ -1771,11 +2032,21 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                isym.addComments(isymComment);
+                flags.addComments(flagsComment);
+            }
+            TableSeperator s = new TableSeperator("dylib_reference","","","");
+
+            return new LinkedList<IContainer>(Arrays.asList(s,isym, flags));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            isym.setComments(isymComment);
-            flags.setComments(flagsComment);
-            return new LinkedList<>(Arrays.asList(isym, flags));
+            return runOnce();
         }
     }
 
@@ -1799,13 +2070,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                offset.addComments(offsetComment);
+                nhints.addComments(nhintsComment);
+            }
+            TableSeperator s = new TableSeperator("twolevel_hints_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, offset, nhints));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            offset.setComments(offsetComment);
-            nhints.setComments(nhintsComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, offset, nhints));
+            return runOnce();
         }
     }
 
@@ -1837,11 +2118,21 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                isub_image.addComments(isub_imageComment);
+                itoc.addComments(itocComment);
+            }
+            TableSeperator s = new TableSeperator("twolevel_hint","","","");
+
+            return new LinkedList<IContainer>(Arrays.asList(s,isub_image, itoc));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            isub_image.setComments(isub_imageComment);
-            itoc.setComments(itocComment);
-            return new LinkedList<IContainer>(Arrays.asList(isub_image, itoc));
+            return runOnce();
         }
 
     }
@@ -1870,12 +2161,22 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                cksum.addComments(cksumComment);
+            }
+            TableSeperator s = new TableSeperator("prebind_cksum_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, cksum));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            cksum.setComments(cksumComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, cksum));
+            return runOnce();
         }
     }
 
@@ -1897,12 +2198,22 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                uuid.addComments(uuidComment);
+            }
+            TableSeperator s = new TableSeperator("uuid_command","","","");
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, uuid));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            uuid.setComments(uuidComment);
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize, uuid));
+            return runOnce();
         }
     }
 
@@ -1924,13 +2235,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                path.addComments(pathComment);
+            }
+            TableSeperator s = new TableSeperator("rpath_command","","","");
+
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            path.setComments(pathComment);
-
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -1954,13 +2275,22 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once) {
+                once = false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                version.addComments(versionComment);
+                sdk.addComments(sdkComment);
+            }
+            TableSeperator s = new TableSeperator("version_min_command","","","");
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, version, sdk));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            version.setComments(versionComment);
-            sdk.setComments(sdkComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, version, sdk));
+            return runOnce();
         }
     }
 
@@ -1985,13 +2315,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                dataoff.addComments(dataoffComment);
+                datasize.addComments(datasizeComment);
+            }
+            TableSeperator s = new TableSeperator("linkedit_ABI_command","","","");
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, dataoff, datasize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            dataoff.setComments(dataoffComment);
-            datasize.setComments(datasizeComment);
-            return new LinkedList<IContainer>(Arrays.asList(cmd, cmdsize, dataoff, datasize));
+            return runOnce();
         }
     }
 
@@ -2017,14 +2357,24 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                cryptoff.addComments(cryptoffComment);
+                cryptsize.addComments(cryptsizeComment);
+                cryptid.addComments(cryptidComment);
+            }
+            TableSeperator s = new TableSeperator("encryption_info_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, cryptoff, cryptsize, cryptid));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            cryptoff.setComments(cryptoffComment);
-            cryptsize.setComments(cryptsizeComment);
-            cryptid.setComments(cryptidComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, cryptoff, cryptsize, cryptid));
+            return runOnce();
         }
     }
 
@@ -2148,21 +2498,31 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                rebase_off.addComments(rebase_offComment);
+                rebase_size.addComments(rebase_sizeComment);
+                bind_off.addComments(bind_offComment);
+                bind_size.addComments(bind_sizeComment);
+                weak_bind_off.addComments(weak_bind_offComment);
+                weak_bind_size.addComments(weak_bind_sizeComment);
+                lazy_bind_off.addComments(lazy_bind_offComment);
+                lazy_bind_size.addComments(lazy_bind_sizeComment);
+                export_off.addComments(export_offComment);
+                export_size.addComments(export_sizeComment);
+            }
+            TableSeperator s = new TableSeperator("dyld_info_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, rebase_off, rebase_size, bind_off, bind_size, weak_bind_off, weak_bind_size, lazy_bind_off, lazy_bind_size, export_off, export_size));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            rebase_off.setComments(rebase_offComment);
-            rebase_size.setComments(rebase_sizeComment);
-            bind_off.setComments(bind_offComment);
-            bind_size.setComments(bind_sizeComment);
-            weak_bind_off.setComments(weak_bind_offComment);
-            weak_bind_size.setComments(weak_bind_sizeComment);
-            lazy_bind_off.setComments(lazy_bind_offComment);
-            lazy_bind_size.setComments(lazy_bind_sizeComment);
-            export_off.setComments(export_offComment);
-            export_size.setComments(export_sizeComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, rebase_off, rebase_size, bind_off, bind_size, weak_bind_off, weak_bind_size, lazy_bind_off, lazy_bind_size, export_off, export_size));
+            return runOnce();
         }
     }
 
@@ -2257,13 +2617,23 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                offset.addComments(offsetComment);
+                size.addComments(sizeComment);
+            }
+            TableSeperator s = new TableSeperator("symseg_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, offset, size));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            offset.setComments(offsetComment);
-            size.setComments(sizeComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, offset, size));
+            return runOnce();
         }
     }
 
@@ -2285,11 +2655,21 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+            }
+            TableSeperator s = new TableSeperator("ident_command","","","");
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize));
+            return runOnce();
         }
     }
 
@@ -2315,14 +2695,24 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                name.addComments(nameComment);
+                header_addr.addComments(header_addrComment);
+            }
+            TableSeperator s = new TableSeperator("fvmfile_command","","","");
+
+
+            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, header_addr));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            name.setComments(nameComment);
-            header_addr.setComments(header_addrComment);
-
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, header_addr));
+            return runOnce();
         }
     }
 
@@ -2349,13 +2739,24 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            TableSeperator s = new TableSeperator("entry_point_command","","","");
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                entryoff.addComments(entryoffComment);
+                stacksize.addComments(stacksizeComment);
+
+            }
+
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, entryoff, stacksize));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            entryoff.setComments(entryoffComment);
-            stacksize.setComments(stacksizeComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, entryoff, stacksize));
+            return runOnce();
         }
     }
 
@@ -2378,17 +2779,22 @@ public interface Loader {
             super(parent);
         }
 
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            TableSeperator s = new TableSeperator("source_version_command","","","");
+            if(once){
+                once=false;
+                cmd.addComments(cmdComment);
+                cmdsize.addComments(cmdsizeComment);
+                version.addComments(versionComment);
+            }
+            return new LinkedList<>(Arrays.asList(s,cmd, cmdsize, version));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            cmd.setComments(cmdComment);
-            cmdsize.setComments(cmdsizeComment);
-            version.setComments(versionComment);
-            return new LinkedList<>(Arrays.asList(cmd, cmdsize, version));
+            return runOnce();
         }
     }
-
-    ;
-
 
     /*
      * The LC_DATA_IN_CODE load commands uses a linkedit_data_command
@@ -2408,12 +2814,25 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                return new LinkedList<IContainer>();
+            }
+            TableSeperator s = new TableSeperator("ABI_in_code_entry","","","");
+            offset.addComments(offsetComment);
+            length.addComments(lengthComment);
+            kind.addComments(kindComment);
+            return new LinkedList<>(Arrays.asList(s,offset, length, kind));
+        }
+
         @Override
         public LinkedList<IContainer> getStructureData() {
-            offset.setComments(offsetComment);
-            length.setComments(lengthComment);
-            kind.setComments(kindComment);
-            return new LinkedList<>(Arrays.asList(offset, length, kind));
+            TableSeperator s = new TableSeperator("ABI_in_code_entry","","","");
+
+            return new LinkedList<>(Arrays.asList(s,offset, length, kind));
         }
 
     }
@@ -2442,11 +2861,21 @@ public interface Loader {
             super(parent);
         }
 
+
+        private boolean once = true;
+        private LinkedList<IContainer> runOnce() {
+            if(once){
+                once=false;
+                return new LinkedList<IContainer>();
+            }
+            TableSeperator s = new TableSeperator("tlv_descriptor","","","");
+            key.addComments(keyComment);
+            offset.addComments(offsetComment);
+            return new LinkedList<>(Arrays.asList(s,key, offset));
+        }
         @Override
         public LinkedList<IContainer> getStructureData() {
-            key.setComments(keyComment);
-            offset.setComments(offsetComment);
-            return new LinkedList<>(Arrays.asList(key, offset));
+            return runOnce();
         }
     }
 

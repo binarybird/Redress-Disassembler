@@ -1,11 +1,11 @@
 package redress.memory.address;
 
 import redress.abi.generic.IContainer;
+import redress.memory.data.AbstractData;
+import redress.memory.data.QWord;
 import redress.util.B;
 
-import java.math.BigInteger;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 /**
  * Created by jamesrichardson on 2/11/16.
@@ -56,6 +56,11 @@ public abstract class AbstractAddress implements IContainer,Comparable<AbstractA
         B.add(this,in);
     }
 
+    public void add(int i){
+        QWord w = new QWord(B.intToBytes(i,ByteOrder.BIG_ENDIAN), AbstractData.Type.DATA_NULL,ByteOrder.BIG_ENDIAN);
+        add(w);
+    }
+
     public void subtract(IContainer in){
         B.subtract(this,in);
     }
@@ -65,7 +70,7 @@ public abstract class AbstractAddress implements IContainer,Comparable<AbstractA
     }
 
     public String getStringValue(){
-        return B.bytesToString(container);
+        return B.bytesToByteString(container);
     }
 
     @Override

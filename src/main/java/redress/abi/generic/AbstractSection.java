@@ -3,6 +3,7 @@ package redress.abi.generic;
 import redress.abi.generic.visitors.AbstractStructureVisitor;
 import redress.memory.address.AbstractAddress;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -15,7 +16,7 @@ public abstract class AbstractSection implements IStructure, ILoadable  {
     protected AbstractAddress beginAddress;
     protected AbstractAddress endAddress;
     protected String name = "";
-    protected String[] comment = new String[0];
+    protected final HashSet<String> comment = new HashSet<>();
     protected ILoader load;
 
     protected AbstractSection(IStructure parent) {
@@ -85,12 +86,13 @@ public abstract class AbstractSection implements IStructure, ILoadable  {
     }
 
     @Override
-    public void setComments(String... comment) {
-        this.comment = comment;
+    public void addComments(String... comment){
+        for(String s : comment)
+            this.comment.add(s);
     }
 
     @Override
-    public String[] getComment() {
+    public HashSet<String> getComments(){
         return comment;
     }
 }

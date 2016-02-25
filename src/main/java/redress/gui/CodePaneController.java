@@ -9,6 +9,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import redress.memory.data.Text;
+import redress.memory.data.TableSeperator;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -39,16 +41,15 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         this.setRowFactory(tableView -> {
             TableRow<DisplaySet> row = new TableRow<>();
             row.itemProperty().addListener((obs, prev, cur) -> {
-                if (cur != null && AbstractData.Type.valueOf(cur.getInformationType()) == AbstractData.Type.COMMENT) {
-                    row.setStyle("-fx-background-color: yellowgreen;");
-                    return;
-                }
                 row.setStyle("");
+                if (cur == null)
+                    return;
+                if(cur.getData() instanceof TableSeperator){
+                    row.setStyle("-fx-background-color: "+((TableSeperator)cur.getData()).getColor()+";");
+                }
             });
             return row;
         });
-
-
         this.getColumns().addAll(addressColumn,dataTypeColumn, codeColumn, commentColumn);
     }
 
@@ -66,35 +67,22 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
         private final SimpleStringProperty informationType;
         private final IContainer data;
 
-        //TODO - add color ivar to Data
         public DisplaySet(IContainer in){
             if(in instanceof AbstractData) {
-                if(((AbstractData) in).getDataType() == AbstractData.Type.COMMENT) {
-                    String one = "";
-                    String two = "";
-                    String three = "";
-
-                    if(((AbstractData) in).getComment().length != 3) {
-                        this.comment = new SimpleStringProperty("Comment length for spacer must 4");
-                        this.address = new SimpleStringProperty("");
-                        this.text = new SimpleStringProperty("");
-                        this.informationType = new SimpleStringProperty(((AbstractData) in).getDataType().toString());
-                    }
-                    else {
-                        this.comment = new SimpleStringProperty(((AbstractData) in).getComment()[2]);
-                        this.address = new SimpleStringProperty(((AbstractData) in).getComment()[0]);
-                        this.text = new SimpleStringProperty(((AbstractData) in).getComment()[1]);
-                        this.informationType = new SimpleStringProperty(((AbstractData) in).getDataType().toString());
-                    }
-                }else{
-                    this.address = new SimpleStringProperty(((AbstractData) in).getBeginAddress().toString());
-                    this.text = new SimpleStringProperty(in.toString());
-                    String s = "";
-                    if(((AbstractData) in).getComment() != null && ((AbstractData) in).getComment()[0] != null)
-                        s = ((AbstractData) in).getComment()[0];
-                    this.comment = new SimpleStringProperty(s);
-                    this.informationType = new SimpleStringProperty(((AbstractData) in).getDataType().toString());
-                }
+                this.address = new SimpleStringProperty(((AbstractData) in).getBeginAddress().toString());
+                this.text = new SimpleStringProperty(in.toString());
+                this.comment = new SimpleStringProperty(generateCommentString(((AbstractData) in).getComments()));
+                this.informationType = new SimpleStringProperty(((AbstractData) in).getDataType().toString());
+            }else if(in instanceof TableSeperator) {
+                this.address = new SimpleStringProperty(((TableSeperator) in).getAddressCell());
+                this.text = new SimpleStringProperty(((TableSeperator) in).getcodeCell());
+                this.comment = new SimpleStringProperty(((TableSeperator) in).getcommentCell());
+                this.informationType = new SimpleStringProperty(((TableSeperator) in).gettypeCell());
+            }else if(in instanceof Text) {
+                this.address = new SimpleStringProperty(((Text) in).getBeginAddress().toString());
+                this.text = new SimpleStringProperty(in.toString());
+                this.comment = new SimpleStringProperty(generateCommentString(((Text) in).getComments()));
+                this.informationType = new SimpleStringProperty(((Text) in).getDataType().toString());
             }else{
                 this.address = new SimpleStringProperty("");
                 this.text = new SimpleStringProperty(in.toString());
@@ -102,6 +90,16 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
                 this.informationType = new SimpleStringProperty("");
             }
             this.data = in;
+        }
+
+        private String generateCommentString(HashSet<String> in){
+            if(in == null)
+                return "";
+            String ret = "";
+            for(String s : in){
+                ret+=s+"\n";
+            }
+            return ret;
         }
 
         public String getAddress(){return address.get();}
@@ -127,7 +125,6 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
 
         @Override
         public int compareTo(AbstractData o) {
-
             if(o == null || o.getBeginAddress() == null)
                 return 0;
 
@@ -139,4 +136,6 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
             else return 0;
         }
     }
+
+
 }

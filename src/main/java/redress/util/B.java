@@ -113,7 +113,7 @@ public final class B {
         return DatatypeConverter.parseHexBinary(in.replaceAll("0x",""));
     }
 
-    public static String bytesToString(byte[] in){
+    public static String bytesToByteString(byte[] in){
         return DatatypeConverter.printHexBinary(in);
     }
 
@@ -219,6 +219,12 @@ public final class B {
 
         return ret;
     }
+    public static Range getRangeAtAddress(final byte[] raw, IStructure parent, final AbstractAddress begin, final AbstractAddress end, ByteOrder order){
+        final byte[] rangeAtAddress = getRangeAtAddress(raw, begin, end);
+
+        return new Range(rangeAtAddress,begin,end,parent,order);
+    }
+
 
     public static byte[] mergeBytes(byte[] first, byte[] last){
         byte[] join = new byte[first.length+last.length];
@@ -375,67 +381,4 @@ public final class B {
         }
         return fromMe;
     }
-    public static AbstractData C(String ...comment){
-        Word comm = new Word(new byte[0], AbstractData.Type.COMMENT, ByteOrder.BIG_ENDIAN);
-        comm.setComments(comment);
-        return comm;
-    }
-
-
-//    public static <T extends AbstractAddress> T getEndAddressFromOffset(T beginning, Container offset){
-//
-//        final T ret = (T)beginning.clone();
-//
-//        if(offset.getByteOrder() == ByteOrder.LITTLE_ENDIAN) {
-//            ret.add(offset.flipByteOrder());
-//        }else{
-//            ret.add(offset);
-//        }
-//
-//        return ret;
-//    }
-
-
-
-//    public static byte[] getWordAtAddress(final byte[] raw,final byte[] address){
-//
-//        final byte[] ret = new byte[2];
-//        final int addr = longToInt(bytesToLong(address,ByteOrder.BIG_ENDIAN));
-//
-//        ret[0] = raw[addr];
-//        ret[1] = raw[addr+1];
-//
-//        return ret;
-//    }
-//
-//    public static byte[] getDWordAtAddress(final byte[] raw, final byte[] address){
-//
-//        final byte[] ret = new byte[4];
-//        final int addr = longToInt(bytesToLong(address,ByteOrder.BIG_ENDIAN));
-//
-//        ret[0] = raw[addr];
-//        ret[1] = raw[addr+1];
-//        ret[2] = raw[addr+2];
-//        ret[3] = raw[addr+3];
-//
-//        return ret;
-//    }
-//
-//
-//    public static byte[] getQWordAtAddress(final byte[] raw,final byte[] address){
-//
-//        final byte[] ret = new byte[8];
-//        final int addr = longToInt(bytesToLong(address,ByteOrder.BIG_ENDIAN));
-//
-//        ret[0] = raw[addr];
-//        ret[1] = raw[addr+1];
-//        ret[2] = raw[addr+2];
-//        ret[3] = raw[addr+3];
-//        ret[4] = raw[addr+4];
-//        ret[5] = raw[addr+5];
-//        ret[6] = raw[addr+6];
-//        ret[7] = raw[addr+7];
-//
-//        return ret;
-//    }
 }
