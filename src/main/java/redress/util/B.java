@@ -13,6 +13,9 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by jamesrichardson on 2/10/16.
@@ -20,7 +23,7 @@ import java.util.Arrays;
  * Byte Utils
  */
 public final class B {
-
+    private final static Logger LOGGER = Logger.getLogger(B.class.getName());
     private B(){}
 
     /**
@@ -113,8 +116,21 @@ public final class B {
         return DatatypeConverter.parseHexBinary(in.replaceAll("0x",""));
     }
 
-    public static String bytesToByteString(byte[] in){
+    public static String bytesToHexString(byte[] in){
         return DatatypeConverter.printHexBinary(in);
+    }
+
+    public static LinkedList<String> bytesToPrettyHexString(byte[] in){
+        LinkedList<String> ret = new LinkedList<>();
+
+        for(int i=0;i<in.length;i++){
+            if(i==(in.length-1))
+                ret.add("0x"+bytesToHexString(new byte[]{in[i]}));
+            else
+                ret.add("0x"+bytesToHexString(new byte[]{in[i]})+", ");
+        }
+
+        return ret;
     }
 
     public static boolean equals(final byte[] one,final byte[] two){
@@ -381,4 +397,6 @@ public final class B {
         }
         return fromMe;
     }
+
+
 }

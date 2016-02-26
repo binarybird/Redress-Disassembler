@@ -65,12 +65,17 @@ public abstract class AbstractAddress implements IContainer,Comparable<AbstractA
         B.subtract(this,in);
     }
 
+    public void subtract(int i){
+        QWord w = new QWord(B.intToBytes(i,ByteOrder.BIG_ENDIAN), AbstractData.Type.DATA_NULL,ByteOrder.BIG_ENDIAN);
+        subtract(w);
+    }
+
     public int getIntValue(){
         return B.bytesToInt(container, BYTEORDER);
     }
 
     public String getStringValue(){
-        return B.bytesToByteString(container);
+        return B.bytesToHexString(container);
     }
 
     @Override

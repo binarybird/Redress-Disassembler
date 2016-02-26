@@ -49,8 +49,17 @@ public class ParseSegSec64 {
         section_64.reserved3=B.getDWordAtAddressAndIncrement(in.getRaw(), pointer, section_64,AbstractData.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
         section_64.setEndAddress(pointer.clone());
 
+
+
+
         boolean strings = false;
         String flags = "";
+
+        if(section_64.sectname.value.contains("__cfstring")){
+            setAlignedStringLoader(in, section_64,8);
+            strings=true;
+        }
+
         if(Loader.SECTION_TYPE.and(section_64.flags)) {
             flags+="SECTION_TYPE, ";
         } if(Loader.SECTION_ATTRIBUTES.and(section_64.flags)){
@@ -65,13 +74,16 @@ public class ParseSegSec64 {
             strings=true;
         } if(Loader.S_4BYTE_LITERALS.and(section_64.flags)){
             flags+="S_4BYTE_LITERALS, ";
-
+            setAlignedStringLoader(in,section_64,4);
+            strings=true;
         } if(Loader.S_8BYTE_LITERALS.and(section_64.flags)){
             flags+="S_8BYTE_LITERALS, ";
-
+            setAlignedStringLoader(in,section_64,8);
+            strings=true;
         } if(Loader.S_LITERAL_POINTERS.and(section_64.flags)){
             flags+="S_LITERAL_POINTERS, ";
-
+            setCStringLoader(in, section_64);
+            strings=true;
         } if(Loader.S_NON_LAZY_SYMBOL_POINTERS.and(section_64.flags)){
             flags+="S_NON_LAZY_SYMBOL_POINTERS, ";
         } if(Loader.S_LAZY_SYMBOL_POINTERS.and(section_64.flags)){
@@ -144,6 +156,27 @@ public class ParseSegSec64 {
         }
 
         return section_64;
+    }
+
+    private static void setAlignedStringLoader(MachO64 in, Loader.section_64 section_64,int align) {
+        section_64.setLoader(abi->{
+            final LinkedList<IContainer> ret = new LinkedList<>();
+            final Address64 begin64 = B.qWordToAddr64(section_64.addr);
+            final Address64 end64 = (Address64)B.qWordToAddr64(section_64.size);
+            end64.add(begin64);
+            begin64.subtract(new Address64("0x0000000100000000"));
+            end64.subtract(new Address64("0x0000000100000000"));
+
+            final int length = end64.getIntValue() - begin64.getIntValue();
+
+            Range range = B.getRangeAtAddress(in.getRaw(),section_64,begin64,end64, ByteOrder.LITTLE_ENDIAN);
+
+            ret.add(new TableSeperator("Seg: "+section_64.segname.value,"Sec: "+section_64.sectname.value,"Procedure Start, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+            ret.addAll(T.deCompileStringsAligned(align,range, in));
+            ret.add(new TableSeperator("","","Procedure End, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+
+            return ret;
+        });
     }
 
     private static void setCStringLoader(MachO64 in, Loader.section_64 section_64) {

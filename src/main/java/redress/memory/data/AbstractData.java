@@ -53,6 +53,10 @@ public abstract class AbstractData implements IContainer, IAddressable {
         this.parent = parent;
     }
 
+    public IStructure getParent(){
+        return parent;
+    }
+
     public byte[] getContainer(){return container;}
 
     public ByteOrder getByteOrder(){return BYTEORDER;}
@@ -91,7 +95,7 @@ public abstract class AbstractData implements IContainer, IAddressable {
     }
 
     public String getStringValue(){
-        return B.bytesToByteString(container);
+        return B.bytesToHexString(container);
     }
 
     public long getLongValue(){

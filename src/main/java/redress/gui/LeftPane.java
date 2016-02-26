@@ -41,7 +41,7 @@ public class LeftPane extends Pane {
 //        byte[] range = B.getRangeAtAddress(redress.abi.getRaw(),start,end);
 //
 //        System.out.println("START LONG "+addr);
-//        System.out.println("START BYTE "+B.bytesToByteString(B.byteToBytes(redress.abi.getRaw()[(int)addr])));
+//        System.out.println("START BYTE "+B.bytesToHexString(B.byteToBytes(redress.abi.getRaw()[(int)addr])));
 //
 //
 //

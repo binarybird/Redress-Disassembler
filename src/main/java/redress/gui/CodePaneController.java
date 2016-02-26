@@ -28,10 +28,10 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
     public CodePaneController(){
         this.widthProperty().addListener(c->{
             final double w = this.getWidth();
-            addressColumn.setPrefWidth(w/4);
-            dataTypeColumn.setPrefWidth(w/4);
-            codeColumn.setPrefWidth(w/4);
-            commentColumn.setPrefWidth(w / 4);
+            addressColumn.setPrefWidth(w/6);
+            dataTypeColumn.setPrefWidth(w/6);
+            codeColumn.setPrefWidth(w/6);
+            commentColumn.setPrefWidth(w / 2);
         });
         addressColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("address"));
         dataTypeColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("informationType"));
