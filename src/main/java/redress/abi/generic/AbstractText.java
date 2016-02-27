@@ -4,6 +4,8 @@ import capstone.Capstone;
 import redress.abi.generic.visitors.AbstractStructureVisitor;
 import redress.memory.address.AbstractAddress;
 import redress.memory.data.AbstractData;
+import redress.memory.data.QWord;
+import redress.util.B;
 
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -66,6 +68,24 @@ public abstract class AbstractText implements IStructure, IContainer {
     @Override
     public byte[] getContainer(){
         return container;
+    }
+
+    public void add(IContainer in){
+        B.add(this, in);
+    }
+
+    public void add(int i){
+        QWord w = new QWord(B.intToBytes(i,ByteOrder.BIG_ENDIAN), AbstractData.Type.DATA_NULL,ByteOrder.BIG_ENDIAN);
+        add(w);
+    }
+
+    public void subtract(IContainer in){
+        B.subtract(this,in);
+    }
+
+    public void subtract(int i){
+        QWord w = new QWord(B.intToBytes(i,ByteOrder.BIG_ENDIAN), AbstractData.Type.DATA_NULL,ByteOrder.BIG_ENDIAN);
+        subtract(w);
     }
 
     public void setByteOrder(ByteOrder in){

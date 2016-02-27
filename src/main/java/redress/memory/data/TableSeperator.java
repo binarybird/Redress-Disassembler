@@ -65,4 +65,24 @@ public class TableSeperator implements IContainer {
     public IContainer clone() {
         return null;
     }
+
+    @Override
+    public void add(IContainer i) {
+
+    }
+
+    @Override
+    public void add(int i) {
+
+    }
+
+    @Override
+    public void subtract(IContainer i) {
+
+    }
+
+    @Override
+    public void subtract(int i) {
+
+    }
 }

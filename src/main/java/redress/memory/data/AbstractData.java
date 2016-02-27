@@ -78,6 +78,11 @@ public abstract class AbstractData implements IContainer, IAddressable {
         B.subtract(this,in);
     }
 
+    public void subtract(int i){
+        QWord w = new QWord(B.intToBytes(i,ByteOrder.BIG_ENDIAN), AbstractData.Type.DATA_NULL,ByteOrder.BIG_ENDIAN);
+        subtract(w);
+    }
+
     public void setDataType(Type type){
         this.type = type;
     }
