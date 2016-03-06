@@ -1,5 +1,7 @@
 package redress.memory.address;
 
+import redress.abi.generic.IContainer;
+import redress.abi.generic.IStructure;
 import redress.util.B;
 
 /**
@@ -34,6 +36,8 @@ public class Address32 extends AbstractAddress {
             container[i]=tmp[i];
         }
     }
+
+
 
     @Override
     public Address32 flipByteOrder() {

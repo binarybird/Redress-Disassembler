@@ -1,7 +1,8 @@
 package redress.abi.mach;
 
 import redress.abi.generic.*;
-import redress.memory.data.TableSeperator;
+import redress.abi.generic.visitors.AbstractContainerVisitor;
+import redress.memory.data.view.TableSeperator;
 import redress.memory.data.*;
 
 import java.nio.ByteOrder;
@@ -83,6 +84,14 @@ public interface Loader {
         @Override
         public AbstractData clone() {
             return null;
+        }
+
+        @Override
+        public void accept(AbstractContainerVisitor visitor) {
+            if(visitor.preVisit())
+                visitor.visit(this);
+            visitor.postVisit();
+            nextSibling.accept(visitor);
         }
     }
 

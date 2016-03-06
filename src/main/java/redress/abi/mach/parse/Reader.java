@@ -1,6 +1,7 @@
 package redress.abi.mach.parse;
 
 
+import org.apache.commons.io.IOUtils;
 import redress.memory.address.Address64;
 import redress.memory.data.DWord;
 import redress.abi.mach.Loader;
@@ -15,6 +16,7 @@ import redress.util.B;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,24 +32,22 @@ public class Reader {
 
     public static Mach Read(final File in) throws Exception{
 
-        long fileLengthInBytes = -1;
-        if(in.exists()){
-            fileLengthInBytes = in.length();
-        }
-
-        if(fileLengthInBytes == -1){
-            LOGGER.log(Level.SEVERE,"Unable to get size of binary!");
-            throw new IOException("Unable to get binary size.");
-        }
-
-        final byte[] binary = new byte[java.lang.Math.toIntExact(fileLengthInBytes)];
-
-        LOGGER.log(Level.INFO,"Reading binary: {0}, size: {1}bytes",new Object[] {in.getAbsolutePath(),fileLengthInBytes});
-
         final FileInputStream fis = new FileInputStream(in);
-        fis.read(binary);
 
-        final DWord dWordAtAddress = B.getDWordAtAddress(binary, new Address64("0x0000000000000000"), null,AbstractData.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
+        return Read(fis);
+    }
+
+    public static Mach Read(final InputStream inputStream) throws Exception{
+
+        LOGGER.log(Level.INFO,"Reading binary");
+
+        final byte[] binary = IOUtils.toByteArray(inputStream);
+
+        return getMach(binary);
+    }
+
+    private static Mach getMach(byte[] binary) throws Exception {
+        final DWord dWordAtAddress = B.getDWordAtAddress(binary, new Address64("0x0000000000000000"), null, AbstractData.Type.DATA_BYTE, ByteOrder.LITTLE_ENDIAN);
 
         if(dWordAtAddress == null)
             return null;
@@ -56,10 +56,10 @@ public class Reader {
 
         if(Loader.MH_MAGIC_64.equals(dWordAtAddress) || Loader.MH_CIGAM_64.equals(dWordAtAddress)){
             ret = new MachO64(binary);
-            MachParser64.parse((MachO64)ret);
+            MachParser64.parse((MachO64) ret);
         } else if(Loader.MH_MAGIC.equals(dWordAtAddress) || Loader.MH_CIGAM.equals(dWordAtAddress)){
             ret = new MachO32(binary);
-            MachParser32.parse((MachO32)ret);
+            MachParser32.parse((MachO32) ret);
         }
 
         return ret;

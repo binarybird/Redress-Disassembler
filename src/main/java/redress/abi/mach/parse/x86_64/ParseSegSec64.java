@@ -1,7 +1,8 @@
 package redress.abi.mach.parse.x86_64;
 
 import redress.abi.generic.IContainer;
-import redress.memory.data.TableSeperator;
+import redress.memory.data.view.Color;
+import redress.memory.data.view.TableSeperator;
 import redress.memory.address.Address64;
 import redress.memory.data.AbstractData;
 import redress.abi.generic.IStructure;
@@ -171,9 +172,9 @@ public class ParseSegSec64 {
 
             Range range = B.getRangeAtAddress(in.getRaw(),section_64,begin64,end64, ByteOrder.LITTLE_ENDIAN);
 
-            ret.add(new TableSeperator("Seg: "+section_64.segname.value,"Sec: "+section_64.sectname.value,"Procedure Start, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+            ret.add(new TableSeperator("Seg: "+section_64.segname.value,"Sec: "+section_64.sectname.value,"Procedure Start, Length: " + length + " bytes","",Color.rgba(255,28,0,0.43)));
             ret.addAll(T.deCompileStringsAligned(align,range, in));
-            ret.add(new TableSeperator("","","Procedure End, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+            ret.add(new TableSeperator("","","Procedure End, Length: " + length + " bytes","", Color.rgba(255,28,0,0.43)));
 
             return ret;
         });
@@ -192,9 +193,9 @@ public class ParseSegSec64 {
 
             Range range = B.getRangeAtAddress(in.getRaw(),section_64,begin64,end64, ByteOrder.LITTLE_ENDIAN);
 
-            ret.add(new TableSeperator("Seg: "+section_64.segname.value,"Sec: "+section_64.sectname.value,"Procedure Start, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+            ret.add(new TableSeperator("Seg: "+section_64.segname.value,"Sec: "+section_64.sectname.value,"Procedure Start, Length: " + length + " bytes","",Color.rgba(255,28,0,0.43)));
             ret.addAll(T.deCompileCStrings(range, in));
-            ret.add(new TableSeperator("","","Procedure End, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+            ret.add(new TableSeperator("","","Procedure End, Length: " + length + " bytes","",Color.rgba(255,28,0,0.43)));
 
             return ret;
         });
@@ -213,9 +214,9 @@ public class ParseSegSec64 {
 
             Range range = B.getRangeAtAddress(in.getRaw(),section_64,begin64,end64, ByteOrder.LITTLE_ENDIAN);
 
-            ret.add(new TableSeperator("Seg: "+section_64.segname.value,"Sec: "+section_64.sectname.value,"Procedure Start, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+            ret.add(new TableSeperator("Seg: "+section_64.segname.value,"Sec: "+section_64.sectname.value,"Procedure Start, Length: " + length + " bytes","",Color.rgba(255,28,0,0.43)));
             ret.addAll(T.deCompileText(range, in));
-            ret.add(new TableSeperator("","","Procedure End, Length: " + length + " bytes","","rgba(255, 28, 0, 0.43)"));
+            ret.add(new TableSeperator("","","Procedure End, Length: " + length + " bytes","",Color.rgba(255,28,0,0.43)));
 
             return ret;
         });

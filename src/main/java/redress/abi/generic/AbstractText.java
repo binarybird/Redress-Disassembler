@@ -1,6 +1,7 @@
 package redress.abi.generic;
 
 import capstone.Capstone;
+import redress.abi.generic.visitors.AbstractContainerVisitor;
 import redress.abi.generic.visitors.AbstractStructureVisitor;
 import redress.memory.address.AbstractAddress;
 import redress.memory.data.AbstractData;
@@ -8,17 +9,18 @@ import redress.memory.data.QWord;
 import redress.util.B;
 
 import java.nio.ByteOrder;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
  * Created by jamesrichardson on 2/23/16.
  */
-public abstract class AbstractText implements IStructure, IContainer {
+public abstract class AbstractText implements IContainer {
 
     protected final LinkedList<IStructure> children = new LinkedList<>();
     protected final IStructure parent;
+    protected IContainer previousSibling;
+    protected IContainer nextSibling;
     protected AbstractAddress beginAddress;
     protected AbstractAddress endAddress;
     protected final HashSet<String> comment = new HashSet<>();
@@ -38,6 +40,24 @@ public abstract class AbstractText implements IStructure, IContainer {
         for(int i=0;i<content.length;i++)
             this.container[i] = content[i];
         this.instructionStringValue = builtInstruction;
+    }
+
+    public void setNextSibling(IContainer c){
+        this.nextSibling = c;
+    }
+
+    @Override
+    public IContainer getNextSibling() {
+        return nextSibling;
+    }
+
+    public void setPreviousSibling(IContainer c){
+        this.previousSibling = c;
+    }
+
+    @Override
+    public IContainer getPreviousSibling() {
+        return previousSibling;
     }
 
     public AbstractData.Type getDataType(){
@@ -106,57 +126,39 @@ public abstract class AbstractText implements IStructure, IContainer {
     public abstract AbstractText clone();
 
     @Override
-    public void accept(AbstractStructureVisitor visitor) {
-        if(visitor.preVisit())
-            visitor.visit(this);
-        visitor.postVisit();
-        for(IStructure child : getChildren()){
-            child.accept(visitor);
-        }
-    }
-
-    @Override
     public IStructure getParent() {
         return parent;
     }
 
-    @Override
     public LinkedList<IStructure> getChildren() {
         return children;
     }
 
-    @Override
     public AbstractAddress getBeginAddress() {
         return beginAddress;
     }
 
-    @Override
     public AbstractAddress getEndAddress() {
         return endAddress;
     }
 
-    @Override
     public void setBeginAddress(AbstractAddress in){
         this.beginAddress = in;
     }
 
-    @Override
     public void setEndAddress(AbstractAddress in){
         this.endAddress = in;
     }
 
-    @Override
     public void addComments(String... comment){
         for(String s : comment)
             this.comment.add(s);
     }
 
-    @Override
     public HashSet<String> getComments(){
         return comment;
     }
 
-    @Override
     public int compareTo(IAddressable o) {
         if(o == null)
             return 0;

@@ -50,12 +50,7 @@ public class DataCollectVisitor extends AbstractStructureVisitor {
             allData.addAll(in.getStructureData());
         }
     }
-    @Override
-    public void visit(AbstractText in){
-        if(in.getStructureData() != null) {
-            allData.addAll(in.getStructureData());
-        }
-    }
+
     @Override
     public void visit(AbstractTable in){
         if(in.getStructureData() != null) {

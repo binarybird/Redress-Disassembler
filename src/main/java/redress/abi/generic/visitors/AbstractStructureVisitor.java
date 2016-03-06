@@ -16,4 +16,6 @@ public abstract class AbstractStructureVisitor implements IVisitor{
     public void visit(AbstractABI in){}
     public void visit(AbstractText in){}
     public void visit(AbstractTable in){}
+
+
 }

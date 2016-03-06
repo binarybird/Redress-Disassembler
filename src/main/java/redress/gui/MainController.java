@@ -30,7 +30,7 @@ public class MainController extends AnchorPane {
 
     private final static Logger LOGGER = Logger.getLogger(MainController.class.getName());
     private static MainController mainController;
-    private static final Image dockImage = new Image(DockFX.class.getResource("docknode.png").toExternalForm());
+
     private final SimpleBooleanProperty loadedProperty = new SimpleBooleanProperty(false);
 
     private RightPane rp;
@@ -74,18 +74,20 @@ public class MainController extends AnchorPane {
         codePaneController= new CodePaneController();
         menuBarController = new MenuBarController(menuBar);
 
-        codePaneDock = new DockNode(codePaneController,CODEWINDOW_NAME,new ImageView(dockImage));
+        codePaneDock = new DockNode(codePaneController,CODEWINDOW_NAME);
         codePaneDock.setDockTitleBar(null);
         codePaneDock.setPrefSize(300, 100);
         codePaneDock.dock(dockPane, DockPos.BOTTOM);
 
-        rp = new RightPane();
+
         lp = new LeftPane();
 
-        DockNode lpdn = new DockNode(lp);
-        lpdn.setPrefSize(300, 100);
-        lpdn.dock(dockPane, DockPos.LEFT);
+        lp.getDockNode().dock(dockPane, DockPos.LEFT);
+//        dockPane.widthProperty().addListener((o,w,a)->{System.out.println("DockPane: "+a);});
+//        lp.widthProperty().addListener((o,w,a)->{System.out.println("LeftPane : "+a);});
+//        lp.getDockNode().widthProperty().addListener((o,w,a)->{System.out.println("DockNode: "+a);});
 
+        rp = new RightPane();
         DockNode rpdn = new DockNode(rp);
         rpdn.setPrefSize(300, 100);
         rpdn.dock(dockPane, DockPos.RIGHT);

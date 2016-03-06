@@ -1,10 +1,12 @@
-package redress.memory.data;
+package redress.memory.data.view;
 
 /**
  * Created by jamesrichardson on 2/25/16.
  */
 
 import redress.abi.generic.IContainer;
+import redress.abi.generic.IStructure;
+import redress.abi.generic.visitors.AbstractContainerVisitor;
 
 import java.nio.ByteOrder;
 
@@ -12,9 +14,10 @@ import java.nio.ByteOrder;
  * Created by jamesrichardson on 2/25/16.
  */
 public class TableSeperator implements IContainer {
-    private final String addressCell,typeCell,codeCell,commentCell,color;
+    private final String addressCell,typeCell,codeCell,commentCell;
+    private Color color;
 
-    public TableSeperator(String addressCell,String typeCell,String codeCell,String commentCell,String color){
+    public TableSeperator(String addressCell,String typeCell,String codeCell,String commentCell,Color color){
         this.addressCell = addressCell;
         this.typeCell=typeCell;
         this.codeCell=codeCell;
@@ -23,7 +26,7 @@ public class TableSeperator implements IContainer {
     }
 
     public TableSeperator(String addressCell,String typeCell,String codeCell,String commentCell){
-        this(addressCell,typeCell,codeCell,commentCell,"rgba(104, 255, 0, 0.43)");
+        this(addressCell,typeCell,codeCell,commentCell,Color.rgba());
     }
 
     public String getAddressCell(){
@@ -42,7 +45,7 @@ public class TableSeperator implements IContainer {
         return commentCell;
     }
 
-    public String getColor(){
+    public Color getColor(){
         return color;
     }
 
@@ -54,6 +57,21 @@ public class TableSeperator implements IContainer {
     @Override
     public ByteOrder getByteOrder() {
         return ByteOrder.BIG_ENDIAN;
+    }
+
+    @Override
+    public IContainer getNextSibling() {
+        return null;
+    }
+
+    @Override
+    public IContainer getPreviousSibling() {
+        return null;
+    }
+
+    @Override
+    public IStructure getParent() {
+        return null;
     }
 
     @Override
@@ -83,6 +101,11 @@ public class TableSeperator implements IContainer {
 
     @Override
     public void subtract(int i) {
+
+    }
+
+    @Override
+    public void accept(AbstractContainerVisitor visitor) {
 
     }
 }

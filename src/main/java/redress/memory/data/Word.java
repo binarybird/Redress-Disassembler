@@ -1,13 +1,12 @@
 package redress.memory.data;
 
-import redress.abi.generic.IContainer;
 import redress.abi.generic.IStructure;
+import redress.abi.generic.visitors.AbstractContainerVisitor;
 import redress.memory.address.AbstractAddress;
 import redress.memory.address.Address32;
 import redress.util.B;
 
 import java.nio.ByteOrder;
-import java.util.LinkedList;
 
 /**
  * Created by jamesrichardson on 2/11/16.
@@ -53,6 +52,14 @@ public class Word extends AbstractData {
         for(int i=0;i<BYTES;i++){
             container[i]=tmp[i];
         }
+    }
+
+    @Override
+    public void accept(AbstractContainerVisitor visitor) {
+        if(visitor.preVisit())
+            visitor.visit(this);
+        visitor.postVisit();
+        nextSibling.accept(visitor);
     }
 
     public void setDataType(Type in){

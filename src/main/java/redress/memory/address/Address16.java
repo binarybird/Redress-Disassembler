@@ -1,5 +1,6 @@
 package redress.memory.address;
 
+import redress.abi.generic.visitors.AbstractContainerVisitor;
 import redress.util.B;
 
 /**
@@ -46,6 +47,7 @@ public class Address16 extends AbstractAddress {
     public Address16 clone() {
         return new Address16(container);
     }
+
 
 
 }

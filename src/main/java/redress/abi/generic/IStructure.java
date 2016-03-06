@@ -12,7 +12,7 @@ import java.util.LinkedList;
  * See redress.abi.mach.Loader
  *
  */
-public interface IStructure extends IAddressable, IVisitable<AbstractStructureVisitor>{
+public interface IStructure extends IAddressable, IVisitable<AbstractStructureVisitor> {
     public IStructure getParent();
     public LinkedList<IStructure> getChildren();
     public LinkedList<IContainer> getStructureData();

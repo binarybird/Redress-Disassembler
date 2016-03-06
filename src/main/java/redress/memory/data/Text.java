@@ -2,6 +2,7 @@ package redress.memory.data;
 
 import capstone.Capstone;
 import redress.abi.generic.*;
+import redress.abi.generic.visitors.AbstractContainerVisitor;
 
 import java.util.LinkedList;
 
@@ -17,8 +18,11 @@ public class Text extends AbstractText {
     }
 
     @Override
-    public LinkedList<IContainer> getStructureData() {
-        return new LinkedList<>();
+    public void accept(AbstractContainerVisitor visitor) {
+        if(visitor.preVisit())
+            visitor.visit(this);
+        visitor.postVisit();
+        nextSibling.accept(visitor);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package redress.memory.address;
 
 import redress.abi.generic.IContainer;
+import redress.abi.generic.IStructure;
+import redress.abi.generic.visitors.AbstractContainerVisitor;
 import redress.memory.data.AbstractData;
 import redress.memory.data.QWord;
 import redress.util.B;
@@ -22,7 +24,10 @@ public abstract class AbstractAddress implements IContainer,Comparable<AbstractA
         this.BYTEORDER = ByteOrder.BIG_ENDIAN;
         container = new byte[BYTES];
     }
+    @Override
+    public void accept(AbstractContainerVisitor visitor) {
 
+    }
     @Override
     public abstract AbstractAddress clone();
 
@@ -115,6 +120,21 @@ public abstract class AbstractAddress implements IContainer,Comparable<AbstractA
             }
         }
         return true;
+    }
+
+    @Override
+    public IContainer getNextSibling() {
+        return null;
+    }
+
+    @Override
+    public IContainer getPreviousSibling() {
+        return null;
+    }
+
+    @Override
+    public IStructure getParent() {
+        return null;
     }
 
     @Override

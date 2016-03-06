@@ -10,14 +10,13 @@ import redress.util.B;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 /**
  * Created by jamesrichardson on 2/16/16.
  *
  * A single data item
  */
-public abstract class AbstractData implements IContainer, IAddressable {
+public abstract class AbstractData implements IContainer, IAddressable{
 
     public enum Type{
         DATA_NULL,
@@ -34,8 +33,9 @@ public abstract class AbstractData implements IContainer, IAddressable {
         COMMENT
     }
 
-    protected final LinkedList<IStructure> children = new LinkedList<>();
     protected final IStructure parent;
+    protected IContainer previousSibling;
+    protected IContainer nextSibling;
     protected AbstractAddress beginAddress;
     protected AbstractAddress endAddress;
     protected final byte[] container;
@@ -45,6 +45,7 @@ public abstract class AbstractData implements IContainer, IAddressable {
     protected Type type = Type.DATA_NULL;
     protected final HashSet<String> comment = new HashSet<>();
 
+
     protected AbstractData(int bytes, IStructure parent, Type type, ByteOrder order){
         BYTES=bytes;
         BYTEORDER=order;
@@ -53,8 +54,27 @@ public abstract class AbstractData implements IContainer, IAddressable {
         this.parent = parent;
     }
 
+    @Override
     public IStructure getParent(){
         return parent;
+    }
+
+    public void setNextSibling(IContainer c){
+        this.nextSibling = c;
+    }
+
+    @Override
+    public IContainer getNextSibling() {
+        return nextSibling;
+    }
+
+    public void setPreviousSibling(IContainer c){
+        this.previousSibling = c;
+    }
+
+    @Override
+    public IContainer getPreviousSibling() {
+        return previousSibling;
     }
 
     public byte[] getContainer(){return container;}

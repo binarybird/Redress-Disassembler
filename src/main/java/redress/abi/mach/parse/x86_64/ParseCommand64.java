@@ -58,7 +58,8 @@ public class ParseCommand64 {
                 Loader.load_command load_command = new Loader.load_command(parent);
 
                 load_command.setBeginAddress(pointer.clone());
-                LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                LOGGER.log(Level.SEVERE, "\tNOT YET IMPLEMENTED");
+                pointer.add(8);
                 load_command.setEndAddress(pointer.clone());
                 load_command.addComments("LC_LOAD_UPWARD_DYLIB");
 
@@ -70,6 +71,7 @@ public class ParseCommand64 {
 
                 version_min_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                pointer.add(16);
                 version_min_command.setEndAddress(pointer.clone());
                 version_min_command.addComments("LC_VERSION_MIN_IPHONEOS");
 
@@ -95,6 +97,7 @@ public class ParseCommand64 {
 
                 dyld_info_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                pointer.add(48);
                 dyld_info_command.setEndAddress(pointer.clone());
                 dyld_info_command.addComments("LC_DYLD_ENVIRONMENT");
 
@@ -176,6 +179,7 @@ public class ParseCommand64 {
 
                 load_command.setBeginAddress(pointer.clone());
                 LOGGER.log(Level.SEVERE,"\tNOT YET IMPLEMENTED");
+                pointer.add(8);
                 load_command.setEndAddress(pointer.clone());
                 load_command.addComments("LC_REQ_DYLD");
 

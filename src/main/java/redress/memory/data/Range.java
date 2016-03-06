@@ -1,12 +1,11 @@
 package redress.memory.data;
 
-import redress.abi.generic.IContainer;
 import redress.abi.generic.IStructure;
+import redress.abi.generic.visitors.AbstractContainerVisitor;
 import redress.memory.address.AbstractAddress;
 import redress.util.B;
 
 import java.nio.ByteOrder;
-import java.util.LinkedList;
 
 /**
  * Created by jamesrichardson on 2/16/16.
@@ -28,6 +27,14 @@ public class Range extends AbstractData {
         for(int i=0;i<in.length;i++){
             container[i]=in[i];
         }
+    }
+
+    @Override
+    public void accept(AbstractContainerVisitor visitor) {
+        if(visitor.preVisit())
+            visitor.visit(this);
+        visitor.postVisit();
+        nextSibling.accept(visitor);
     }
 
     @Override

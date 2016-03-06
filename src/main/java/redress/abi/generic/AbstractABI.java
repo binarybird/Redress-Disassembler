@@ -12,7 +12,7 @@ import java.util.LinkedList;
 /**
  * Created by jamesrichardson on 2/10/16.
  */
-public abstract class AbstractABI implements IStructure{
+public abstract class AbstractABI implements IStructure {
 
     protected AbstractABI(byte[] raw) {
         this.raw=raw;

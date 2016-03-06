@@ -10,6 +10,9 @@ import javafx.stage.FileChooser;
 import redress.abi.mach.parse.Reader;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -23,6 +26,7 @@ public class MenuBarController {
     public static final String MENU_HELP = "Help";
     public static final String MENU_WINDOW = "Window";
     public static final String OPEN = "Open...";
+    public static final String OPEN_TEST = "Open Test Bin";
     public static final String SAVE = "Save...";
     public static final String PREFERENCES = "Preferences...";
     public static final String QUIT = "Quit";
@@ -38,6 +42,7 @@ public class MenuBarController {
     private final Menu helpMenu = new Menu(MENU_HELP);
     private final Menu windowMenu = new Menu(MENU_WINDOW);
     private final MenuItem openMenuItem = new MenuItem(OPEN);
+    private final MenuItem openTestMenuItem = new MenuItem(OPEN_TEST);
     private final MenuItem saveMenuItem = new MenuItem(SAVE);
     private final MenuItem preferencesMenuItem = new MenuItem(PREFERENCES);
     private final MenuItem quitMenuItem = new MenuItem(QUIT);
@@ -55,7 +60,7 @@ public class MenuBarController {
         initWindowMenu();
         initHelpMenu();
 
-        fileMenu.getItems().addAll(openMenuItem,saveMenuItem,preferencesMenuItem,quitMenuItem);
+        fileMenu.getItems().addAll(openTestMenuItem,openMenuItem,saveMenuItem,preferencesMenuItem,quitMenuItem);
         editMenu.getItems().addAll(deleteMenuItem);
         windowMenu.getItems().addAll(codeWindowMenuItem,leftWindowMenuItem,rightWindowMenuItem);
         helpMenu.getItems().addAll(aboutMenuItem);
@@ -64,31 +69,46 @@ public class MenuBarController {
 
     private void initFileMenu(){
         openMenuItem.setAccelerator(KeyCombination.keyCombination(KeyCombination.META_DOWN+"+o"));
-        openMenuItem.setOnAction((ae)->{
+        openMenuItem.setOnAction((ae) -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Binary");
-
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            //File toOpen = fileChooser.showOpenDialog(MainController.getSharedMainController().getPrimaryStage());
-
-            File toOpen = new File(MenuBarController.class.getResource("mach_bin.out").getPath());
-
-            if(toOpen == null)
-                return;
-
-            AbstractABI read = null;
+            InputStream resourceAsStream = null;
             try {
-                read = Reader.Read(toOpen);
+                resourceAsStream = new FileInputStream(fileChooser.showOpenDialog(MainController.getSharedMainController().getPrimaryStage()));
             }catch(Exception e){
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE,"Unable to open file: "+e);
             }
-
-            if(read == null)
-                return;
-
-            MainController.getSharedMainController().setABI(read);
+            openStream(resourceAsStream);
+        });
+        openTestMenuItem.setAccelerator(KeyCombination.keyCombination(KeyCombination.META_DOWN+"+"+KeyCombination.SHIFT_ANY+"+o"));
+        openTestMenuItem.setOnAction((ae)->{
+            final InputStream resourceAsStream = MenuBarController.class.getResourceAsStream("mach_bin.out");
+            openStream(resourceAsStream);
         });
     }
+
+    private void openStream(final InputStream stream){
+        if (stream == null) {
+            LOGGER.log(Level.SEVERE,"Unable to open file!");
+            return;
+        }
+
+        AbstractABI read = null;
+        try {
+            read = Reader.Read(stream);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        if(read == null){
+            LOGGER.log(Level.SEVERE,"Unable to parse ABI!");
+            return;
+        }
+
+        MainController.getSharedMainController().setABI(read);
+    }
+
     private void initEditMenu(){
 
     }

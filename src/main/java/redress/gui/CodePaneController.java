@@ -10,7 +10,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import redress.memory.data.Text;
-import redress.memory.data.TableSeperator;
+import redress.memory.data.view.TableSeperator;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -45,7 +45,7 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
                 if (cur == null)
                     return;
                 if(cur.getData() instanceof TableSeperator){
-                    row.setStyle("-fx-background-color: "+((TableSeperator)cur.getData()).getColor()+";");
+                    row.setStyle("-fx-background-color: "+((TableSeperator)cur.getData()).getColor());
                 }
             });
             return row;
