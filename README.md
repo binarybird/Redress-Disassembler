@@ -11,9 +11,13 @@ Heres a screenshot of the working prototype. It is able to read and decompile ba
 
 
 #####To Build via CLI:  
-    Linux/OSX: Install maven. Run the "run.sh" shell script  
-    Windows: Comming soon  
-
+    Linux/OSX: Install maven. Run the scripts/build.sh shell script  
+    Windows: Install maven. Run the scripts/build.bat batch file  
+    
+#####To Run via CLI:
+    Linux/OSX: Build the project first. Run the scripts/run.sh shell script
+    Windows: Build the project first. Run the scripts/run.bat batch file    
+    
 #####To Build via IDE:  
     All: Import Redress as a maven project. Add lib/dockfx-0.1-SNAPSHOT.jar as a project dependency.  
 
