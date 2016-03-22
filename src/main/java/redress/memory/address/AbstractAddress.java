@@ -8,6 +8,7 @@ import redress.memory.data.QWord;
 import redress.util.B;
 
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  * Created by jamesrichardson on 2/11/16.
@@ -120,6 +121,14 @@ public abstract class AbstractAddress implements IContainer,Comparable<AbstractA
             }
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.BYTES;
+        result = 31 * result + (this.BYTEORDER != null ? this.BYTEORDER.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(this.container);
+        return result;
     }
 
     @Override

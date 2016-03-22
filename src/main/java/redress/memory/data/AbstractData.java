@@ -9,6 +9,7 @@ import redress.util.B;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -175,6 +176,22 @@ public abstract class AbstractData implements IContainer, IAddressable{
         if(!(o instanceof AbstractData))
             return false;
         return equals((AbstractData) o, false);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.parent != null ? this.parent.hashCode() : 0;
+        result = 31 * result + (this.previousSibling != null ? this.previousSibling.hashCode() : 0);
+        result = 31 * result + (this.nextSibling != null ? this.nextSibling.hashCode() : 0);
+        result = 31 * result + (this.beginAddress != null ? this.beginAddress.hashCode() : 0);
+        result = 31 * result + (this.endAddress != null ? this.endAddress.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(this.container);
+        result = 31 * result + (this.BYTEORDER != null ? this.BYTEORDER.hashCode() : 0);
+        result = 31 * result + this.BYTES;
+        result = 31 * result + (this.userData != null ? this.userData.hashCode() : 0);
+        result = 31 * result + (this.type != null ? this.type.hashCode() : 0);
+        result = 31 * result + (this.comment != null ? this.comment.hashCode() : 0);
+        return result;
     }
 
     public boolean and(IContainer in){
