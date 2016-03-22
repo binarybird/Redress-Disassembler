@@ -135,7 +135,7 @@ public interface Loader {
                     " * The 32-bit mach header appears at the very beginning of the object file for\n" +
                     " * 32-bit architectures.\n" +
                     "  */","","");
-            return new LinkedList<IContainer>(Arrays.asList(s,s,magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags));
+            return new LinkedList<>(Arrays.asList(s, s, magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags));
         }
 
         @Override
@@ -196,7 +196,7 @@ public interface Loader {
                     " * The 64-bit mach header appears at the very beginning of object files for\n" +
                     " * 64-bit architectures.\n" +
                     " */");
-            return new LinkedList<IContainer>(Arrays.asList(s,magic,cputype,cpusubtype,filetype,ncmds,sizeofcmds,flags,reserved));
+            return new LinkedList<>(Arrays.asList(s,magic,cputype,cpusubtype,filetype,ncmds,sizeofcmds,flags,reserved));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -363,7 +363,7 @@ public interface Loader {
 
                 TableSeperator s = new TableSeperator("load_command","","","");
 
-                return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+                return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
 
         }
         @Override
@@ -481,7 +481,7 @@ public interface Loader {
                 once=false;
             }
             TableSeperator s = new TableSeperator("lc_str","","","");
-            return new LinkedList<IContainer>(Arrays.asList(s,offset, ptr));
+            return new LinkedList<>(Arrays.asList(s, offset, ptr));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -616,7 +616,7 @@ public interface Loader {
             }
             TableSeperator s = new TableSeperator("segment_command_64","","","");
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, segname, vmaddr, vmsize, maxprot, initprot, nsects, flags));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize, segname, vmaddr, vmsize, maxprot, initprot, nsects, flags));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -717,7 +717,7 @@ public interface Loader {
             }
             TableSeperator s = new TableSeperator("section","","","");
 
-            return new LinkedList<IContainer>(Arrays.asList(s,sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2));
+            return new LinkedList<>(Arrays.asList(s, sectname, segname, addr, size, offset, align, reloff, nreloc, flags, reserved1, reserved2));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -1037,7 +1037,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("fvmlib_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -1172,7 +1172,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("sub_framework_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -1215,7 +1215,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("sub_client_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -1262,7 +1262,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("sub_umbrella_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -1311,7 +1311,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("sub_library_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -1360,7 +1360,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("prebound_dylib_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -1452,7 +1452,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("thread_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -2012,7 +2012,7 @@ public interface Loader {
             }
             TableSeperator s = new TableSeperator("dylib_module_64","","","");
 
-            return new LinkedList<IContainer>(Arrays.asList(s,module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
+            return new LinkedList<>(Arrays.asList(s, module_name, iextdefsym, nextdefsym, irefsym, ilocalsym, nlocalsym, iextrel, nextrel, iinit_iterm, ninit_nterm, objc_module_info_addr, objc_module_info_size, nrefsym));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -2051,7 +2051,7 @@ public interface Loader {
             }
             TableSeperator s = new TableSeperator("dylib_reference","","","");
 
-            return new LinkedList<IContainer>(Arrays.asList(s,isym, flags));
+            return new LinkedList<>(Arrays.asList(s, isym, flags));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -2137,7 +2137,7 @@ public interface Loader {
             }
             TableSeperator s = new TableSeperator("twolevel_hint","","","");
 
-            return new LinkedList<IContainer>(Arrays.asList(s,isub_image, itoc));
+            return new LinkedList<>(Arrays.asList(s, isub_image, itoc));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -2218,7 +2218,7 @@ public interface Loader {
             }
             TableSeperator s = new TableSeperator("uuid_command","","","");
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, uuid));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize, uuid));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -2336,7 +2336,7 @@ public interface Loader {
             }
             TableSeperator s = new TableSeperator("linkedit_ABI_command","","","");
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, dataoff, datasize));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize, dataoff, datasize));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -2717,7 +2717,7 @@ public interface Loader {
             TableSeperator s = new TableSeperator("fvmfile_command","","","");
 
 
-            return new LinkedList<IContainer>(Arrays.asList(s,cmd, cmdsize, header_addr));
+            return new LinkedList<>(Arrays.asList(s, cmd, cmdsize, header_addr));
         }
         @Override
         public LinkedList<IContainer> getStructureData() {
@@ -2828,7 +2828,7 @@ public interface Loader {
         private LinkedList<IContainer> runOnce() {
             if(once){
                 once=false;
-                return new LinkedList<IContainer>();
+                return new LinkedList<>();
             }
             TableSeperator s = new TableSeperator("ABI_in_code_entry","","","");
             offset.addComments(offsetComment);
@@ -2875,7 +2875,7 @@ public interface Loader {
         private LinkedList<IContainer> runOnce() {
             if(once){
                 once=false;
-                return new LinkedList<IContainer>();
+                return new LinkedList<>();
             }
             TableSeperator s = new TableSeperator("tlv_descriptor","","","");
             key.addComments(keyComment);

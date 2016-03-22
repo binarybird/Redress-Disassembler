@@ -33,10 +33,10 @@ public class CodePaneController extends TableView<CodePaneController.DisplaySet>
             codeColumn.setPrefWidth(w/6);
             commentColumn.setPrefWidth(w / 2);
         });
-        addressColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("address"));
-        dataTypeColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("informationType"));
-        codeColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet, String>("text"));
-        commentColumn.setCellValueFactory(new PropertyValueFactory<DisplaySet,String>("comment"));
+        addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+        dataTypeColumn.setCellValueFactory(new PropertyValueFactory<>("informationType"));
+        codeColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
+        commentColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
 
         this.setRowFactory(tableView -> {
             TableRow<DisplaySet> row = new TableRow<>();
